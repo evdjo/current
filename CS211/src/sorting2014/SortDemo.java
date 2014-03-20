@@ -13,9 +13,10 @@ import java.util.Set;
 public class SortDemo {
 	final static String[] sorts = {
 			// "RadixSort",
-			  "InsertionSort",  "SelectionSort", //"ImprovedBubbleSort",
+		//	  "InsertionSort",  "SelectionSort", //"ImprovedBubbleSort",
 		//	"QuickSort_MidPivot", "QuickSort_MedianPivot", "QuickSort_Hybrid",
-	// "ShellSort", "MergeSort",
+	// "ShellSort", 
+		"MergeSort",
 
 	};
 	final static String[] fileCondition = { "unsorted", "sorted", "reverse" };
@@ -33,7 +34,12 @@ public class SortDemo {
 
 		SortDemo sd = new SortDemo();
 
-		sd.testAll(1);
+		Comparable[] data1 = sd.load("/home/evdjoint/unsorted/test3.dat");
+		Comparable[] data2 = sd.load("/home/evdjoint/unsorted/test3.dat");
+		sd.sort("sorting2014.InsertionSort", data1);
+		Arrays.sort(data2);	
+		System.out.println(Arrays.equals(data1, data2))	;	
+		//sd.testAll(1);
 
 	}
 

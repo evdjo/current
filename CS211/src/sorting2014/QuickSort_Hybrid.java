@@ -7,36 +7,15 @@ package sorting2014;
 @SuppressWarnings("rawtypes")
 public class QuickSort_Hybrid implements Sorter {
 
-	static final int INSERT_SORT = 20; // when to start using insertion sort
-
+	private static final int INSERT_SORT = 20; // when to start using insertion sort
+    private Comparable[] items;
 	@Override
 	public void sort(Comparable[] items, int cutoff) {
-		quicksort(items, 0, items.length - 1);
+		this.items = items;
+		quicksort(0, items.length - 1);
 	}
 
-	/**
-	 * @see InsertionSort 
-	 */
-	private void insertionSort(Comparable[] items, int start, int end) {
-
-		for (int i = start; i <= end; ++i) {
-
-			Comparable temp = items[i]; // the current element to compare
-
-			int j; // integer to index the shifted value
-
-			for (j = i - 1; j >= 0; --j) {
-
-				if (items[j].compareTo(temp) < 0) {
-					break; // the current position is correct - stop shifting
-				}
-				items[j + 1] = items[j]; // continually shift the previous value
-											// to current position
-			}
-			items[j + 1] = temp; // insert the value to it's correct position
-		}
-	}
-
+	
 	/**
 	 * Sorts the element in array items. An item from the array is selected
 	 * based on some criteria as a "pivot". The method works by finding the
@@ -58,25 +37,25 @@ public class QuickSort_Hybrid implements Sorter {
 	 * @param first	     the index of the first item in the (sub)array
 	 * @param last      the index of the last item in the (sub)array
 	 */
-	private void quicksort(Comparable[] items, int first, int last) {
+	private void quicksort(int first, int last) {
 
 		if (last - first < INSERT_SORT) { // use insert sort if array size below
 											// the limit
-			this.insertionSort(items, first, last);
+			this.insertionsort(first, last);
 			return;
 		}
 
-		int pivot = this.findMedian(items, first, last); // pivot middle element
+		int pivot = this.findMedian(first, last); // pivot middle element
 
-		pivot = setPivot(items, first, last, pivot); // moves the pivot to it's
+		pivot = setPivot(first, last, pivot); // moves the pivot to it's
 														// correct position
 
 		if (first < pivot)
-			quicksort(items, first, pivot - 1); // recursively sort the sub
+			quicksort( first, pivot - 1); // recursively sort the sub
 												// array
 												// left from the pivot
 		if (last > pivot)
-			quicksort(items, pivot + 1, last); // recursively sort the sub array
+			quicksort(pivot + 1, last); // recursively sort the sub array
 												// right from the pivot
 
 	}
@@ -93,9 +72,9 @@ public class QuickSort_Hybrid implements Sorter {
 	 * 
 	 * @return returns the updated index of the pivot
 	 */
-	private int setPivot(Comparable[] items, int left, int right, int pivotIndex) {
+	private int setPivot(int left, int right, int pivotIndex) {
 
-		swap(items, pivotIndex, left); // move the pivot out of the way
+		swap(pivotIndex, left); // move the pivot out of the way
 
 		int swap = left + 1; // set the initial swap position
 
@@ -105,13 +84,14 @@ public class QuickSort_Hybrid implements Sorter {
 			if (items[left].compareTo(items[i]) > 0) { // compare the current
 														// item with the pivot
 
-				swap(items, swap, i); // swap the current item with the swap
+				swap( swap, i); // swap the current item with the swap
 										// position
+				
 				swap++; // move the swap position to the right
 			}
 
 		}
-		swap(items, left, swap - 1); // put the pivot to it's right place
+		swap(left, swap - 1); // put the pivot to it's right place
 		return swap - 1; // swap - 1 is the pivot's new index
 
 	}
@@ -120,14 +100,11 @@ public class QuickSort_Hybrid implements Sorter {
 	 * A helper-method. Swaps two elements from the array items. The integers
 	 * indexFirst and indexSecond are the indexes of the elements to be swapped.
 	 * 
-	 * @param items
-	 *            the array where the swap will occur
-	 * @param indexFirst
-	 *            the index of the first element
-	 * @param indexSecond
-	 *            the index of the second element
+	 * @param items         the array where the swap will occur
+	 * @param indexFirst    the index of the first element
+	 * @param indexSecond   the index of the second element
 	 */
-	private void swap(Comparable[] items, int indexFirst, int indexSecond) {
+	private void swap(int indexFirst, int indexSecond) {
 
 		Comparable temp = items[indexFirst]; // store the first in temporary
 												// variable
@@ -143,15 +120,12 @@ public class QuickSort_Hybrid implements Sorter {
 	 * A helper-method. Finds the median among the first, middle and last
 	 * element of the current array or sub array.
 	 * 
-	 * @param items
-	 *            the primary array where the data lives
-	 * @param first
-	 *            index of the first element
-	 * @param last
-	 *            index of the last element
+	 * @param items      the primary array where the data lives
+	 * @param first      index of the first element
+	 * @param last       index of the last element
 	 * @return the index of the median of the three
 	 */
-	private int findMedian(Comparable[] items, int first, int last) {
+	private int findMedian(int first, int last) {
 
 		int pivot;
 		int mid = first + (last - first) / 2;
@@ -160,20 +134,47 @@ public class QuickSort_Hybrid implements Sorter {
 
 			if (items[first].compareTo(items[last]) < 0)
 				pivot = first;
+			
 			else if (items[mid].compareTo(items[last]) > 0)
 				pivot = mid;
-			else
-				pivot = last;
+			
+			else pivot = last;
+			
 		} else {
+			
 			if (items[mid].compareTo(items[last]) < 0)
 				pivot = mid;
+			
 			else if (items[first].compareTo(items[last]) > 0)
 				pivot = first;
-			else
-				pivot = last;
+			
+			else pivot = last;
 
 		}
 		return pivot;
 	}
+	/**
+	 * @see InsertionSort 
+	 */
+	private void insertionsort(int start, int end) {
+
+		for (int i = start; i <= end; ++i) {
+
+			Comparable temp = items[i]; // the current element to compare
+
+			int j; // integer to index the shifted value
+
+			for (j = i - 1; j >= 0; --j) {
+
+				if (items[j].compareTo(temp) < 0) {
+					break; // the current position is correct - stop shifting
+				}
+				items[j + 1] = items[j]; // continually shift the previous value
+											// to current position
+			}
+			items[j + 1] = temp; // insert the value to it's correct position
+		}
+	}
+	
 
 }

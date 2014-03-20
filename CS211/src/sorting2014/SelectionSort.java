@@ -1,11 +1,18 @@
 package sorting2014;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
+/**
+ *  Selection sort.
+ * @author Evdzhan Mustafa enm3@aber.ac.uk
+ *
+ */
 public class SelectionSort implements Sorter {
 
+	private Comparable[] items;
 	public void sort(Comparable[] items, int cutoff) {
 
-		selectionSort(items);
+		this.items = items;
+		selectionSort();
 	}
 
 	/**
@@ -18,7 +25,7 @@ public class SelectionSort implements Sorter {
 	 * @param items
 	 *            the array to be sorted.
 	 */
-	  private void selectionSort(Comparable[] items) {
+	  private void selectionSort() {
 
 		int min; // index of the current lowest value
 
@@ -30,6 +37,7 @@ public class SelectionSort implements Sorter {
 			for (int j = i + 1; j < items.length; ++j) {
 
 				if (items[min].compareTo(items[j]) > 0) {
+					
 					min = j; // if the previous lowest value is higher , mark
 								// this as the lowest
 

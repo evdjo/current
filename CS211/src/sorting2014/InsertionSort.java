@@ -1,15 +1,18 @@
 package sorting2014;
 
 /**
- * Insertion sort. * 
+ * Insertion sort.  
  * @author Evdzhan Mustafa enm3@aber.ac.uk
  */
 @SuppressWarnings("rawtypes")
 public class InsertionSort implements Sorter {
 
+	private Comparable[] items ;
 	@Override
 	public void sort(Comparable[] items, int cutoff) {
-		this.insertionSort(items);
+		
+		this.items = items ;
+		this.insertionsort();
 
 	}
 
@@ -26,7 +29,7 @@ public class InsertionSort implements Sorter {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private void insertionSort(Comparable[] items) {
+	private void insertionsort() {
 
 		for (int i = 1; i < items.length; ++i) {
 

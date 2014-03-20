@@ -1,12 +1,19 @@
 package sorting2014;
 @SuppressWarnings({"unchecked","rawtypes"})
  
+/**
+ *  Shell sort.
+ * @author Evdzhan Mustafa enm3@aber.ac.uk
+ *
+ */
 public class ShellSort implements Sorter {
 
-	
+	private Comparable[] items ;
 	@Override
 	public void sort(Comparable[] items, int cutoff) {
-		shellSort(items);
+	
+		this.items = items ;
+		shellsort();
 
 	}
 
@@ -23,7 +30,7 @@ public class ShellSort implements Sorter {
 	 * @param items The sorted array
 	 */
 	
-	private void shellSort(Comparable[] items) {
+	private void shellsort() {
 
 		 
 		

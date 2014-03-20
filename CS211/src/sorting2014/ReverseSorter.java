@@ -1,41 +1,48 @@
 package sorting2014;
 
 @SuppressWarnings("rawtypes")
+/**
+ *  Based on Quick Sort - Median Pivot. 
+ *  Reverse sorts the  array items.
+ * @author Evdzhan Mustafa enm3@aber.ac.uk
+ *
+ */
 public class ReverseSorter implements Sorter {
-
+private Comparable[] items;
 	@Override
 	public void sort(Comparable[] items, int cutoff) {
-		quicksort(items, 0, items.length - 1);
+		this.items = items ;
+		quicksort(0, items.length - 1);
 	}
 
 	 
-	private void quicksort(Comparable[] items, int first, int last) {
+	private void quicksort(int first, int last) {
 
 		if (last <= first) {
 			return; // if only one item in the array - it is sorted
 		}
 
-		int pivot = findMedian(items, first, last); // let the pivot be the
+		int pivot = findMedian(first, last); // let the pivot be the
 													// median of the three
 													// values
 
-		pivot = setPivot(items, first, last, pivot); // moves the pivot to it's
+		pivot = setPivot(first, last, pivot); // moves the pivot to it's
 														// correct position
 
 		if (first < pivot)
-			quicksort(items, first, pivot - 1); // recursively sort the sub
+			quicksort(first, pivot - 1); // recursively sort the sub
 												// array
 												// left from the pivot
 		if (last > pivot)
-			quicksort(items, pivot + 1, last); // recursively sort the sub array
+			quicksort(pivot + 1, last); // recursively sort the sub array
 												// right from the pivot
 
 	}
 
  
-	private int setPivot(Comparable[] items, int left, int right, int pivotIndex) {
+	private int setPivot(int left, int right, int pivotIndex) {
 
-		swap(items, pivotIndex, left); // move the pivot out of the way
+		swap(pivotIndex, left); // move the pivot out of the way
 
 		int swap = left + 1; // set the initial swap position
 
@@ -45,19 +52,19 @@ public class ReverseSorter implements Sorter {
 			if (items[left].compareTo(items[i]) < 0) { // compare the current
 														// item with the pivot
 
-				swap(items, swap, i); // swap the current item with the swap
+				swap(swap, i); // swap the current item with the swap
 										// position
 				swap++; // move the swap position to the right
 			}
 
 		}
-		swap(items, left, swap - 1); // put the pivot to it's right place
+		swap(left, swap - 1); // put the pivot to it's right place
 		return swap - 1; // swap - 1 is the pivot's new index
 
 	}
 
  
-	private void swap(Comparable[] items, int indexFirst, int indexSecond) {
+	private void swap(int indexFirst, int indexSecond) {
 
 		Comparable temp = items[indexFirst]; // store the first in temporary
 												// variable
@@ -70,7 +77,7 @@ public class ReverseSorter implements Sorter {
 	}
 
 	 
-	private int findMedian(Comparable[] items, int first, int last) {
+	private int findMedian(int first, int last) {
 
 		int pivot;
 		int mid = first + (last - first) / 2;
@@ -79,17 +86,22 @@ public class ReverseSorter implements Sorter {
 
 			if (items[first].compareTo(items[last]) < 0)
 				pivot = first;
+			
 			else if (items[mid].compareTo(items[last]) > 0)
 				pivot = mid;
-			else
-				pivot = last;
+			
+			else	pivot = last;
+			
+			
 		} else {
+			
 			if (items[mid].compareTo(items[last]) < 0)
 				pivot = mid;
+			
 			else if (items[first].compareTo(items[last]) > 0)
 				pivot = first;
-			else
-				pivot = last;
+			
+			else	pivot = last;
 
 		}
 		return pivot;
