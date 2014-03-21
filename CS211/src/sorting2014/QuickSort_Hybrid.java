@@ -7,7 +7,7 @@ package sorting2014;
 @SuppressWarnings("rawtypes")
 public class QuickSort_Hybrid implements Sorter {
 
-	private static final int INSERT_SORT = 20; // when to start using insertion sort
+	private static final int INSERT_SORT = 10; // when to start using insertion sort
     private Comparable[] items;
 	@Override
 	public void sort(Comparable[] items, int cutoff) {
@@ -39,7 +39,7 @@ public class QuickSort_Hybrid implements Sorter {
 	 */
 	private void quicksort(int first, int last) {
 
-		if (last - first < INSERT_SORT) { // use insert sort if array size below
+		if (last - first <= INSERT_SORT) { // use insert sort if array size below
 											// the limit
 			this.insertionsort(first, last);
 			return;
@@ -84,7 +84,7 @@ public class QuickSort_Hybrid implements Sorter {
 			if (items[left].compareTo(items[i]) > 0) { // compare the current
 														// item with the pivot
 
-				swap( swap, i); // swap the current item with the swap
+				swap( swap, i ); // swap the current item with the swap
 										// position
 				
 				swap++; // move the swap position to the right
@@ -125,6 +125,7 @@ public class QuickSort_Hybrid implements Sorter {
 	 * @param last       index of the last element
 	 * @return the index of the median of the three
 	 */
+	@SuppressWarnings("unchecked")
 	private int findMedian(int first, int last) {
 
 		int pivot;

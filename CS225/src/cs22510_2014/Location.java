@@ -3,8 +3,8 @@ package cs22510_2014;
 import java.util.Date;
 
 public class Location {
-	public double latitude;
-	public double longitude;
+	public float latitude;
+	public float longitude;
     public Date date;
 	public String toString() {
 		return latitude + "," + longitude;
@@ -32,9 +32,9 @@ public class Location {
 		loc.latitude = other.latitude;
 	    loc.longitude = other.longitude;
 	    
-	    loc.latitude  = (((long)(loc.latitude * 100000)) +offset.latitude)  / 100000.0;
+	    loc.latitude  = (float) ((((long)(loc.latitude * 100000)) +offset.latitude)  / 100000.0);
 		
-	    loc.longitude  = (((long) (loc.longitude *100000)) +offset.longitude)/ 100000.0;
+	    loc.longitude  = (float) ((((long) (loc.longitude *100000)) +offset.longitude)/ 100000.0);
 	    return  loc;
 	   
 	}

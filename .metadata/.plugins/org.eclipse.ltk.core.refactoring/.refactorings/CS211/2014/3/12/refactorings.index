@@ -1,0 +1,13 @@
+1395351566320	Rename local variable 'u'
+1395351581282	Rename local variable 'mean'
+1395351676614	Rename local variable 'mean'
+1395351932402	Rename local variable 'next'
+1395351937440	Rename local variable 'arr_one'
+1395351980041	Rename local variable 'arr_two'
+1395352053827	Rename local variable 'secondary_arr'
+1395356083607	Rename local variable 'primary_arr'
+1395358640816	Rename method 'shellSort'
+1395358819153	Rename method 'mergeSort'
+1395358836693	Rename method 'insertionSort'
+1395358945236	Rename method 'insertionSort'
+1395405827631	Delete element

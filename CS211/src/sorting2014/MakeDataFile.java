@@ -19,7 +19,7 @@ public class MakeDataFile {
 			makeFile(args[0],Integer.parseInt(args[1]));
 		} else {
 			System.out.println("Creating lots of files, please wait... dots will get faster");
-			for (int i = 7 ; i < 8; i++) {
+			for (int i = 3 ; i < 8; i++) {
 				System.out.print(".");
 				makeFile("test"+String.valueOf(i)+".dat", (int)Math.pow(10,i));
 				if(i == 8) break;

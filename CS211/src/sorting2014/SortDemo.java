@@ -11,16 +11,24 @@ import java.util.Set;
 
 @SuppressWarnings({ "rawtypes" })
 public class SortDemo {
+	final static int howManyTimes  =  5 ;
 	final static String[] sorts = {
-			// "RadixSort",
-		//	  "InsertionSort",  "SelectionSort", //"ImprovedBubbleSort",
-		//	"QuickSort_MidPivot", "QuickSort_MedianPivot", "QuickSort_Hybrid",
-	// "ShellSort", 
-		"MergeSort",
+
+			"ImprovedBubbleSort",
+			"SelectionSort", 
+			"InsertionSort",
+			"QuickSort_MidPivot",
+			"QuickSort_MedianPivot",
+			"QuickSort_Hybrid",
+		    "ShellSort",
+		    "MergeSort",
+	        "RadixSort",
 
 	};
+	
 	final static String[] fileCondition = { "unsorted", "sorted", "reverse" };
-	final static String[] files = { "test3.dat", "test3a.dat", "test3b.dat",
+	final static String[] files = {
+		    "test3.dat", "test3a.dat", "test3b.dat",
 			"test3c.dat", "test3d.dat", "test4.dat", "test4a.dat",
 			"test4b.dat", "test4c.dat", "test4d.dat", "test5.dat",
 			"test5a.dat", "test5b.dat", "test5c.dat", "test5d.dat",
@@ -28,22 +36,17 @@ public class SortDemo {
 			"test6d.dat", "test7.dat"
 
 	};
-	final static String DIR = "/home/evdjoint/Programming/JAVA/CS211/";
+	final static String DIR = "";
 
 	public static void main(String[] args) {
 
 		SortDemo sd = new SortDemo();
 
-		Comparable[] data1 = sd.load("/home/evdjoint/unsorted/test3.dat");
-		Comparable[] data2 = sd.load("/home/evdjoint/unsorted/test3.dat");
-		sd.sort("sorting2014.InsertionSort", data1);
-		Arrays.sort(data2);	
-		System.out.println(Arrays.equals(data1, data2))	;	
-		//sd.testAll(1);
+		sd.testAll();
 
 	}
 
-	public void testAll(int howManyTimes) {
+	public void testAll() {
 
 		for (int j = 0; j < sorts.length; j++) {
 
@@ -55,16 +58,21 @@ public class SortDemo {
 				sb.append(fileCondition[u] + '\n');
 
 				for (int i = 0; i < files.length; i++) {
-					  if(j < 2 && i > 10) continue;
+
+					if (j < 3 && i > 10)
+					continue; // skip the slow sorts for large data sets
 
 					long time = 0;
 					Comparable[] items = null;
 					for (int p = 0; p < howManyTimes; p++) {
 						items = this.load(fileCondition[u] + "/" + files[i]);
+
 						time += this.sort("sorting2014." + sorts[j], items);
 
+					 
+
 					}
-					double timeInSeconds = time / howManyTimes / 1000.0;
+					double timeInSeconds = time / howManyTimes / 1000.0 ;
 					sb.append(items.length + "," + timeInSeconds + "\n");
 				}
 			}

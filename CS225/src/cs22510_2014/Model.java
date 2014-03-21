@@ -28,8 +28,9 @@ public class Model {
 
 		try {
 			br = new BufferedReader(new FileReader(fileName));
-		} catch (IOException e) {}
-		
+		} catch (IOException e) {
+		}
+
 		satelitesOK = false;
 
 	}
@@ -94,7 +95,7 @@ public class Model {
 				if (!data[o].equals("") && Integer.parseInt(data[o]) > 30) {
 					count++;
 					if (count == 3) {
-						
+
 						this.satelitesOK = true;
 						return;
 					}
@@ -104,7 +105,6 @@ public class Model {
 
 		}
 		this.satelitesOK = false;
-		 
 
 	}
 
@@ -123,9 +123,11 @@ public class Model {
 		}
 
 		this.currLoc = degreesToDecimal(thedata[3], thedata[5]);
-		if(thedata[4].equals("S")) this.currLoc.latitude *=-1; 
-		if(thedata[6].equals("W")) this.currLoc.longitude *=-1; 
-		 
+		if (thedata[4].equals("S"))
+			this.currLoc.latitude *= -1;
+		if (thedata[6].equals("W"))
+			this.currLoc.longitude *= -1;
+
 		this.currLoc.date = currTime;
 
 	}
@@ -133,33 +135,36 @@ public class Model {
 	static Location degreesToDecimal(String latitude, String longitude) {
 
 		Location loc = new Location();
-		BigDecimal bd = new BigDecimal(Double.parseDouble(latitude));
-        bd  = bd.setScale(5,RoundingMode.CEILING);
-		BigDecimal degrees = bd.divide(new BigDecimal(100));
 		
-		
-	/*	
-		
-		long data1 = (long) (Double.parseDouble(latitude)*10000);
-		
-		int degrees1 = (int) data1 / 1000000;		
-		int minutes1 = (int) (data1 - degrees1*1000000) / 60;
-		
+		double data1 = Double.parseDouble(latitude);
+        int degrees1  = (int) data1/100;
+        double minutes1 = ( data1 - degrees1*100  ) / 60;
+         
+    	double data2 = Double.parseDouble(longitude);
+        int degrees2  = (int) data2/100;
+        double minutes2 = ( data2 - degrees2*100  ) / 60;
+        
+        
+	/*	long data1 = (long) (Double.parseDouble(latitude) * 10000);
+
+		int degrees1 = (int) data1 / 1000000;
+		int minutes1 = (int) (data1 - degrees1 * 1000000) / 60;
+
 		double minutes1_ = (minutes1 / 10000.0);
-		
+
 		loc.latitude = degrees1 + minutes1_;
 
-		
-		
-		long data2 = (long)(Double.parseDouble(longitude)*10000);
-		
+		long data2 = (long) (Double.parseDouble(longitude) * 10000);
+
 		int degrees2 = (int) data2 / 1000000;
-		int minutes2 = (int) (data2 - degrees2*1000000) / 60 ;
-	
+		int minutes2 = (int) (data2 - degrees2 * 1000000) / 60;
+
 		double minutes2_ = (minutes2 / 10000.0);
 
 		loc.longitude = degrees2 + minutes2_;
 */
+        loc.latitude = (float) (degrees1 + minutes1);
+        loc.longitude = (float) (degrees2 + minutes2);
 		return loc;
 	}
 }

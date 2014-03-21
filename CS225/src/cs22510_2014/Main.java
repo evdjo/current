@@ -8,12 +8,9 @@ public class Main {
 	public static void main(String[] args) {
 
 		
-	 	String b = "00402.5179";
-	 	String a =  "5225.0030";
-	 	Location l = Model.degreesToDecimal(a, b);
-	 	l  = null;
+	 
 		
-		/* String file1 = "/home/evdjoint/gps_1.dat";
+		  String file1 = "/home/evdjoint/gps_1.dat";
 		String file2 = "/home/evdjoint/gps_2.dat";
 
 		Controller controller = new Controller(file1, file2);
@@ -43,7 +40,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		pw.close();
- */
+  
 	} 
 
 }
