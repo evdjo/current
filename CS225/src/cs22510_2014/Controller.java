@@ -1,34 +1,36 @@
 package cs22510_2014;
 
+
 import java.util.LinkedList;
 
 public class Controller {
-	Model strm1, strm2;
-	LinkedList<Location> locs;
-	Location offset;
-
-	public Controller(String file1, String file2) {
-
-		strm1 = new Model(file1);
-		strm2 = new Model(file2);
+	protected GPSReader strm1, strm2; // stream 1 and stream 2
+	protected LinkedList<GPSReader.Location> locs; // the place to store the locations
+	protected long latOffset;
+    protected long lngOffset;
+    private final static double  MIL = 1000000.0 ;
+    
+	protected Controller(String file1, String file2) {
+		strm1 = new GPSReader(file1);
+		strm2 = new GPSReader(file2);
 		locs = new LinkedList<>();
 	}
 
-	public boolean synchronizeTimes() {
+	private boolean synchronizeTimes() {
 		String data = "";
-		while (!data.equals(Model.GPS_TIME) && !data.equals(Model.EOF)) {
+		while (!data.equals(GPSReader.GPS_TIME) && !data.equals(GPSReader.EOF)) {
 			data = strm1.read();
 
 		}
-		if (data.equals(Model.EOF)) {
+		if (data.equals(GPSReader.EOF)) {
 			return false;
 		}
 
 		data = "";
-		while (!data.equals(Model.GPS_TIME) && !data.equals(Model.EOF)) {
+		while (!data.equals(GPSReader.GPS_TIME) && !data.equals(GPSReader.EOF)) {
 			data = strm2.read();
 		}
-		if (data.equals(Model.EOF)) {
+		if (data.equals(GPSReader.EOF)) {
 			return false;
 		}
 
@@ -37,9 +39,9 @@ public class Controller {
 		if (time == -1) {
 			do {
 				data = strm1.read();
-				if (data == Model.EOF)
+				if (data == GPSReader.EOF)
 					return false;
-				if (data.equals(Model.GPS_TIME)) {
+				if (data.equals(GPSReader.GPS_TIME)) {
 					time = strm1.currTime.compareTo(strm2.currTime);
 
 				}
@@ -48,67 +50,79 @@ public class Controller {
 		} else if (time == 1) {
 			do {
 				data = strm2.read();
-				if (data == Model.EOF)
+				if (data == GPSReader.EOF)
 					return false;
-				if (data.equals(Model.GPS_TIME)) {
+				if (data.equals(GPSReader.GPS_TIME)) {
 					time = strm1.currTime.compareTo(strm2.currTime);
 
 				}
 			} while (time != 0);
 
 		}
-		this.offset = strm1.currLoc.getOffset(strm2.currLoc);
+		
 		return true;
 	}
 
-	public void start() {
+	private void getoffset(GPSReader.Location one, GPSReader.Location two) {
+
+		this.latOffset  = (long)(one.latitude  * MIL) - (long)(two.latitude  * MIL);
+		
+		this.lngOffset  = (long)(one.longitude * MIL) - (long)(two.longitude * MIL);
+
+	}
+
+	private void addoffset(GPSReader.Location goodFix, GPSReader.Location badFix) {
+
+		badFix.latitude  = Math.round(goodFix.latitude  * MIL + this.latOffset) / MIL;
+		
+		badFix.longitude = Math.round(goodFix.longitude * MIL + this.lngOffset) / MIL;
+
+	}
+
+	protected void start() {
 		this.synchronizeGPS();
 		this.synchronizeTimes();
 		while (true) {
-
+			
 			if (strm1.satelitesOK) {
-				if (strm1.currTime.toString().equals(
-						("Fri Feb 21 15:14:20 GMT 2014"))) {
-					System.out.println("asd");
-				}
+
 				locs.add(strm1.currLoc);
 				if (strm2.satelitesOK)
-					this.offset = strm1.currLoc.getOffset(strm2.currLoc);
+					this.getoffset(strm1.currLoc, strm2.currLoc);
 
-				else if (this.offset != null)
-					strm2.currLoc = Location.getLoc(this.offset, strm1.currLoc);
+				else
+					this.addoffset(strm1.currLoc, strm2.currLoc);
 
 			} else if (strm2.satelitesOK) {
 				locs.add(strm2.currLoc);
-				if (this.offset != null)
-					strm1.currLoc = Location.getLoc(this.offset, strm2.currLoc);
+				this.addoffset(strm2.currLoc, strm1.currLoc);
 
 			}
 			String lineRead = "";
 			do {
 				lineRead = strm1.read();
-				if (lineRead.equals(Model.EOF))
+				if (lineRead.equals(GPSReader.EOF))
 					return;
 
-			} while (!lineRead.equals(Model.GPS_TIME));
+			} while (!lineRead.equals(GPSReader.GPS_TIME));
 			lineRead = "";
 			do {
 				lineRead = strm2.read();
-				if (lineRead.equals(Model.EOF))
+				if (lineRead.equals(GPSReader.EOF))
 					return;
 
-			} while (!lineRead.equals(Model.GPS_TIME));
+			} while (!lineRead.equals(GPSReader.GPS_TIME));
 
 		}
 
 	}
 
-	public boolean synchronizeGPS() {
+	private boolean synchronizeGPS() {
 		String data = "";
 		if (!strm1.satelitesOK) {
 			while (!strm1.satelitesOK) {
 				data = strm1.read();
-				if (data == Model.EOF)
+				if (data == GPSReader.EOF)
 					return false;
 			}
 		}
@@ -116,7 +130,7 @@ public class Controller {
 			while (!strm2.satelitesOK) {
 				data = strm2.read();
 
-				if (data == Model.EOF)
+				if (data == GPSReader.EOF)
 					return false;
 			}
 		}

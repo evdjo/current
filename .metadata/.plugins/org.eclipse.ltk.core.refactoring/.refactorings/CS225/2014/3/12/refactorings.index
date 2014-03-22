@@ -15,3 +15,15 @@
 1395188075323	Rename method 'offset'
 1395252072136	Rename local variable 'degrees'
 1395252079154	Rename local variable 'minutes'
+1395433323745	Rename local variable 'degrees1'
+1395433328746	Rename local variable 'data1'
+1395433340874	Rename local variable 'degrees'
+1395433351502	Rename local variable 'lat_degree'
+1395439202624	Rename local variable 'degrees'
+1395440649937	Rename local variable 'goodFixLocation'
+1395440657496	Rename local variable 'badFixLocation'
+1395440670070	Rename local variable 'goodFixLoc'
+1395440676140	Rename local variable 'badFixLoc'
+1395442470524	Delete element
+1395442773122	Delete element
+1395446820984	Rename type 'Model'

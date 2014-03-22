@@ -6,11 +6,8 @@ import java.io.PrintWriter;
 public class Main {
 
 	public static void main(String[] args) {
-
 		
-	 
-		
-		  String file1 = "/home/evdjoint/gps_1.dat";
+		String file1 = "/home/evdjoint/gps_1.dat";
 		String file2 = "/home/evdjoint/gps_2.dat";
 
 		Controller controller = new Controller(file1, file2);
@@ -18,18 +15,18 @@ public class Main {
 		PrintWriter pw = null;
 		try {
 			controller.start();
-			pw = new PrintWriter("data.gpx");
-
-			pw.write("<?xml version=\"1.0\"?>\n" + 
-					"<gpx\n" + 
-					" version=\"1.0\"\n" + 
-					" creator=\"Evdzhan Mustafa\"\n" + 
-					" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
 			
+			
+			pw = new PrintWriter("data.gpx");
+			pw.write("<?xml version=\"1.0\"?>\n"
+					+ "<gpx\n"
+					+ " version=\"1.0\"\n"
+					+ " creator=\"Evdzhan Mustafa\"\n"
+					+ " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
 
-			for (Location l : controller.locs) {
-				pw.write("<wpt lat=\""+l.latitude+"\" lon=\""+l.longitude+"\">\n"
-						+ "<time>"+l.date.toString() +"</time>"
+			for (GPSReader.Location l : controller.locs) {
+				pw.write("<wpt lat=\"" + l.latitude + "\" lon=\"" + l.longitude
+						+ "\">\n" + "<time>" + l.date.toString() + "</time>"
 						+ "\n</wpt>\n");
 			}
 
@@ -40,7 +37,7 @@ public class Main {
 			e.printStackTrace();
 		}
 		pw.close();
-  
-	} 
+
+	}
 
 }

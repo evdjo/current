@@ -32,10 +32,12 @@
 <fullyQualifiedTypeName name="java.util.Calendar"/>
 <fullyQualifiedTypeName name="java.util.Date"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="java.lang.Math"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
 <fullyQualifiedTypeName name="cs22510_2014.Location"/>
-<fullyQualifiedTypeName name="java.math.RoundingMode"/>
 <fullyQualifiedTypeName name="blockmation.FrameModel"/>
 <fullyQualifiedTypeName name="java.lang.InterruptedException"/>
+<fullyQualifiedTypeName name="java.math.BigDecimal"/>
+<fullyQualifiedTypeName name="java.math.MathContext"/>
+<fullyQualifiedTypeName name="java.math.RoundingMode"/>
+<fullyQualifiedTypeName name="java.lang.Math"/>
 </qualifiedTypeNameHistroy>

@@ -1,0 +1,140 @@
+package cs22510_2014;
+
+import java.util.LinkedList;
+
+public class Controller {
+	protected Model strm1, strm2;
+	protected LinkedList<Location> locs;
+	protected Location offset;
+    protected long latOffset;
+    protected long lngOffset;
+    
+	protected Controller(String file1, String file2) {
+		offset = new Location();
+		strm1 = new Model(file1);
+		strm2 = new Model(file2);
+		locs = new LinkedList<>();
+	}
+
+	private boolean synchronizeTimes() {
+		String data = "";
+		while (!data.equals(Model.GPS_TIME) && !data.equals(Model.EOF)) {
+			data = strm1.read();
+
+		}
+		if (data.equals(Model.EOF)) {
+			return false;
+		}
+
+		data = "";
+		while (!data.equals(Model.GPS_TIME) && !data.equals(Model.EOF)) {
+			data = strm2.read();
+		}
+		if (data.equals(Model.EOF)) {
+			return false;
+		}
+
+		int time = strm1.currTime.compareTo(strm2.currTime);
+
+		if (time == -1) {
+			do {
+				data = strm1.read();
+				if (data == Model.EOF)
+					return false;
+				if (data.equals(Model.GPS_TIME)) {
+					time = strm1.currTime.compareTo(strm2.currTime);
+
+				}
+			} while (time != 0);
+
+		} else if (time == 1) {
+			do {
+				data = strm2.read();
+				if (data == Model.EOF)
+					return false;
+				if (data.equals(Model.GPS_TIME)) {
+					time = strm1.currTime.compareTo(strm2.currTime);
+
+				}
+			} while (time != 0);
+
+		}
+		this.offset = strm1.currLoc.getOffset(strm2.currLoc);
+		return true;
+	}
+
+	private void getoffset(Location one, Location two) {
+
+		this.latOffset  = (long)(one.latitude  * 100000) - (long)(two.latitude  * 100000);
+		
+		this.lngOffset  = (long)(one.longitude * 100000) - (long)(two.longitude * 100000);
+
+	}
+
+	private void addoffset(Location goodFixLocation, Location badFixLocation) {
+
+		badFixLocation.latitude = goodFixLocation.latitude + this.latOffset/100000.0;
+		badFixLocation.longitude = goodFixLocation.longitude + this.lngOffset/100000.0;
+
+	}
+
+	protected void start() {
+		this.synchronizeGPS();
+		this.synchronizeTimes();
+		while (true) {
+
+			if (strm1.satelitesOK) {
+
+				locs.add(strm1.currLoc);
+				if (strm2.satelitesOK)
+					this.getoffset(strm1.currLoc, strm2.currLoc);
+
+				else
+					this.addoffset(strm1.currLoc, strm2.currLoc);
+
+			} else if (strm2.satelitesOK) {
+				locs.add(strm2.currLoc);
+				this.addoffset(strm2.currLoc, strm1.currLoc);
+
+			}
+			String lineRead = "";
+			do {
+				lineRead = strm1.read();
+				if (lineRead.equals(Model.EOF))
+					return;
+
+			} while (!lineRead.equals(Model.GPS_TIME));
+			lineRead = "";
+			do {
+				lineRead = strm2.read();
+				if (lineRead.equals(Model.EOF))
+					return;
+
+			} while (!lineRead.equals(Model.GPS_TIME));
+
+		}
+
+	}
+
+	private boolean synchronizeGPS() {
+		String data = "";
+		if (!strm1.satelitesOK) {
+			while (!strm1.satelitesOK) {
+				data = strm1.read();
+				if (data == Model.EOF)
+					return false;
+			}
+		}
+		if (!strm2.satelitesOK) {
+			while (!strm2.satelitesOK) {
+				data = strm2.read();
+
+				if (data == Model.EOF)
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+}
