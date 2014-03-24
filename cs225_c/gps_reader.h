@@ -40,10 +40,10 @@ extern "C" {
     void loop_through(loc_t * head, void (*funcPtr)(loc_t*));
     void print_loc(loc_t * node);
     void start();
-    void synchronize(FILE * file1, FILE * file2);
-    
+    void synchronize(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2);
     char * read_line(FILE * file, stream_t * data);
     void proccessRMC(char * buffer, stream_t * data);
+    void proccessGSV(char lines[][BUFFER_SIZE], int num_lines, stream_t * data);
     void degreesToDecimal(loc_t * loc, char * lat, char * lng);
 #ifdef	__cplusplus
 }
