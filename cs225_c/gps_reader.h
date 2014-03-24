@@ -18,6 +18,7 @@ extern "C" {
 #define GPS_TIME "GPS_TIME"
 #define SATELITE "SATELITE"
 #define _EOF "EOF"
+#define SKIP_LINE "SKIP_LINE"
 #define MIL 1000000.0
 
     typedef struct location {
@@ -42,9 +43,9 @@ extern "C" {
     void start();
     void synchronize(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2);
     char * read_line(FILE * file, stream_t * data);
-    void proccessRMC(char * buffer, stream_t * data);
-    void proccessGSV(char lines[][BUFFER_SIZE], int num_lines, stream_t * data);
-    void degreesToDecimal(loc_t * loc, char * lat, char * lng);
+    void proccess_rmc(char * buffer, stream_t * data);
+    void proccess_gsv(char lines[][BUFFER_SIZE], int num_lines, stream_t * data);
+    void degrees_to_decimal(loc_t * loc, char * lat, char * lng);
 #ifdef	__cplusplus
 }
 #endif

@@ -14,21 +14,12 @@
 /*
  * 
  */
+
+
 int main() {
 
 
-
-
-
     start();
-
-    /* loc_t * head = (loc_t*) malloc(sizeof (loc_t));
-
-     add_element(head, 52.5123 , -4.0156);
-     add_element(head, 52.7128 , -4.5124);
-
-
-     loop_through(head, print_loc );*/
 
     return (EXIT_SUCCESS);
 }

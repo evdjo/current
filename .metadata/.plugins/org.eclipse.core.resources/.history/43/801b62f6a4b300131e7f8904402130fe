@@ -1,0 +1,32 @@
+package cs22510_2014;
+
+public class Main {
+
+	public static void main(String[] args) {
+
+		String file1 = "/home/evdjoint/gps_1.dat";
+		String file2 = "/home/evdjoint/gps_2.dat";
+
+		Controller controller = new Controller(file1, file2);
+
+		controller.synchronizeTimes();
+
+		String[]lines = {
+				"$GPGSV,3,1,09,09,52,061,22,18,07,318,18,28,44,108,25,26,82,309,34*71",
+				"$GPGSV,3,2,09,21,18,301,24,05,51,189,27,07,16,057,15,15,42,285,37*74",
+				"$GPGSV,3,3,09,24,07,234,31*46"
+		};
+		controller.strm1.proccessGSV(lines);
+
+		String line;
+		do {
+			line = controller.strm2.read();
+			if (!controller.strm2.satelitesOK) {
+				System.out.println(controller.strm2.currTime.toString());
+
+			}
+		} while (!line.equals("EOF"));
+		System.out.println(controller.strm2.currTime.toString());
+
+	}
+}

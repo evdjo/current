@@ -25,6 +25,7 @@ public class GPSReader {
 	protected final static String SATELITE = "SATELITE";
 	protected final static String GSV = "GSV";
 	protected final static String RMC = "RMC";
+	protected final static String SKIP_LINE = "SKIP_LINE";
 
 	protected final static double MIL = 1000000.0;
 
@@ -37,7 +38,9 @@ public class GPSReader {
 	public GPSReader(String fileName) {
 		try {
 			br = new BufferedReader(new FileReader(fileName));
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		satelitesOK = false;
 
@@ -46,46 +49,47 @@ public class GPSReader {
 	protected String read() {
 		String data = "";
 		try {
-			while (true) {
-				data = br.readLine();
-				if (data == null)
-					return EOF;
 
-				if (data.equals(""))
-					continue;
+			data = br.readLine();
+			if (data == null)
+				return EOF;
 
-				String type = data.substring(3, 6);
+			if (data.equals(""))
+				return SKIP_LINE;
 
-				if (type.equals(GSV)) {
-					int linesNum = Integer.parseInt(data.substring(7, 8));
+			String type = data.substring(3, 6);
 
-					String[] sateliteData = new String[linesNum];
+			if (type.equals(GSV)) {
+				int linesNum = Integer.parseInt(data.substring(7, 8));
 
-					sateliteData[0] = data;
+				String[] sateliteData = new String[linesNum];
 
-					for (int i = 1; i < linesNum; i++) {
-						sateliteData[i] = br.readLine();
-					}
-					proccessGSV(sateliteData);
+				sateliteData[0] = data;
 
-					return SATELITE;
-
-				} else if (type.equals(RMC)) {
-
-					proccessRMC(data);
-
-					return GPS_TIME;
+				for (int i = 1; i < linesNum; i++) {
+					sateliteData[i] = br.readLine();
 				}
+				proccessGSV(sateliteData);
+
+				return SATELITE;
+
+			} else if (type.equals(RMC)) {
+
+				proccessRMC(data);
+
+				return GPS_TIME;
+			} else {
+				return SKIP_LINE;
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
-		return EOF;
 
 	}
 
-	private void proccessGSV(String[] gsvData) {
+	  void proccessGSV(String[] gsvData) {
 
 		int satNum = Integer.parseInt(gsvData[0].substring(11, 13));
 		if (satNum < 3) {
@@ -98,14 +102,15 @@ public class GPSReader {
 		for (int i = 0; i < gsvData.length; i++) {
 			int end = gsvData[i].indexOf('*');
 			String[] data = gsvData[i].substring(14, end).split(",");
-			for (int o = 3; o < 16 && satNum > 1 && o < data.length; o += 4) {
+			for (int o = 3; o < 16 && satNum > 0 && o < data.length; o += 4) {
 
-				if (!data[o].equals("") && Integer.parseInt(data[o]) > 30) {
+				if (!data[o].equals("") && Integer.parseInt(data[o]) >= 30) {
 					count++;
 					if (count == 3) {
 
 						this.satelitesOK = true;
 						return;
+
 					}
 				}
 				satNum--;

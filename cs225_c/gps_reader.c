@@ -11,9 +11,9 @@
 void start() {
     FILE * file1;
     FILE * file2;
-    stream_t strm_1,strm_2;// stream 1 and stream 2
-    strm_1.satelitesOK = -1 ;
-    strm_2.satelitesOK = -1 ;
+    stream_t strm_1, strm_2; // stream 1 and stream 2
+    strm_1.satelitesOK = 0;
+    strm_2.satelitesOK = 0;
 
     file1 = fopen(FILE_NAME_1, "r");
     file2 = fopen(FILE_NAME_2, "r");
@@ -21,24 +21,61 @@ void start() {
         printf("Invalid file name(s).");
         return;
     }
-    synchronize(file1, file2,&strm_1,&strm_2);
-    printf("%d",strm_1.satelitesOK);
-    printf("%d",strm_2.satelitesOK);
-     
+
+    synchronize(file1, file2, &strm_1, &strm_2);
+    printf("%d", strm_1.satelitesOK);
+    printf("%d", strm_2.satelitesOK);
+
+    printf("\n %s", asctime(&strm_1.location.time));
+    printf("\n %s", asctime(&strm_2.location.time));
+
+
+    char status[STRING_SIZE];
+
+    do {
+
+        strcpy(status, read_line(file2, &strm_2));
+         if (strm_2.satelitesOK == 0) {
+            printf("%s", asctime(&strm_2.location.time));
+            
+        }
+
+    } while (strcmp(status, _EOF) != 0);
+ 
+printf("%s", asctime(&strm_2.location.time));
+    printf("%d", strm_2.satelitesOK);
 
 }
 
 void synchronize(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2) {
-    char line_read_1[STRING_SIZE] = "";   
+    char line_read[STRING_SIZE] = "";
 
-    while (strcmp(line_read_1, GPS_TIME) != 0) {
-        strcpy(line_read_1, read_line(file1, strm_1));
+    line_read[0] = '\0';
+    while (strcmp(line_read, SATELITE) != 0) {
+        strcpy(line_read, read_line(file1, strm_1));
+        if (strm_1->satelitesOK != 0) {
+            break;
+        }
     }
-    char line_read_2[STRING_SIZE] = "";
-    while (strcmp(line_read_2, GPS_TIME) != 0) {
-        strcpy(line_read_2, read_line(file2, strm_2));
+    line_read[0] = '\0';
+    while (strcmp(line_read, SATELITE) != 0) {
+        strcpy(line_read, read_line(file2, strm_2));
+        if (strm_2->satelitesOK != 0) {
+            break;
+        }
     }
-    
+
+
+    line_read[0] = '\0';
+    while (strcmp(line_read, GPS_TIME) != 0) {
+        strcpy(line_read, read_line(file1, strm_1));
+    }
+
+    line_read[0] = '\0';
+    while (strcmp(line_read, GPS_TIME) != 0) {
+        strcpy(line_read, read_line(file2, strm_2));
+    }
+
     time_t time_1 = mktime(&strm_1->location.time);
     time_t time_2 = mktime(&strm_2->location.time);
 
@@ -46,9 +83,9 @@ void synchronize(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_
 
     if (time_difference < 0) {
         while (time_difference != 0) {
-            line_read_1[0] = '\0';
-            while (strcmp(line_read_1, GPS_TIME) != 0) {
-                strcpy(line_read_1, read_line(file1, strm_1));
+            line_read[0] = '\0';
+            while (strcmp(line_read, GPS_TIME) != 0) {
+                strcpy(line_read, read_line(file1, strm_1));
             }
             time_1 = mktime(&strm_1->location.time);
             time_2 = mktime(&strm_2->location.time);
@@ -56,9 +93,9 @@ void synchronize(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_
         }
     } else if (time_difference > 0) {
         while (time_difference != 0) {
-            line_read_2[0] = '\0';
-            while (strcmp(line_read_2, GPS_TIME) != 0) {
-                strcpy(line_read_2, read_line(file2, strm_2));
+            line_read[0] = '\0';
+            while (strcmp(line_read, GPS_TIME) != 0) {
+                strcpy(line_read, read_line(file2, strm_2));
             }
             time_1 = mktime(&strm_1->location.time);
             time_2 = mktime(&strm_2->location.time);
@@ -70,106 +107,133 @@ void synchronize(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_
 }
 
 char * read_line(FILE * file, stream_t * strm) {
+
     char buffer[BUFFER_SIZE];
-    char current_line[BUFFER_SIZE];
 
     char * status = fgets(buffer, BUFFER_SIZE, file);
-    strcpy(current_line, buffer);
-    if (status != NULL) {
-        char * current = strtok(buffer, ",");
-        if (strcmp(current, "$GPRMC") == 0) {
-            proccessRMC(buffer, strm);
-            return GPS_TIME;
-        } else if (strcmp(current, "$GPGSV") == 0) {
 
-            char * current = strtok(NULL, ",");
-            int num_lines = atoi(current);
-            char lines[num_lines][BUFFER_SIZE];
+    char * temp_buffer = strdup(buffer);
 
-            strcpy(lines[0], current_line);
-            int i;
-            for (i = 1; i < num_lines; i++) {
+    if (status == NULL) {
+        return _EOF;
+    }
 
-                fgets(buffer, BUFFER_SIZE, file);
-                strcpy(lines[i], buffer);
+    char * temp = strsep(&temp_buffer, ",");
 
-            }
-            proccessGSV(lines, num_lines, strm);
-            return SATELITE;
+    if (strcmp(temp, "$GPRMC") == 0) {
 
+        proccess_rmc(buffer, strm);
+        return GPS_TIME;
 
+    } else if (strcmp(temp, "$GPGSV") == 0) {
+
+        char * current = strsep(&temp_buffer, ",");
+
+        int num_lines = atoi(current);
+
+        char lines[num_lines][BUFFER_SIZE];
+
+        strcpy(lines[0], buffer);
+
+        int i;
+        for (i = 1; i < num_lines; i++) {
+
+            fgets(buffer, BUFFER_SIZE, file);
+            strcpy(lines[i], buffer);
         }
 
+        proccess_gsv(lines, num_lines, strm);
+        return SATELITE;
 
+    } else {
+        return SKIP_LINE;
     }
-    return _EOF;
 
 }
 
-void proccessGSV(char lines[][BUFFER_SIZE], int num_lines, stream_t * data) {
+void proccess_gsv(char lines[][BUFFER_SIZE], int num_lines, stream_t * data) {
     int num_satelites;
     int i = 0, o = 0, j = 0, k = 0;
 
-    char first_line[BUFFER_SIZE];
-    strcpy(first_line, lines[0]);
-    char * current = strtok(first_line, ",");
-    for (i = 0; i < 3; ++i) {
-        current = strtok(NULL, ",");
+    char * first_line = strdup(lines[0]);
+    char * token;
+
+    for (i = 0; i < 4; ++i) {
+        token = strsep(&first_line, ",");
     }
-    num_satelites = atoi(current);
+
+    num_satelites = atoi(token);
     int count = 0;
+
     for (i = 0; i < num_lines; ++i) {
-        char * asterix_getter = strtok(lines[i], "*");
-        char * current = strtok(asterix_getter, ",");
-        for (o = 0; o < 3; ++o) {
-            current = strtok(NULL, ",");
+
+        char * curr_line = strdup(lines[i]);
+
+        char * asterix_getter = strsep(&curr_line, "*");
+
+
+        char * current;
+        for (o = 0; o < 4; ++o) {
+            current = strsep(&asterix_getter, ",");
         }
+
         for (k = 0; k < 4 && current != NULL && num_satelites > 0; ++k) {
+
             for (j = 0; j < 4 && current != NULL && num_satelites > 0; ++j) {
-                current = strtok(NULL, ",");
+
+                current = strsep(&asterix_getter, ",");
+
             }
-            int satelite_status = atoi(current);           
-            if (satelite_status >= 30) {
-                count++;
-                if (count == 3) {
-                    data->satelitesOK = 1;
-                    return;
+            if (*current != '\0') {
+
+                int satelite_status = atoi(current);
+
+                if (satelite_status >= 30) {
+                    ++count;
+                    if (count == 3) {
+                        data->satelitesOK = 1;
+                        return;
+                    }
                 }
             }
             num_satelites--;
         }
     }
-    data->satelitesOK = -1 ;
+    data->satelitesOK = 0;
     return;
 }
 
-void proccessRMC(char * buffer, stream_t * data) {
-    char tokens[10][STRING_SIZE];
-    int i;
-    char * current = strtok(NULL, ",");
-    for (i = 0; i < 10; ++i) {
-        strcpy(tokens[i], current);
-        current = strtok(NULL, ",");
-    }
-    char * the_time = strtok(tokens[0], ".");
-    strcat(the_time, tokens[8]);
-    // printf("%s", the_time);
-    strptime(the_time, "%H%M%S%d%m%y", &(data->location.time));
+void proccess_rmc(char * buffer, stream_t * data) {
+    char * tokens[10]; // array of pointers to string
 
+    char * temp = strdup(buffer);
+
+    int i;
+    for (i = 0; i < 10; ++i) {
+        tokens[i] = strsep(&temp, ",");
+    }
+
+    char * the_time = strsep(&tokens[1], ".");
+    strcat(the_time, tokens[9]);
+
+    strptime(the_time, "%H%M%S%d%m%y", &(data->location.time));
     data->location.time.tm_isdst = 0;
 
+    degrees_to_decimal(&data->location, tokens[3], tokens[5]);
 
-    degreesToDecimal(&data->location, tokens[2], tokens[4]);
-    if (*tokens[3] == 'S') {
+    if (*tokens[4] == 'S') {
         data->location.latitude *= -1;
     }
-    if (*tokens[5] == 'W') {
+
+    if (*tokens[6] == 'W') {
         data->location.longitude *= -1;
     }
 
+
+
 }
 
-void degreesToDecimal(loc_t * loc, char * lat, char * lng) {
+void degrees_to_decimal(loc_t * loc, char * lat, char * lng) {
 
     double lat_ = atof(lat);
     int lat_degrees = (int) lat_ / 100;
