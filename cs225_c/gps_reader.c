@@ -30,20 +30,7 @@ void start() {
     printf("\n %s", asctime(&strm_2.location.time));
 
 
-    char status[STRING_SIZE];
-
-    do {
-
-        strcpy(status, read_line(file2, &strm_2));
-         if (strm_2.satelitesOK == 0) {
-            printf("%s", asctime(&strm_2.location.time));
-            
-        }
-
-    } while (strcmp(status, _EOF) != 0);
- 
-printf("%s", asctime(&strm_2.location.time));
-    printf("%d", strm_2.satelitesOK);
+    
 
 }
 
