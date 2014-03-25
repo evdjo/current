@@ -24,27 +24,63 @@ void start() {
     sync_time_gps(file_1, file_2, &strm_1, &strm_2);
 
     node_t * head = NULL;
-    
-        while (1) {
+    long lat_offset = 0;
+    long lng_offset = 0;
 
-            if (strm_1.satelitesOK) {
-                add_element(head,strm_1.location);
-                
+    int size = 0;
+    while (1) {
 
-
+        if (strm_1.satelitesOK) {
+            add_element(&head, strm_1.location);
+            ++size;
+            if (strm_2.satelitesOK) {
+                get_offset(&lat_offset, &lng_offset, strm_1.location, strm_2.location);
+            } else {
+                add_offset(lat_offset, lng_offset, strm_1.location, &strm_2.location);
             }
-
+        } else if (strm_2.satelitesOK) {
+            ++size;
+            add_element(&head, strm_2.location);
+            add_offset(lat_offset, lng_offset, strm_2.location, &strm_1.location);
 
         }
-     
+        int line_read = 0;
+        while (line_read != GPS_TIME) {
+            line_read = read_line(file_1, &strm_1);
+            if (line_read == _EOF) {
+                loop_through(head,print_loc);
+                return;
+            }
+        }
+        line_read = 0;
+        while (line_read != GPS_TIME) {
+            line_read = read_line(file_2, &strm_2);
+            if (line_read == _EOF) {
+              
+                return;
+            }
+        }
 
-/*
-    printf("%d", strm_1.satelitesOK);
-    printf("%d", strm_2.satelitesOK);
+    }
 
-    printf("\n %s", asctime(&strm_1.location.time));
-    printf("\n %s", asctime(&strm_2.location.time));
-*/
+
+   
+
+}
+
+void get_offset(long * lat_offset, long * lng_offset, loc_t one, loc_t two) {
+
+    *lat_offset = (long) (one.latitude * MIL) - (long) (two.latitude * MIL);
+    *lng_offset = (long) (one.longitude * MIL) - (long) (two.longitude * MIL);
+
+
+}
+
+void add_offset(long lat_offset, long lng_offset, loc_t good, loc_t * bad) {
+
+    bad->latitude = (ceil(good.latitude * MIL) + lat_offset) / MIL;
+    bad->longitude = (ceil(good.longitude * MIL) + lng_offset) / MIL;
+
 }
 
 int sync_time_gps(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2) {

@@ -11,8 +11,8 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-    
- 
+
+
 #define STRING_SIZE 64
 #define BUFFER_SIZE 512
 #define FILE_NAME_1 "gps_1.dat"
@@ -45,16 +45,28 @@ extern "C" {
 
 
 
-    void add_element(node_t * head, loc_t loc);
+    void add_element(node_t ** head, loc_t loc);
     void loop_through(node_t * head, void (*funcPtr)(node_t*));
     void print_loc(node_t * node);
+
+
     void start();
-    int sync_time_gps(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2);
-    int sync_satelites(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2);
+
+    int sync_time_gps(FILE * file1, FILE * file2,
+            stream_t * strm_1, stream_t * strm_2);
+
+    int sync_satelites(FILE * file1, FILE * file2,
+            stream_t * strm_1, stream_t * strm_2);
+
+
     int read_line(FILE * file, stream_t * data);
     void proccess_rmc(char * buffer, stream_t * data);
     void proccess_gsv(char lines[][BUFFER_SIZE], int num_lines, stream_t * data);
     void degrees_to_decimal(loc_t * loc, char * lat, char * lng);
+
+
+    void get_offset(long * lat_offset, long * lng_offset, loc_t loc_1, loc_t loc_2);
+    void add_offset(long lat_offset, long lng_offset, loc_t good, loc_t * bad);
 
 
 #ifdef	__cplusplus

@@ -118,7 +118,8 @@ void proccess_rmc(char * buffer, stream_t * data) {
         tokens[i] = strsep(&temp, ",");
     }
 
-    char * the_time = strsep(&tokens[1], ".");
+    char * temp_time = strdup(tokens[1]);
+    char * the_time = strsep(&temp_time, ".");
     strcat(the_time, tokens[9]);
 
     strptime(the_time, "%H%M%S%d%m%y", &(data->location.time));
