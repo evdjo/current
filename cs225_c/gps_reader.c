@@ -1,99 +1,17 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
+#define __USE_XOPEN
 #include <time.h>
 #include <math.h>
 #include "gps_reader.h"
-#include <math.h>
-
-void start() {
-    FILE * file1;
-    FILE * file2;
-    stream_t strm_1, strm_2; // stream 1 and stream 2
-    strm_1.satelitesOK = 0;
-    strm_2.satelitesOK = 0;
-
-    file1 = fopen(FILE_NAME_1, "r");
-    file2 = fopen(FILE_NAME_2, "r");
-    if (file1 == NULL || file2 == NULL) {
-        printf("Invalid file name(s).");
-        return;
-    }
-
-    synchronize(file1, file2, &strm_1, &strm_2);
-    printf("%d", strm_1.satelitesOK);
-    printf("%d", strm_2.satelitesOK);
-
-    printf("\n %s", asctime(&strm_1.location.time));
-    printf("\n %s", asctime(&strm_2.location.time));
 
 
-    
-
-}
-
-void synchronize(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2) {
-    char line_read[STRING_SIZE] = "";
-
-    line_read[0] = '\0';
-    while (strcmp(line_read, SATELITE) != 0) {
-        strcpy(line_read, read_line(file1, strm_1));
-        if (strm_1->satelitesOK != 0) {
-            break;
-        }
-    }
-    line_read[0] = '\0';
-    while (strcmp(line_read, SATELITE) != 0) {
-        strcpy(line_read, read_line(file2, strm_2));
-        if (strm_2->satelitesOK != 0) {
-            break;
-        }
-    }
 
 
-    line_read[0] = '\0';
-    while (strcmp(line_read, GPS_TIME) != 0) {
-        strcpy(line_read, read_line(file1, strm_1));
-    }
-
-    line_read[0] = '\0';
-    while (strcmp(line_read, GPS_TIME) != 0) {
-        strcpy(line_read, read_line(file2, strm_2));
-    }
-
-    time_t time_1 = mktime(&strm_1->location.time);
-    time_t time_2 = mktime(&strm_2->location.time);
-
-    double time_difference = difftime(time_1, time_2);
-
-    if (time_difference < 0) {
-        while (time_difference != 0) {
-            line_read[0] = '\0';
-            while (strcmp(line_read, GPS_TIME) != 0) {
-                strcpy(line_read, read_line(file1, strm_1));
-            }
-            time_1 = mktime(&strm_1->location.time);
-            time_2 = mktime(&strm_2->location.time);
-            time_difference = difftime(time_1, time_2);
-        }
-    } else if (time_difference > 0) {
-        while (time_difference != 0) {
-            line_read[0] = '\0';
-            while (strcmp(line_read, GPS_TIME) != 0) {
-                strcpy(line_read, read_line(file2, strm_2));
-            }
-            time_1 = mktime(&strm_1->location.time);
-            time_2 = mktime(&strm_2->location.time);
-            time_difference = difftime(time_1, time_2);
-        }
-    }
-
-
-}
-
-char * read_line(FILE * file, stream_t * strm) {
+int read_line(FILE * file, stream_t * strm) {
 
     char buffer[BUFFER_SIZE];
 

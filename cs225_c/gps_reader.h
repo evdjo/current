@@ -11,14 +11,17 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-#define STRING_SIZE 50
-#define BUFFER_SIZE 500
+    
+ 
+#define STRING_SIZE 64
+#define BUFFER_SIZE 512
 #define FILE_NAME_1 "gps_1.dat"
 #define FILE_NAME_2 "gps_2.dat"
-#define GPS_TIME "GPS_TIME"
-#define SATELITE "SATELITE"
-#define _EOF "EOF"
-#define SKIP_LINE "SKIP_LINE"
+#define SKIP_LINE 1
+#define GPS_TIME 2 
+#define SATELITE 3
+#define _EOF -1
+
 #define MIL 1000000.0
 
     typedef struct location {
@@ -33,19 +36,27 @@ extern "C" {
 
     } stream_t;
 
+    typedef struct node {
+        loc_t loc;
+        struct node * next;
+    } node_t;
 
 
 
-    char** str_split(char* a_str, const char a_delim);
-    void add_element(loc_t * head, double lat, double lng);
-    void loop_through(loc_t * head, void (*funcPtr)(loc_t*));
-    void print_loc(loc_t * node);
+
+
+    void add_element(node_t * head, loc_t loc);
+    void loop_through(node_t * head, void (*funcPtr)(node_t*));
+    void print_loc(node_t * node);
     void start();
-    void synchronize(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2);
-    char * read_line(FILE * file, stream_t * data);
+    int sync_time_gps(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2);
+    int sync_satelites(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2);
+    int read_line(FILE * file, stream_t * data);
     void proccess_rmc(char * buffer, stream_t * data);
     void proccess_gsv(char lines[][BUFFER_SIZE], int num_lines, stream_t * data);
     void degrees_to_decimal(loc_t * loc, char * lat, char * lng);
+
+
 #ifdef	__cplusplus
 }
 #endif
