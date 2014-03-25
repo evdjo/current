@@ -149,9 +149,9 @@ void degrees_to_decimal(loc_t * loc, char * lat, char * lng) {
     int lng_degrees = (int) lng_ / 100;
     double lng_minutes = (lng_ - lng_degrees * 100) / 60.0;
 
-    loc->latitude = ceil((lat_degrees + lat_minutes) * MIL) / MIL;
+    loc->latitude = round((lat_degrees + lat_minutes) * MIL) / MIL;
 
-    loc->longitude = ceil((lng_degrees + lng_minutes) * MIL) / MIL;
+    loc->longitude = round((lng_degrees + lng_minutes) * MIL) / MIL;
 
 
 }

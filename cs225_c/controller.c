@@ -45,41 +45,42 @@ void start() {
 
         }
         int line_read = 0;
-        while (line_read != GPS_TIME) {
+        while (line_read != GPS_TIME && line_read != _EOF) {
             line_read = read_line(file_1, &strm_1);
-            if (line_read == _EOF) {
-                loop_through(head,print_loc);
-                return;
-            }
+        }
+        if (line_read == _EOF) {
+            break;
         }
         line_read = 0;
-        while (line_read != GPS_TIME) {
+        while (line_read != GPS_TIME && line_read != _EOF) {
             line_read = read_line(file_2, &strm_2);
-            if (line_read == _EOF) {
-              
-                return;
-            }
+        }
+        if (line_read == _EOF) {
+            break;
         }
 
     }
+    loop_through(head);
 
 
-   
+
+
+
 
 }
 
 void get_offset(long * lat_offset, long * lng_offset, loc_t one, loc_t two) {
 
     *lat_offset = (long) (one.latitude * MIL) - (long) (two.latitude * MIL);
-    *lng_offset = (long) (one.longitude * MIL) - (long) (two.longitude * MIL);
+    *lng_offset = (long) (one.longitude * MIL) -(long) (two.longitude * MIL);
 
 
 }
 
 void add_offset(long lat_offset, long lng_offset, loc_t good, loc_t * bad) {
 
-    bad->latitude = (ceil(good.latitude * MIL) + lat_offset) / MIL;
-    bad->longitude = (ceil(good.longitude * MIL) + lng_offset) / MIL;
+    bad->latitude = (round(good.latitude * MIL) + lat_offset) / MIL;
+    bad->longitude = (round(good.longitude * MIL) + lng_offset) / MIL;
 
 }
 

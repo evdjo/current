@@ -32,15 +32,25 @@ void print_loc(node_t * node) {
 
 }
 
-void loop_through(node_t * head, void (*funcPtr)(node_t*)) {
+void loop_through(node_t * head) {
+    FILE *f = fopen(FILE_NAME_3, "w");
 
-     
-        node_t * current = head;
-        while (current != NULL) {
-            (*funcPtr)(current);
-            current = current->next;
-        }
-     
+    fprintf(f, "%s", "<?xml version=\"1.0\"?>\n"
+            "<gpx\n"
+            " version=\"1.0\"\n"
+            " creator=\"Evdzhan Mustafa\"\n"
+            " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
+
+    node_t * current = head;
+    while (current != NULL) {
+        fprintf(f, "<wpt lat=\"%lf\" lon=\"%lf\">\n<time>%s</time>\n</wpt>\n ",
+                current->loc.latitude, current->loc.longitude, asctime(&current->loc.time));
+
+        current = current->next;
+    }
+    fprintf(f, "%s", "</gpx>");
+    fclose(f);
+
 
 
 }

@@ -17,6 +17,7 @@ extern "C" {
 #define BUFFER_SIZE 512
 #define FILE_NAME_1 "gps_1.dat"
 #define FILE_NAME_2 "gps_2.dat"
+#define FILE_NAME_3 "data.gpx"
 #define SKIP_LINE 1
 #define GPS_TIME 2 
 #define SATELITE 3
@@ -46,7 +47,7 @@ extern "C" {
 
 
     void add_element(node_t ** head, loc_t loc);
-    void loop_through(node_t * head, void (*funcPtr)(node_t*));
+    void loop_through(node_t * head);
     void print_loc(node_t * node);
 
 
