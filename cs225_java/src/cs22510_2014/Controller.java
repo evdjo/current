@@ -4,154 +4,211 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
+/**
+ * The Controller class to work with two streams.
+ * 
+ * @author Evdzhan Mustafa enm3@aber.ac.uk
+ * 
+ */
 public class Controller {
-	protected GPSReader strm1, strm2; // stream 1 and stream 2
-	protected LinkedList<GPSReader.Location> locs; // the place to store the
-													// locations
-	protected long latOffset;
-	protected long lngOffset;
-	private final static double MIL = 1000000.0;
+	private GPSReader strm_1, strm_2; // stream 1 and stream 2
+	private LinkedList<GPSReader.Location> locs;// saving good locations here
 
-	protected Controller(String file1, String file2) {
-		strm1 = new GPSReader(file1);
-		strm2 = new GPSReader(file2);
+	private long lat_offset; // the offsets
+	private long lng_offset;
+
+	private final static double MIL = 1000000.0; // used in rounding
+
+	/**
+	 * 
+	 * Construct new controller with the file names
+	 * 
+	 * @param file1
+	 *            the first file
+	 * @param file2
+	 *            the second file
+	 */
+	private Controller(String file1, String file2) {
+		strm_1 = new GPSReader(file1);
+		strm_2 = new GPSReader(file2);
 		locs = new LinkedList<>();
 	}
 
-	public boolean synchronizeTimes() {
-		String data = "";
-		while (!data.equals(GPSReader.GPS_TIME) && !data.equals(GPSReader.EOF)) {
-			data = strm1.read();
+	/**
+	 * Try to synchronise the two streams, so that both have good satellite fix.
+	 * 
+	 * @return did the synchronisation succeed ?
+	 */
+
+	private boolean syncSatelite() {
+		int lineRead = 0;
+		if (!strm_1.satellitesOK) {
+			while (!strm_1.satellitesOK) {
+				lineRead = strm_1.read();
+				if (lineRead == GPSReader._EOF)
+					return false;
+			}
+		}
+		if (!strm_2.satellitesOK) {
+			while (!strm_2.satellitesOK) {
+				lineRead = strm_2.read();
+
+				if (lineRead == GPSReader._EOF)
+					return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Try to synchronise the two streams, so that both have same time.
+	 * 
+	 * @return did the synchronisation succeed ?
+	 */
+	private boolean syncTimesGPS() {
+		int lineRead = 0;
+		while (lineRead != GPSReader.GPS_TIME && lineRead != GPSReader._EOF) {
+			lineRead = strm_1.read();
 
 		}
-		if (data.equals(GPSReader.EOF)) {
+		if (lineRead == GPSReader._EOF) {
 			return false;
 		}
 
-		data = "";
-		while (!data.equals(GPSReader.GPS_TIME) && !data.equals(GPSReader.EOF)) {
-			data = strm2.read();
+		lineRead = 0;
+		while (lineRead != GPSReader.GPS_TIME && lineRead != GPSReader._EOF) {
+			lineRead = strm_2.read();
 		}
-		if (data.equals(GPSReader.EOF)) {
+		if (lineRead == GPSReader._EOF) {
 			return false;
 		}
 
-		int time = strm1.currTime.compareTo(strm2.currTime);
+		int timeDiff = strm_1.currTime.compareTo(strm_2.currTime);
 
-		if (time == -1) {
+		if (timeDiff == -1) {
 			do {
-				data = strm1.read();
-				if (data == GPSReader.EOF)
+				lineRead = strm_1.read();
+				if (lineRead == GPSReader._EOF)
 					return false;
-				if (data.equals(GPSReader.GPS_TIME)) {
-					time = strm1.currTime.compareTo(strm2.currTime);
+				if (lineRead == GPSReader.GPS_TIME) {
+					timeDiff = strm_1.currTime.compareTo(strm_2.currTime);
 				}
 
-			} while (time != 0);
+			} while (timeDiff != 0);
 
-		} else if (time == 1) {
+		} else if (timeDiff == 1) {
 			do {
-				data = strm2.read();
-				if (data == GPSReader.EOF)
+				lineRead = strm_2.read();
+				if (lineRead == GPSReader._EOF)
 					return false;
-				if (data.equals(GPSReader.GPS_TIME)) {
-					time = strm1.currTime.compareTo(strm2.currTime);
+				if (lineRead == GPSReader.GPS_TIME) {
+					timeDiff = strm_1.currTime.compareTo(strm_2.currTime);
 
 				}
-			} while (time != 0);
+			} while (timeDiff != 0);
 
 		}
 
 		return true;
 	}
 
+	/**
+	 * Calculates the offset between two locations.
+	 * 
+	 * @param one
+	 *            location one
+	 * @param two
+	 *            location two
+	 */
 	private void getoffset(GPSReader.Location one, GPSReader.Location two) {
 
-		this.latOffset = (long) (one.latitude * MIL)
-				- (long) (two.latitude * MIL);
+		this.lat_offset = (long) (one.lat * MIL) - (long) (two.lat * MIL);
 
-		this.lngOffset = (long) (one.longitude * MIL)
-				- (long) (two.longitude * MIL);
+		this.lng_offset = (long) (one.lng * MIL) - (long) (two.lng * MIL);
 
 	}
 
+	/**
+	 * Fixes the location of the badFix Location by adding the offset to the
+	 * good location, and applying that to the bad fix.
+	 * 
+	 * @param goodFix
+	 *            good satellites location
+	 * @param badFix
+	 *            bad satellites location
+	 */
 	private void addoffset(GPSReader.Location goodFix, GPSReader.Location badFix) {
 
-		badFix.latitude = Math.round(goodFix.latitude * MIL + this.latOffset)
-				/ MIL;
+		badFix.lat = Math.round(goodFix.lat * MIL + this.lat_offset) / MIL;
 
-		badFix.longitude = Math.round(goodFix.longitude * MIL + this.lngOffset)
-				/ MIL;
+		badFix.lng = Math.round(goodFix.lng * MIL + this.lng_offset) / MIL;
 
 	}
 
-	protected void start() {
-		this.synchronizeGPS();
-		this.synchronizeTimes();
+	/**
+	 * All the magic starts here...
+	 */
+	private void start() {
+		// synchronise the streams first
+		this.syncSatelite();
+		this.syncTimesGPS();
+
+		// infinite loop, breaks only of one of the streams returns end of file
 		while (true) {
 
-			if (strm1.satelitesOK) {
+			if (strm_1.satellitesOK) { // check if stream1 has good fix
 
-				locs.add(strm1.currLoc);
-				if (strm2.satelitesOK)
-					this.getoffset(strm1.currLoc, strm2.currLoc);
+				locs.add(strm_1.currLoc);
+				if (strm_2.satellitesOK) // check if the stream2 has good fix
+											// too
+					this.getoffset(strm_1.currLoc, strm_2.currLoc); // offset
+																	// can be
+																	// updated
 
 				else
-					this.addoffset(strm1.currLoc, strm2.currLoc);
+					// location two was bad, fix it
+					this.addoffset(strm_1.currLoc, strm_2.currLoc);
 
-			} else if (strm2.satelitesOK) {
-				locs.add(strm2.currLoc);
-				this.addoffset(strm2.currLoc, strm1.currLoc);
+			} else if (strm_2.satellitesOK) { // if stream1 fails ,try stream2
 
+				locs.add(strm_2.currLoc);
+				this.addoffset(strm_2.currLoc, strm_1.currLoc);// location one
+																// was bad, fix
+																// it
 			}
-			String lineRead = "";
-			do {
-				lineRead = strm1.read();
-				if (lineRead.equals(GPSReader.EOF))
-					return;
 
-			} while (!lineRead.equals(GPSReader.GPS_TIME));
-			lineRead = "";
+			// now read lines until new time and coordinates are met.
+			int lineRead = 0;
 			do {
-				lineRead = strm2.read();
-				if (lineRead.equals(GPSReader.EOF))
-					return;
+				lineRead = strm_1.read();
+				if (lineRead == GPSReader._EOF)
+					return; // stream 1 ended , exit
 
-			} while (!lineRead.equals(GPSReader.GPS_TIME));
+			} while (lineRead != GPSReader.GPS_TIME);
+
+			// now do that again for stream 2
+			lineRead = 0;
+			do {
+				lineRead = strm_2.read();
+				if (lineRead == GPSReader._EOF)
+					return; // stream 2 ended , exit
+
+			} while (lineRead != GPSReader.GPS_TIME);
 
 		}
 
 	}
-
-	private boolean synchronizeGPS() {
-		String data = "";
-		if (!strm1.satelitesOK) {
-			while (!strm1.satelitesOK) {
-				data = strm1.read();
-				if (data == GPSReader.EOF)
-					return false;
-			}
-		}
-		if (!strm2.satelitesOK) {
-			while (!strm2.satelitesOK) {
-				data = strm2.read();
-
-				if (data == GPSReader.EOF)
-					return false;
-			}
-		}
-
-		return true;
-	}
-
-	static void go() {
+/**
+ * Simply go ! Read the two streams , and out put to the file !
+ *  kaboom magic !
+ */
+	public static void go() {
 
 		String file1 = "/home/evdjoint/gps_1.dat";
 		String file2 = "/home/evdjoint/gps_2.dat";
 
 		Controller controller = new Controller(file1, file2);
-
-		controller.synchronizeTimes();
 
 		controller.start();
 
@@ -160,14 +217,14 @@ public class Controller {
 
 			pw = new PrintWriter("data.gpx");
 			pw.write("<?xml version=\"1.0\"?>\n"
-					+ "<gpx\n"
-					+ " version=\"1.0\"\n"
-					+ " creator=\"Evdzhan Mustafa\"\n"
-					+ " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
+					+ "<gpx "
+					+ "version=\"1.0\"\n"
+					+ "creator=\"Evdzhan Mustafa\"\n"
+					+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
 
 			for (GPSReader.Location l : controller.locs) {
-				pw.write("<wpt lat=\"" + l.latitude + "\" lon=\"" + l.longitude
-						+ "\">\n" + "<time>" + l.date.toString() + "</time>"
+				pw.write("<wpt lat=\"" + l.lat + "\" lon=\"" + l.lng + "\">\n"
+						+ "<time>" + l.date.toString() + "\n</time>"
 						+ "\n</wpt>\n");
 			}
 

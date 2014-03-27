@@ -15,9 +15,9 @@
 
 
 int main() {
-    start();
-     
     
+    start();   
     return (EXIT_SUCCESS);
+    
 }
 
