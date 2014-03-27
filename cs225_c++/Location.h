@@ -7,7 +7,7 @@
 
 #ifndef LOCATION_H
 #define	LOCATION_H
-
+/* Represents locations using set of coordinates and a time.*/
 class Location {
 public:
     double latitude;
@@ -17,9 +17,6 @@ public:
     Location();
     Location(const Location& orig);
     virtual ~Location();
-private:
-
-
 };
 
 #endif	/* LOCATION_H */

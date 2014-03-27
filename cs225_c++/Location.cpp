@@ -4,9 +4,10 @@
  * 
  * Created on 25 March 2014, 22:21
  */
-#include <time.h>
+#include <ctime>
 #include "Location.h"
 
+/* Initialises the time in the location to zeroes.*/
 Location::Location() {
     latitude = 0;
     longitude = 0;
@@ -18,18 +19,23 @@ Location::Location() {
     the_time.tm_mon = 0;
     the_time.tm_gmtoff = 0;
 }
-Location& Location::operator=(const Location& orig) {    
+
+/* Copy assignment. The compiler providies this by default,
+ *  but I like having on my own*/
+Location& Location::operator=(const Location& orig) {
     latitude = orig.latitude;
     longitude = orig.longitude;
-    the_time = orig.the_time;          
+    the_time = orig.the_time;
 }
 
+/* Copy constructor. Same story here as above.*/
 Location::Location(const Location& orig) {
     latitude = orig.latitude;
     longitude = orig.longitude;
     the_time = orig.the_time;
 }
 
+/* Nothing to delete here, no memory resources managed.*/
 Location::~Location() {
 }
 
