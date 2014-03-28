@@ -22,12 +22,13 @@ void start() {
     strm_2.satelitesOK = 0;
 
 
-    /* Syncrhonise the streams */
+    /* Synchronise the streams */
     sync_satelites(file_1, file_2, &strm_1, &strm_2);
     sync_time_gps(file_1, file_2, &strm_1, &strm_2);
 
     /* Declare the head of the linked list*/
     node_t * head = NULL;
+
     /* initialise the offset values*/
     long lat_offset = 0;
     long lng_offset = 0;
@@ -37,68 +38,99 @@ void start() {
     while (1) {
 
         if (strm_1.satelitesOK) {
-            // stream 1 satellite one was ok , add the location to the list
-            add_element(&head, strm_1.location); 
+            
+            // stream 1 satellite one was ok ,
+            //add the its location to the list
+            add_element(&head, strm_1.location);
 
             if (strm_2.satelitesOK) {
+
                 // if both streams are ok, calculate the offset
-                get_offset(&lat_offset, &lng_offset, strm_1.location, strm_2.location);
+                get_offset(&lat_offset, &lng_offset,
+                        strm_1.location, strm_2.location);
+
 
             } else { // stream 2 failed, fix its location
-                add_offset(lat_offset, lng_offset, strm_1.location, &strm_2.location);
+                add_offset(lat_offset, lng_offset,
+                        strm_1.location, &strm_2.location);
             }
+
         } else if (strm_2.satelitesOK) {
-            // stream 1 failed , fix its location, and add to good locaion to the list
+
+            //stream 2 add to good location to the list
             add_element(&head, strm_2.location);
-            add_offset(lat_offset, lng_offset, strm_2.location, &strm_1.location);
+
+            // stream 1 failed , fix its location,
+            add_offset(lat_offset, lng_offset,
+                    strm_2.location, &strm_1.location);
 
         }
         // status integer to see what we have read
         int line_read = 0;
 
-        // read from stream 1 until new coordinates and time fix is obtained
-        while (line_read != GPS_TIME && line_read != _EOF) {
+        // read from stream 1 until new 
+        // coordinates and time fix is obtained
+        while (line_read != GPS_TIME
+                && line_read != _EOF) {
 
             line_read = read_line(file_1, &strm_1);
+
         }
         if (line_read == _EOF) {
-            break; // stream 1 ended stop reading from streams
+            break; // stream 1 ended  
         }
 
         line_read = 0;
 
 
-        // read from stream 2 until new coordinates and time fix is obtained
-        while (line_read != GPS_TIME && line_read != _EOF) {
+        // read from stream 2 until new 
+        //coordinates and time fix is obtained
+        while (line_read != GPS_TIME
+                && line_read != _EOF) {
+            
             line_read = read_line(file_2, &strm_2);
+            
         }
         if (line_read == _EOF) {
-            break; // stream 2 ended stop reading from streams
+            break; // stream 2 ended  
         }
 
     }
-    out_to_file(head); // output the data to a file
+    // output the data in the linked list to a file
+    out_to_file(head); 
 
 }
 
 /* Calculates the offset between the two locations */
-void get_offset(long * lat_offset, long * lng_offset, loc_t one, loc_t two) {
+void get_offset(long * lat_offset, long * lng_offset,
+        loc_t one, loc_t two) {
 
-    *lat_offset = (long) (one.latitude * MIL) - (long) (two.latitude * MIL);
-    *lng_offset = (long) (one.longitude * MIL) -(long) (two.longitude * MIL);
+    *lat_offset = (long) (one.latitude * MIL) -
+            (long) (two.latitude * MIL);
+
+
+    *lng_offset = (long) (one.longitude * MIL)
+            -(long) (two.longitude * MIL);
 
 }
 
 /* Fixes the bad location passed in*/
-void add_offset(long lat_offset, long lng_offset, loc_t good, loc_t * bad) {
+void add_offset(long lat_offset, long lng_offset,
+        loc_t good, loc_t * bad) {
 
-    bad->latitude = (round(good.latitude * MIL) + lat_offset) / MIL;
-    bad->longitude = (round(good.longitude * MIL) + lng_offset) / MIL;
+    bad->latitude = (round(good.latitude * MIL) 
+            + lat_offset) / MIL;
+    
+    
+    bad->longitude = (round(good.longitude * MIL)
+            + lng_offset) / MIL;
 
 }
 
-/* Try to synchronise the the streams so that both are at equal time */
-int sync_time_gps(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2) {
+/* Try to synchronise the the streams 
+ * so that both are at equal time */
+int sync_time_gps(FILE * file1, FILE * file2, 
+        stream_t * strm_1, stream_t * strm_2) {
     int line_read = 0;
 
     // until time sentence is met
@@ -146,8 +178,10 @@ int sync_time_gps(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm
 
 }
 
-/* Try to synchronise the two streams so that both have good satellite fix*/
-int sync_satelites(FILE * file1, FILE * file2, stream_t * strm_1, stream_t * strm_2) {
+/* Try to synchronise the two streams
+ *  so that both have good satellite fix*/
+int sync_satelites(FILE * file1, FILE * file2,
+        stream_t * strm_1, stream_t * strm_2) {
 
     int line_read = 0;
 

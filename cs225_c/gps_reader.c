@@ -8,11 +8,13 @@
 #include <math.h>
 #include "gps_reader.h"
 
-/* Reads a line from the read, if it is RMC or GSV , the data is processed
+/* Reads a line from the read, 
+ * if it is RMC or GSV , the data is processed
  returns integer corresponding to the line read*/
 int read_line(FILE * file, stream_t * strm) {
 
-    char buffer[BUFFER_SIZE]; // buffer to store the current line
+    // buffer to store the current line
+    char buffer[BUFFER_SIZE]; 
 
     // read a line
     char * status = fgets(buffer, BUFFER_SIZE, file);
@@ -148,7 +150,6 @@ void proccess_gsv(char lines[][BUFFER_SIZE],
                     // if count reaches 3 , satellite fix is good
                     if (count == 3) {
                         strm->satelitesOK = 1;
-
                         return;
                     }
                 }
@@ -166,7 +167,8 @@ void proccess_gsv(char lines[][BUFFER_SIZE],
  * and update the time and coordinates. */
 void proccess_rmc(char * buffer, stream_t * data) {
 
-    char * tokens[10]; // array of pointers to string
+    // arrays of string
+    char * tokens[10]; 
 
     char * temp = strdup(buffer);
 
@@ -212,7 +214,8 @@ void proccess_rmc(char * buffer, stream_t * data) {
 /* Transforms coordinates from degrees 
  * to a decimal, and puts the coordinates
  * to the loc passed in */
-void degrees_to_decimal(loc_t * loc, char * lat, char * lng) {
+void degrees_to_decimal(loc_t * loc,
+        char * lat, char * lng) {
 
     // parse the latitude
     double lat_ = atof(lat); 
