@@ -233,6 +233,7 @@ void Controller::write(vector<Location> locs) {
 
     }
     writer << "</gpx>";
+    writer.close();
 }
 
 /*Gets the offset between two locations. */

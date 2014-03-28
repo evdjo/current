@@ -223,5 +223,6 @@ GPSReader::GPSReader(const GPSReader& orig) {
 }
 
 GPSReader::~GPSReader() {
+    reader.close();
 }
 

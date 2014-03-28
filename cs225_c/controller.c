@@ -38,7 +38,7 @@ void start() {
     while (1) {
 
         if (strm_1.satelitesOK) {
-            
+
             // stream 1 satellite one was ok ,
             //add the its location to the list
             add_element(&head, strm_1.location);
@@ -87,9 +87,9 @@ void start() {
         //coordinates and time fix is obtained
         while (line_read != GPS_TIME
                 && line_read != _EOF) {
-            
+
             line_read = read_line(file_2, &strm_2);
-            
+
         }
         if (line_read == _EOF) {
             break; // stream 2 ended  
@@ -97,7 +97,11 @@ void start() {
 
     }
     // output the data in the linked list to a file
-    out_to_file(head); 
+    out_to_file(head);
+
+
+    fclose(file_1);
+    fclose(file_2);
 
 }
 
@@ -118,10 +122,10 @@ void get_offset(long * lat_offset, long * lng_offset,
 void add_offset(long lat_offset, long lng_offset,
         loc_t good, loc_t * bad) {
 
-    bad->latitude = (round(good.latitude * MIL) 
+    bad->latitude = (round(good.latitude * MIL)
             + lat_offset) / MIL;
-    
-    
+
+
     bad->longitude = (round(good.longitude * MIL)
             + lng_offset) / MIL;
 
@@ -129,7 +133,7 @@ void add_offset(long lat_offset, long lng_offset,
 
 /* Try to synchronise the the streams 
  * so that both are at equal time */
-int sync_time_gps(FILE * file1, FILE * file2, 
+int sync_time_gps(FILE * file1, FILE * file2,
         stream_t * strm_1, stream_t * strm_2) {
     int line_read = 0;
 
