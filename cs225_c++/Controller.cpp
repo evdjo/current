@@ -193,16 +193,10 @@ void Controller::go() {
         
         if (line_read == GPSReader::_EOF)
             break;
-
-
     }
 
     //one of the streams ended , output to a file
     ctrl.write(locs);
-
-
-
-
 }
 
 /*Writes the contents of locs to a file in GPX format.*/

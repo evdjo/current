@@ -44,6 +44,10 @@
           <commandLine>-Wall</commandLine>
           <warningLevel>3</warningLevel>
         </cTool>
+        <ccTool>
+          <commandLine>-Werror -Wall</commandLine>
+          <warningLevel>3</warningLevel>
+        </ccTool>
         <linkerTool>
           <linkerLibItems>
             <linkerLibStdlibItem>Mathematics</linkerLibStdlibItem>

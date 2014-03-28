@@ -9,8 +9,9 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Class representing a stream. Contains current location, current time and is
- * responsible for reading from the file. Holds a boolean flag to indicate
+ * Class representing a stream. Contains current location, 
+ * current time and is responsible for reading from the file. 
+ * Holds a boolean flag to indicate
  * whether the current satellite fix is good.
  * 
  * @author Evdzhan Mustafa enm3@aber.ac.uk
@@ -50,8 +51,7 @@ public class GPSReader {
 	private BufferedReader br;
 
 	/**
-	 * @param fileName
-	 *            The file to be opened
+	 * @param fileName  The file to be opened
 	 */
 
 	public GPSReader(String fileName) {
@@ -61,7 +61,8 @@ public class GPSReader {
 			e.printStackTrace();
 		}
 
-		satellitesOK = false; // assume satellite fix is bad at the beginning
+		// assume satellite fix is bad at the beginning
+		satellitesOK = false; 
 
 	}
 
@@ -154,10 +155,12 @@ public class GPSReader {
 					.split(",");
 
 			// loop through the SNR values
-			for (int o = 3; o < 16 && satNum > 0 && o < tokens.length; o += 4, satNum--) {
+			for (int o = 3; o < 16 && satNum > 0 && 
+					o < tokens.length; o += 4, satNum--) {
 
 				// check if snr is good  
-				if (!tokens[o].equals("") && Integer.parseInt(tokens[o]) >= 30) {
+				if (!tokens[o].equals("") &&
+						Integer.parseInt(tokens[o]) >= 30) {
 					count++;
 					if (count == 3) {
 
