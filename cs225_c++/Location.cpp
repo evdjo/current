@@ -7,7 +7,7 @@
 #include <ctime>
 #include "Location.h"
 
-/* Initialises the time in the location to zeroes.*/
+/* Initialises the time, and coordinates to zeroes.*/
 Location::Location() {
     latitude = 0;
     longitude = 0;
@@ -20,8 +20,8 @@ Location::Location() {
     the_time.tm_gmtoff = 0;
 }
 
-/* Copy assignment. The compiler providies this by default,
- *  but I like having on my own*/
+/* Copy assignment. The compiler provides this by default,
+ *  but I like having on my own.*/
 Location& Location::operator=(const Location& orig) {
     latitude = orig.latitude;
     longitude = orig.longitude;

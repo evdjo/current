@@ -11,22 +11,23 @@ import java.util.LinkedList;
  * 
  */
 public class Controller {
-	private GPSReader strm_1, strm_2; // stream 1 and stream 2
-	private LinkedList<GPSReader.Location> locs;// saving good locations here
+	// stream 1 and stream 2
+	private GPSReader strm_1, strm_2; 
+	
+	// saving good locations here
+	private LinkedList<GPSReader.Location> locs;
 
 	private long lat_offset; // the offsets
 	private long lng_offset;
 
-	private final static double MIL = 1000000.0; // used in rounding
+	// used in rounding
+	private final static double MIL = 1000000.0; 
 
-	/**
-	 * 
+	/** 
 	 * Construct new controller with the file names
 	 * 
-	 * @param file1
-	 *            the first file
-	 * @param file2
-	 *            the second file
+	 * @param file1	 the first file
+	 * @param file2  the second file
 	 */
 	private Controller(String file1, String file2) {
 		strm_1 = new GPSReader(file1);
@@ -35,8 +36,8 @@ public class Controller {
 	}
 
 	/**
-	 * Try to synchronise the two streams, so that both have good satellite fix.
-	 * 
+	 * Try to synchronise the two streams, 
+	 * so that both have good satellite fix. 
 	 * @return did the synchronisation succeed ?
 	 */
 
@@ -62,8 +63,8 @@ public class Controller {
 	}
 
 	/**
-	 * Try to synchronise the two streams, so that both have same time.
-	 * 
+	 * Try to synchronise the two streams, 
+	 * so that both have same time. 
 	 * @return did the synchronisation succeed ?
 	 */
 	private boolean syncTimesGPS() {
@@ -116,10 +117,8 @@ public class Controller {
 	/**
 	 * Calculates the offset between two locations.
 	 * 
-	 * @param one
-	 *            location one
-	 * @param two
-	 *            location two
+	 * @param one location one
+	 * @param two  location two
 	 */
 	private void getoffset(GPSReader.Location one, GPSReader.Location two) {
 
@@ -130,15 +129,15 @@ public class Controller {
 	}
 
 	/**
-	 * Fixes the location of the badFix Location by adding the offset to the
+	 * Fixes the location of the badFix Location by 
+     * adding the offset to the
 	 * good location, and applying that to the bad fix.
 	 * 
-	 * @param goodFix
-	 *            good satellites location
-	 * @param badFix
-	 *            bad satellites location
+	 * @param goodFix  good satellites location
+	 * @param badFix  bad satellites location
 	 */
-	private void addoffset(GPSReader.Location goodFix, GPSReader.Location badFix) {
+	private void addoffset(GPSReader.Location goodFix,
+                           GPSReader.Location badFix) {
 
 		badFix.lat = Math.round(goodFix.lat * MIL + this.lat_offset) / MIL;
 
@@ -154,28 +153,41 @@ public class Controller {
 		this.syncSatelite();
 		this.syncTimesGPS();
 
-		// infinite loop, breaks only of one of the streams returns end of file
+		// infinite loop, breaks only of one of the streams 
+		//returns end of file
 		while (true) {
 
-			if (strm_1.satellitesOK) { // check if stream1 has good fix
+			// check if stream1 has good fix
+			if (strm_1.satellitesOK) {
 
 				locs.add(strm_1.currLoc);
-				if (strm_2.satellitesOK) // check if the stream2 has good fix
-											// too
-					this.getoffset(strm_1.currLoc, strm_2.currLoc); // offset
-																	// can be
-																	// updated
 
-				else
-					// location two was bad, fix it
+				// check if the stream2 has good fix
+				if (strm_2.satellitesOK) {
+
+					// offset can be updated
+					this.getoffset(strm_1.currLoc, strm_2.currLoc);
+				}
+
+				else {
+
+					// stream two was bad, fix it
 					this.addoffset(strm_1.currLoc, strm_2.currLoc);
+				}
 
-			} else if (strm_2.satellitesOK) { // if stream1 fails ,try stream2
+				// if stream1 fails ,try stream2
+			} else if (strm_2.satellitesOK) {
 
 				locs.add(strm_2.currLoc);
-				this.addoffset(strm_2.currLoc, strm_1.currLoc);// location one
-																// was bad, fix
-																// it
+
+				// location one was bad, fix it
+				this.addoffset(strm_2.currLoc, strm_1.currLoc);
+
+			} else {
+				// do nothing , both streams failed,
+				// read the next two pair of
+				// coordinates
+				// maybe new gsvs will be read and good fix will be obtained
 			}
 
 			// now read lines until new time and coordinates are met.
@@ -199,10 +211,10 @@ public class Controller {
 		}
 
 	}
-/**
- * Simply go ! Read the two streams , and out put to the file !
- *  kaboom magic !
- */
+
+	/**
+	 * Simply go ! Read the two streams , and out put to the file !
+	 */
 	public static void go() {
 
 		String file1 = "/home/evdjoint/gps_1.dat";
@@ -220,7 +232,8 @@ public class Controller {
 					+ "<gpx "
 					+ "version=\"1.0\"\n"
 					+ "creator=\"Evdzhan Mustafa\"\n"
-					+ "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
+					+ "xmlns:xsi=\""
+					+ "http://www.w3.org/2001/XMLSchema-instance\">\n");
 
 			for (GPSReader.Location l : controller.locs) {
 				pw.write("<wpt lat=\"" + l.lat + "\" lon=\"" + l.lng + "\">\n"

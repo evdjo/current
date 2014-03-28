@@ -20,11 +20,9 @@ using namespace std;
  * 
  */
 int main() {
-
-
+    
     Controller::go();
-
-
     return 0;
+    
 }
 

@@ -28,13 +28,15 @@ int GPSReader::read() {
 
         return _EOF; // stream ended
 
-    } else if (line_read.empty() || line_read.compare("\r") == 0) {
+    } else if (line_read.empty() ||
+            line_read.compare("\r") == 0) {
 
         return SKIP_LINE; // empty line, skip it
 
     } else if (line_read.substr(3, 3) == "RMC") {
 
-        process_rmc(line_read); // process the new coordinates and time
+        // process the new coordinates and time
+        process_rmc(line_read);
 
         return GPS_TIME;
 
@@ -47,24 +49,29 @@ int GPSReader::read() {
         int num_lines;
         strstream >> num_lines;
 
-        //create container array to put the gsv sentences
+        //create container array 
+        //to put the gsv sentences
         string lines[num_lines];
 
-
-        lines[0] = line_read; // the first sentences is already in line_read
+        // the first sentences is already in line_read
+        lines[0] = line_read;
 
         int i = 1;
-        for (i; i < num_lines; i++) { // put  the sentences in the container
+
+        // put  the sentences in the container
+        for (i; i < num_lines; i++) {
             getline(reader, line_read);
             lines[i] = line_read;
         }
 
-        process_gsv(lines, num_lines); // process the sentences
+        // process the sentences
+        process_gsv(lines, num_lines);
         return SATELITE;
 
     } else {
 
-        return SKIP_LINE; // skip if anything else occurred 
+        // skip if anything else occurred 
+        return SKIP_LINE; 
     }
 
 }
@@ -79,7 +86,8 @@ void GPSReader::process_gsv(string data[], int num_sentences) {
 
     stringstream strstream(data[0].substr(11, 2));
 
-    strstream >> num_satelites; // parse the number of satellites 
+    // parse the number of satellites 
+    strstream >> num_satelites;
     int i = 0;
 
     // loop through the sentences 
@@ -90,9 +98,11 @@ void GPSReader::process_gsv(string data[], int num_sentences) {
         // get the sentence up to the asterix
         getline(asterix_getter, data[i], '*');
 
-        vector<string> tokens; // vector to place the tokens
+        // vector to place the tokens
+        vector<string> tokens; 
 
-        stringstream ss(data[i]); // treat the sentence as string stream
+        // treat the sentence as string stream
+        stringstream ss(data[i]); 
         string current;
 
         // split the current sentence to tokens
@@ -104,21 +114,27 @@ void GPSReader::process_gsv(string data[], int num_sentences) {
         //loop through the satellites 
         for (o = 7; o < tokens.size() && !tokens.at(o).empty()
                 && num_satelites > 0; o += 4, num_satelites--) {
-            
-            int value; 
+
+            int value;
             stringstream satelitegetter(tokens.at(o));
-            satelitegetter >> value;  // parse the SNR
             
-            if (value >= 30) { // if SNR good increment count
+            // parse the SNR
+            satelitegetter >> value; 
+
+            // if SNR good increment count
+            if (value >= 30) { 
                 count++;
-                if (count == 3) { // at least 3 satellites had SNR of 30 or more
+
+                // at least 3 satellites had SNR of 30 or more
+                if (count == 3) {
                     satelitesOK = true;
                     return; //  we are done here
                 }
             }
         }
     }
-    satelitesOK = false; //if the code reaches here, no 3 satellites were  good
+    //if the code reaches here, no 3 satellites were  good
+    satelitesOK = false;
     return;
 
 
@@ -127,35 +143,50 @@ void GPSReader::process_gsv(string data[], int num_sentences) {
 void GPSReader::process_rmc(string& data) {
 
     stringstream asterix_getter(data);
-    getline(asterix_getter, data, '*'); // get the line up to the asterix 
 
-    vector<string> tokens; //vector to store the tokens
+    // get the line up to the asterix 
+    getline(asterix_getter, data, '*');
+
+
+    //vector to store the tokens
+    vector<string> tokens;
 
     stringstream ss(data);
     string current;
 
-    while (getline(ss, current, ',')) { // split the string to tokens
+
+    // split the string to tokens
+    while (getline(ss, current, ',')) {
         tokens.push_back(current);
     }
 
-    stringstream time_getter(tokens.at(1)); // get the time
+
+    // get the time
+    stringstream time_getter(tokens.at(1));
 
     string time;
 
     getline(time_getter, time, '.');
 
-    time += tokens.at(9); // concatenate the time with the date
+
+    // concatenate the time with the date
+    time += tokens.at(9);
 
     // take the time and transform it into struct tm time
     strptime(time.c_str(), "%H%M%S%d%m%y", &this->loc.the_time);
 
-    degrees_to_decimal(tokens.at(3), tokens.at(5)); // transform the degrees
+    
+    // transform the degrees
+    degrees_to_decimal(tokens.at(3), tokens.at(5)); 
 
-    if (tokens.at(4) == "S") {// if the coordinate is in the southern hemisphere
+    // if the coordinate is in the southern hemisphere
+    if (tokens.at(4) == "S") {
         loc.latitude *= -1;
 
     }
-    if (tokens.at(6) == "W") {// if the coordinate is in the western hemisphere
+    
+    // if the coordinate is in the western hemisphere
+    if (tokens.at(6) == "W") {
         loc.longitude *= -1;
     }
 

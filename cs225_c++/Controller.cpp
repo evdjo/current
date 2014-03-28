@@ -82,30 +82,42 @@ bool Controller::sync_time_gps() {
 
     // if the first starts before the second
     if (time_difference < 0) {
-        while (time_difference != 0) { // until the two times are equal
+        
+        // until the two times are equal
+        while (time_difference != 0) { 
             status = 0;
-            while (status != GPSReader::GPS_TIME) { // until new time is reached
+            
+            // until new time is reached
+            while (status != GPSReader::GPS_TIME) { 
                 status = strm_1.read();
                 if (status == GPSReader::_EOF)
                     return false; // stream ended , exit
             }
             time_1 = mktime(&strm_1.loc.the_time);
             time_2 = mktime(&strm_2.loc.the_time);
-            time_difference = difftime(time_1, time_2); // update the time diff
+            
+            // update the time diff
+            time_difference = difftime(time_1, time_2); 
         }
 
         //if the second starts before the first
     } else if (time_difference > 0) {
-        while (time_difference != 0) { // until the two times are equal
+        
+        // until the two times are equal
+        while (time_difference != 0) { 
             status = 0;
-            while (status != GPSReader::GPS_TIME) { // until new time is reached
+            
+            // until new time is reached
+            while (status != GPSReader::GPS_TIME) { 
                 status = strm_2.read();
                 if (status == GPSReader::_EOF)
                     return false; // stream ended , exit
             }
             time_1 = mktime(&strm_1.loc.the_time);
             time_2 = mktime(&strm_2.loc.the_time);
-            time_difference = difftime(time_1, time_2); // update the time diff
+            
+            // update the time diff
+            time_difference = difftime(time_1, time_2); 
         }
     }
     return true; // synchronisation  succeeded
@@ -121,7 +133,8 @@ void Controller::go() {
         return;
 
 
-    vector<Location> locs; //container to store 
+    //container to store 
+    vector<Location> locs; 
 
 
 
@@ -157,9 +170,13 @@ void Controller::go() {
 
 
         // get the next location from stream 1
-        while (line_read != GPSReader::GPS_TIME && line_read != GPSReader::_EOF) {
+        while (line_read != GPSReader::GPS_TIME 
+                && line_read != GPSReader::_EOF) {
+            
             line_read = ctrl.strm_1.read();
+            
         }
+        
         if (line_read == GPSReader::_EOF)
             break;
 
@@ -167,9 +184,13 @@ void Controller::go() {
 
         line_read = 0;
         // get the next location from stream 2
-        while (line_read != GPSReader::GPS_TIME && line_read != GPSReader::_EOF) {
+        while (line_read != GPSReader::GPS_TIME 
+                && line_read != GPSReader::_EOF) {
+            
             line_read = ctrl.strm_2.read();
+            
         }
+        
         if (line_read == GPSReader::_EOF)
             break;
 
@@ -191,13 +212,24 @@ void Controller::write(vector<Location> locs) {
     writer << "<?xml version=\"1.0\"?>\n";
     writer << "<gpx version=\"1.0\"";
     writer << "\ncreator=\"Evdzhan Mustafa\"";
-    writer << "\nxmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
+    writer << "\nxmlns:xsi=\"";
+    writer <<"http://www.w3.org/2001/XMLSchema-instance\">\n";
 
     for (int i = 0; i < locs.size(); ++i) {
 
-        writer << setprecision(10) << "<wpt lat=\"" << locs.at(i).latitude << "\" ";
-        writer << setprecision(10) << "lon=\"" << locs.at(i).longitude << "\">";
-        writer << "\n<time>" << asctime(&locs.at(i).the_time) << "</time>\n</wpt>\n";
+        writer << setprecision(10) <<
+                "<wpt lat=\"" << locs.at(i).latitude << 
+                "\" ";
+        
+        
+        writer << setprecision(10) <<
+                "lon=\"" << locs.at(i).longitude << 
+                "\">";
+        
+        
+        writer << "\n<time>" << 
+                asctime(&locs.at(i).the_time) << 
+                "</time>\n</wpt>\n";
 
     }
     writer << "</gpx>";
@@ -206,8 +238,12 @@ void Controller::write(vector<Location> locs) {
 /*Gets the offset between two locations. */
 void Controller::get_offset(const Location& one, const Location& two) {
 
-    lat_offset = (long) (one.latitude * MIL) - (long) (two.latitude * MIL);
-    lng_offset = (long) (one.longitude * MIL) -(long) (two.longitude * MIL);
+    lat_offset = (long) (one.latitude * MIL) 
+            - (long) (two.latitude * MIL);
+    
+    
+    lng_offset = (long) (one.longitude * MIL)
+            -(long) (two.longitude * MIL);
 
 }
 

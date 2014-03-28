@@ -10,7 +10,7 @@ import java.util.Locale;
 
 /**
  * Class representing a stream. Contains current location, current time and is
- * responsible for reading from the  file. Holds a boolean flag to indicate
+ * responsible for reading from the file. Holds a boolean flag to indicate
  * whether the current satellite fix is good.
  * 
  * @author Evdzhan Mustafa enm3@aber.ac.uk
@@ -36,6 +36,7 @@ public class GPSReader {
 	protected final static int SKIP_LINE = 1;
 	protected final static int GPS_TIME = 2;
 	protected final static int SATELITE = 3;
+
 	/* Strings to detect the lines we need. */
 	protected final static String GSV = "GSV";
 	protected final static String RMC = "RMC";
@@ -60,7 +61,7 @@ public class GPSReader {
 			e.printStackTrace();
 		}
 
-		satellitesOK = false; // assume satelite fix is bad at the beggining
+		satellitesOK = false; // assume satellite fix is bad at the beginning
 
 	}
 
@@ -77,11 +78,13 @@ public class GPSReader {
 			if (data == null)
 				return _EOF; // end of file reached
 
-			if (data.equals(""))
+			if (data.equals("")){
 				return SKIP_LINE; // empty line
-
-			String type = data.substring(3, 6); // see what type of sentence was
-												// read
+				} 
+			
+            // see what type of sentence was  read
+			String type = data.substring(3, 6); 
+												
 
 			if (type.equals(GSV)) {
 
@@ -93,16 +96,19 @@ public class GPSReader {
 
 				// place the already read gsv line to the array
 				sateliteData[0] = data;
-
-				for (int i = 1; i < linesNum; i++) { // store each gsv sentence
-														// in the array
+				
+				
+				// store each gsv sentence in the array
+				for (int i = 1; i < linesNum; i++) { 
+														 
 					sateliteData[i] = br.readLine();
 				}
 
-				processGSV(sateliteData); // this will update the satellitesOK
-											// boolean
-
-				return SATELITE; // satellite info obtained
+				// this will update the satellitesOK boolean
+				processGSV(sateliteData); 
+											 
+				// satellite info obtained
+				return SATELITE; 
 
 			} else if (type.equals(RMC)) {
 
@@ -126,8 +132,7 @@ public class GPSReader {
 	/**
 	 * Works on the data given by GSV sentence(s)
 	 * 
-	 * @param gsvData
-	 *            array containing all the gsv sentences
+	 * @param gsvData  array containing all the gsv sentences
 	 */
 	private void processGSV(String[] gsvData) {
 
@@ -135,31 +140,38 @@ public class GPSReader {
 
 		int count = 0;
 
-		for (int i = 0; i < gsvData.length; i++) { // loop through the gsv
-													// sentences
+		
+		// loop through the gsv sentences
+		for (int i = 0; i < gsvData.length; i++) { 
+												 
 
-			int asterixGetter = gsvData[i].indexOf('*'); // get the index of the
-															// asterix
-			
+			// get the index of the asterix
+			int asterixGetter = gsvData[i].indexOf('*'); 
+															  
 
-			//split the current sentence to tokens
-			String[] tokens = gsvData[i].substring(14, asterixGetter).split(",");
+			// split the current sentence to tokens
+			String[] tokens = gsvData[i].substring(14, asterixGetter)
+					.split(",");
 
 			// loop through the SNR values
 			for (int o = 3; o < 16 && satNum > 0 && o < tokens.length; o += 4, satNum--) {
 
-				/* check if snr is good */
+				// check if snr is good  
 				if (!tokens[o].equals("") && Integer.parseInt(tokens[o]) >= 30) {
 					count++;
 					if (count == 3) {
 
-						this.satellitesOK = true; // satellites are ok
-						return; // no point looking for further SNR sentences, go back
+						// satellites are ok
+						this.satellitesOK = true; 
+						
+						// no point looking for further SNR sentences 
+						return; 							 
 					}
 				}
 			}
 		}
-		this.satellitesOK = false; // satellites are NOT ok
+		 // if thise line is reached, satellites are NOT ok
+		this.satellitesOK = false;
 	}
 
 	/**
@@ -170,8 +182,10 @@ public class GPSReader {
 	private void processRMC(String rmcData) {
 
 		String[] thedata = rmcData.split(",");
-		String thetime = thedata[1].substring(0, 6); // drop the milliseconds
-		String thedate = thedata[9]; 
+		
+		// drop the milliseconds
+		String thetime = thedata[1].substring(0, 6); 
+		String thedate = thedata[9];
 
 		try {
 			currTime = new SimpleDateFormat("HHmmssddMMyy", Locale.ENGLISH)
@@ -182,12 +196,12 @@ public class GPSReader {
 		}
 
 		// turn the degrees to decimal and place it to current loc
-		this.currLoc = degreesToDecimal(thedata[3], thedata[5]); 
+		this.currLoc = degreesToDecimal(thedata[3], thedata[5]);
 
-		if (thedata[4].equals("S")) //  if in the south hemisphere
+		if (thedata[4].equals("S")) // if in the south hemisphere
 			this.currLoc.lat *= -1;
 
-		if (thedata[6].equals("W")) //  if in the west hemisphere
+		if (thedata[6].equals("W")) // if in the west hemisphere
 			this.currLoc.lng *= -1;
 
 		this.currLoc.date = currTime;
@@ -195,13 +209,11 @@ public class GPSReader {
 	}
 
 	/**
-	 * Converts degrees and minute representation of latitude and longitude, to
-	 * a decimal form.
+	 * Converts degrees and minute representation 
+	 * of latitude and longitude, to a decimal form.
 	 * 
-	 * @param latitude
-	 *            string holding latitude
-	 * @param longitude
-	 *            string holding longitude
+	 * @param latitude  string holding latitude
+	 * @param longitude string holding longitude
 	 * @return the location with decimal coordinates
 	 */
 	private Location degreesToDecimal(String latitude, String longitude) {
@@ -217,11 +229,14 @@ public class GPSReader {
 		// transform the minutes to decimal
 		double lat_minutes = (lat - lat_degrees * 100) / 60.0;
 
+		
+		
 		// repeat for longitude
 		double lng = Double.parseDouble(longitude);
 		int lng_degrees = (int) lng / 100;
 		double lng_minutes = (lng - lng_degrees * 100) / 60.0;
 
+		
 		// do some rounding at place the new data to the location
 		loc.lat = Math.round((lat_minutes + lat_degrees) * MIL) / MIL;
 		loc.lng = Math.round((lng_minutes + lng_degrees) * MIL) / MIL;

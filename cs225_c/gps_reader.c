@@ -14,34 +14,47 @@ int read_line(FILE * file, stream_t * strm) {
 
     char buffer[BUFFER_SIZE]; // buffer to store the current line
 
-    char * status = fgets(buffer, BUFFER_SIZE, file); // read a line
+    // read a line
+    char * status = fgets(buffer, BUFFER_SIZE, file);
 
-    char * temp_buffer = strdup(buffer); // duplicate , will be needed later on
 
-    if (status == NULL) { // check if stream ended
+    // duplicate , will be needed later on
+    char * temp_buffer = strdup(buffer);
+
+
+    // check if stream ended
+    if (status == NULL) {
         return _EOF;
     }
 
-    char * temp = strsep(&temp_buffer, ","); // get the type of sentence
+    // get the type of sentence
+    char * temp = strsep(&temp_buffer, ",");
 
     if (strcmp(temp, "$GPRMC") == 0) {
 
         proccess_rmc(buffer, strm);
-        return GPS_TIME; // new cooridnate and time was processed
+
+        // new coordinate and time was processed
+        return GPS_TIME;
 
     } else if (strcmp(temp, "$GPGSV") == 0) {
 
         char * current = strsep(&temp_buffer, ",");
 
+        //parse the num of lines
         int num_lines = atoi(current);
 
-        char lines[num_lines][BUFFER_SIZE]; // array to store the gsv sentences
+        // array to store the gsv sentences
+        char lines[num_lines][BUFFER_SIZE];
 
-        strcpy(lines[0], buffer); // store the first, 
-        //already read line to the array
+        // store the first line 
+        strcpy(lines[0], buffer);
+
 
         int i;
-        for (i = 1; i < num_lines; i++) {// put each gsv sentence to the array
+
+        // put each gsv sentence to the array
+        for (i = 1; i < num_lines; i++) {
 
             fgets(buffer, BUFFER_SIZE, file);
             strcpy(lines[i], buffer);
@@ -49,7 +62,8 @@ int read_line(FILE * file, stream_t * strm) {
 
         proccess_gsv(lines, num_lines, strm);
 
-        return SATELITE; // new satellite fix was processed
+        // new satellite fix was processed
+        return SATELITE;
 
     } else {
         return SKIP_LINE;
@@ -57,20 +71,31 @@ int read_line(FILE * file, stream_t * strm) {
 
 }
 
-/* Read the GSV sentences passed and update the stream passed in */
-void proccess_gsv(char lines[][BUFFER_SIZE], int num_lines, stream_t * strm) {
-    int num_satellites; // how many satellites in  the lines
-    int i = 0, o = 0, j = 0, k = 0; // integers used in the loops below
+/* Read the GSV sentences passed 
+ * and update the stream passed in .*/
+void proccess_gsv(char lines[][BUFFER_SIZE],
+        int num_lines, stream_t * strm) {
+    // how many satellites in  the lines
+    int num_satellites;
+
+    // integers used in the loops below
+    int i = 0, o = 0, j = 0, k = 0;
 
 
-    // duplicate used to see how many satellites are there
+    // duplicate used to see 
+    //how many satellites are there
     char * first_line = strdup(lines[0]);
-    char * _num_satellites; // to store the read satellites number
 
-    for (i = 0; i < 4; ++i) { // skip the first four tokens
+    // to store the read satellites number
+    char * _num_satellites;
+
+    // skip the first four tokens
+    for (i = 0; i < 4; ++i) {
         _num_satellites = strsep(&first_line, ",");
     }
-    // now _num_satellites holds the number of satellites , parse that to int
+
+    // now _num_satellites holds the number
+    // of satellites , parse that to int
     num_satellites = atoi(_num_satellites);
 
     // count -  how many good satellites fixes are  there
@@ -84,23 +109,28 @@ void proccess_gsv(char lines[][BUFFER_SIZE], int num_lines, stream_t * strm) {
         // duplicate  the current line
         char * curr_line = strdup(lines[i]);
 
-        // the line without the asterix and the data after it
+        // the line without the asterix
+        //and the data after it
         char * asterix_getter = strsep(&curr_line, "*");
 
 
 
         char * current;
-        for (o = 0; o < 4; ++o) { // skip the first 4 tokens
+
+        // skip the first 4 tokens
+        for (o = 0; o < 4; ++o) {
             current = strsep(&asterix_getter, ",");
         }
 
 
         // loop through each satellite SNR
-        for (k = 0; k < 4 && current != NULL && num_satellites > 0; ++k) {
+        for (k = 0; k < 4 && current != NULL 
+                && num_satellites > 0; ++k) {
 
             // skip each 4 tokens, to the to the next SNR
             for (j = 0; j < 4 && current != NULL
-                    && num_satellites > 0; ++j, --num_satellites) {
+                    && num_satellites > 0;
+                    ++j, --num_satellites) {
 
                 current = strsep(&asterix_getter, ",");
             }
@@ -114,49 +144,64 @@ void proccess_gsv(char lines[][BUFFER_SIZE], int num_lines, stream_t * strm) {
                 //check if its good
                 if (satelite_status >= 30) {
                     ++count;
-                    if (count == 3) { // if count reaches 3 
-                        strm->satelitesOK = 1; // exit and set
-                        //the satellite fix to true
+
+                    // if count reaches 3 , satellite fix is good
+                    if (count == 3) {
+                        strm->satelitesOK = 1;
+
                         return;
                     }
                 }
             }
         }
     }
-    strm->satelitesOK = 0; // no three satellites met the criteria  
-    //  stream has bad fix 
+    // no three satellites met the criteria 
+    //stream has bad fix 
+    strm->satelitesOK = 0;
+
     return;
 }
 
-/* Read the RMC sentence passed and update the time and coordinates*/
+/* Read the RMC sentence passed 
+ * and update the time and coordinates. */
 void proccess_rmc(char * buffer, stream_t * data) {
+
     char * tokens[10]; // array of pointers to string
 
     char * temp = strdup(buffer);
 
     int i;
-    for (i = 0; i < 10; ++i) { // store all the tokens to the array
+    // store all the tokens to the array
+    for (i = 0; i < 10; ++i) {
         tokens[i] = strsep(&temp, ",");
     }
 
-    char * temp_time = strdup(tokens[1]); // duplicate to use as a temp time
-    char * the_time = strsep(&temp_time, "."); // truncate the milliseconds
-    strcat(the_time, tokens[9]); //concatenate  the date and the time
+    // duplicate to use as a temp time
+    char * temp_time = strdup(tokens[1]);
+
+    // truncate the milliseconds
+    char * the_time = strsep(&temp_time, ".");
+
+    //concatenate  the date and the time
+    strcat(the_time, tokens[9]);
 
     // parse the time
     strptime(the_time, "%H%M%S%d%m%y", &(data->location.time));
 
-    data->location.time.tm_isdst = 0; // set this to zero, otherwise bugs occur
+    // set this to zero, otherwise bugs occur
+    data->location.time.tm_isdst = 0;
 
-    //convert the coordinates from degrees to decimal, and  put it into the 
+    //convert the coordinates from degrees 
+    //to decimal, and  put it into the 
     // stream's location
     degrees_to_decimal(&data->location, tokens[3], tokens[5]);
 
-    if (*tokens[4] == 'S') { // check if coordinate is in south hemisphere
+    // check if coordinate is in south hemisphere
+    if (*tokens[4] == 'S') {
         data->location.latitude *= -1;
     }
-
-    if (*tokens[6] == 'W') {// check if coordinate is in west hemisphere
+    // check if coordinate is in west hemisphere
+    if (*tokens[6] == 'W') {
         data->location.longitude *= -1;
     }
 
@@ -164,16 +209,22 @@ void proccess_rmc(char * buffer, stream_t * data) {
 
 }
 
-/* Transforms coordinates from degrees to a decimal, and puts the coordinates
+/* Transforms coordinates from degrees 
+ * to a decimal, and puts the coordinates
  * to the loc passed in */
 void degrees_to_decimal(loc_t * loc, char * lat, char * lng) {
 
-    double lat_ = atof(lat); // parse the latitude
-    int lat_degrees = (int) lat_ / 100; // truncate the degrees
+    // parse the latitude
+    double lat_ = atof(lat); 
+    
+    // truncate the degrees
+    int lat_degrees = (int) lat_ / 100; 
 
     // turn the minutes to decimal
     double lat_minutes = (lat_ - lat_degrees * 100) / 60.0;
 
+    
+    
     // repeat for the longitude 
     double lng_ = atof(lng);
     int lng_degrees = (int) lng_ / 100;
