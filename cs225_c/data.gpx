@@ -114,6 +114,46 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <time>Fri Feb 21 15:10:53 2014
 </time>
 </wpt>
+<wpt lat="52.431682" lon="-4.021270">
+<time>Fri Feb 21 15:10:54 2014
+</time>
+</wpt>
+<wpt lat="52.431620" lon="-4.021392">
+<time>Fri Feb 21 15:10:55 2014
+</time>
+</wpt>
+<wpt lat="52.431557" lon="-4.021513">
+<time>Fri Feb 21 15:10:56 2014
+</time>
+</wpt>
+<wpt lat="52.431493" lon="-4.021630">
+<time>Fri Feb 21 15:10:57 2014
+</time>
+</wpt>
+<wpt lat="52.431430" lon="-4.021745">
+<time>Fri Feb 21 15:10:58 2014
+</time>
+</wpt>
+<wpt lat="52.431370" lon="-4.021852">
+<time>Fri Feb 21 15:10:59 2014
+</time>
+</wpt>
+<wpt lat="52.431317" lon="-4.021945">
+<time>Fri Feb 21 15:11:00 2014
+</time>
+</wpt>
+<wpt lat="52.431273" lon="-4.022025">
+<time>Fri Feb 21 15:11:01 2014
+</time>
+</wpt>
+<wpt lat="52.431238" lon="-4.022087">
+<time>Fri Feb 21 15:11:02 2014
+</time>
+</wpt>
+<wpt lat="52.431213" lon="-4.022130">
+<time>Fri Feb 21 15:11:03 2014
+</time>
+</wpt>
 <wpt lat="52.431200" lon="-4.022153">
 <time>Fri Feb 21 15:11:04 2014
 </time>
@@ -152,6 +192,26 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 </wpt>
 <wpt lat="52.431007" lon="-4.022518">
 <time>Fri Feb 21 15:11:13 2014
+</time>
+</wpt>
+<wpt lat="52.430960" lon="-4.022615">
+<time>Fri Feb 21 15:11:14 2014
+</time>
+</wpt>
+<wpt lat="52.430908" lon="-4.022720">
+<time>Fri Feb 21 15:11:15 2014
+</time>
+</wpt>
+<wpt lat="52.430852" lon="-4.022838">
+<time>Fri Feb 21 15:11:16 2014
+</time>
+</wpt>
+<wpt lat="52.430793" lon="-4.022972">
+<time>Fri Feb 21 15:11:17 2014
+</time>
+</wpt>
+<wpt lat="52.430737" lon="-4.023127">
+<time>Fri Feb 21 15:11:18 2014
 </time>
 </wpt>
 <wpt lat="52.430683" lon="-4.023290">
@@ -274,6 +334,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <time>Fri Feb 21 15:11:48 2014
 </time>
 </wpt>
+<wpt lat="52.429758" lon="-4.028695">
+<time>Fri Feb 21 15:11:49 2014
+</time>
+</wpt>
 <wpt lat="52.429700" lon="-4.028895">
 <time>Fri Feb 21 15:11:50 2014
 </time>
@@ -284,6 +348,10 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 </wpt>
 <wpt lat="52.429582" lon="-4.029265">
 <time>Fri Feb 21 15:11:52 2014
+</time>
+</wpt>
+<wpt lat="52.429522" lon="-4.029435">
+<time>Fri Feb 21 15:11:53 2014
 </time>
 </wpt>
 <wpt lat="52.429473" lon="-4.029652">
@@ -486,6 +554,26 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 <time>Fri Feb 21 15:12:43 2014
 </time>
 </wpt>
+<wpt lat="52.426798" lon="-4.034090">
+<time>Fri Feb 21 15:12:44 2014
+</time>
+</wpt>
+<wpt lat="52.426673" lon="-4.034183">
+<time>Fri Feb 21 15:12:45 2014
+</time>
+</wpt>
+<wpt lat="52.426545" lon="-4.034268">
+<time>Fri Feb 21 15:12:46 2014
+</time>
+</wpt>
+<wpt lat="52.426410" lon="-4.034360">
+<time>Fri Feb 21 15:12:47 2014
+</time>
+</wpt>
+<wpt lat="52.426270" lon="-4.034452">
+<time>Fri Feb 21 15:12:48 2014
+</time>
+</wpt>
 <wpt lat="52.426123" lon="-4.034547">
 <time>Fri Feb 21 15:12:49 2014
 </time>
@@ -564,6 +652,166 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 </wpt>
 <wpt lat="52.423617" lon="-4.036838">
 <time>Fri Feb 21 15:13:08 2014
+</time>
+</wpt>
+<wpt lat="52.423513" lon="-4.036810">
+<time>Fri Feb 21 15:13:09 2014
+</time>
+</wpt>
+<wpt lat="52.423392" lon="-4.036813">
+<time>Fri Feb 21 15:13:10 2014
+</time>
+</wpt>
+<wpt lat="52.423288" lon="-4.036833">
+<time>Fri Feb 21 15:13:11 2014
+</time>
+</wpt>
+<wpt lat="52.423172" lon="-4.036852">
+<time>Fri Feb 21 15:13:12 2014
+</time>
+</wpt>
+<wpt lat="52.423058" lon="-4.036872">
+<time>Fri Feb 21 15:13:13 2014
+</time>
+</wpt>
+<wpt lat="52.422957" lon="-4.036893">
+<time>Fri Feb 21 15:13:14 2014
+</time>
+</wpt>
+<wpt lat="52.422860" lon="-4.036945">
+<time>Fri Feb 21 15:13:15 2014
+</time>
+</wpt>
+<wpt lat="52.422770" lon="-4.037025">
+<time>Fri Feb 21 15:13:16 2014
+</time>
+</wpt>
+<wpt lat="52.422673" lon="-4.037105">
+<time>Fri Feb 21 15:13:17 2014
+</time>
+</wpt>
+<wpt lat="52.422582" lon="-4.037202">
+<time>Fri Feb 21 15:13:18 2014
+</time>
+</wpt>
+<wpt lat="52.422490" lon="-4.037312">
+<time>Fri Feb 21 15:13:19 2014
+</time>
+</wpt>
+<wpt lat="52.422398" lon="-4.037407">
+<time>Fri Feb 21 15:13:20 2014
+</time>
+</wpt>
+<wpt lat="52.422307" lon="-4.037502">
+<time>Fri Feb 21 15:13:21 2014
+</time>
+</wpt>
+<wpt lat="52.422215" lon="-4.037597">
+<time>Fri Feb 21 15:13:22 2014
+</time>
+</wpt>
+<wpt lat="52.422110" lon="-4.037677">
+<time>Fri Feb 21 15:13:23 2014
+</time>
+</wpt>
+<wpt lat="52.422013" lon="-4.037742">
+<time>Fri Feb 21 15:13:24 2014
+</time>
+</wpt>
+<wpt lat="52.421908" lon="-4.037792">
+<time>Fri Feb 21 15:13:25 2014
+</time>
+</wpt>
+<wpt lat="52.421812" lon="-4.037842">
+<time>Fri Feb 21 15:13:26 2014
+</time>
+</wpt>
+<wpt lat="52.421708" lon="-4.037877">
+<time>Fri Feb 21 15:13:27 2014
+</time>
+</wpt>
+<wpt lat="52.421610" lon="-4.037927">
+<time>Fri Feb 21 15:13:28 2014
+</time>
+</wpt>
+<wpt lat="52.421507" lon="-4.037962">
+<time>Fri Feb 21 15:13:29 2014
+</time>
+</wpt>
+<wpt lat="52.421415" lon="-4.038027">
+<time>Fri Feb 21 15:13:30 2014
+</time>
+</wpt>
+<wpt lat="52.421317" lon="-4.038092">
+<time>Fri Feb 21 15:13:31 2014
+</time>
+</wpt>
+<wpt lat="52.421218" lon="-4.038172">
+<time>Fri Feb 21 15:13:32 2014
+</time>
+</wpt>
+<wpt lat="52.421127" lon="-4.038267">
+<time>Fri Feb 21 15:13:33 2014
+</time>
+</wpt>
+<wpt lat="52.421033" lon="-4.038362">
+<time>Fri Feb 21 15:13:34 2014
+</time>
+</wpt>
+<wpt lat="52.420942" lon="-4.038457">
+<time>Fri Feb 21 15:13:35 2014
+</time>
+</wpt>
+<wpt lat="52.420850" lon="-4.038552">
+<time>Fri Feb 21 15:13:36 2014
+</time>
+</wpt>
+<wpt lat="52.420757" lon="-4.038647">
+<time>Fri Feb 21 15:13:37 2014
+</time>
+</wpt>
+<wpt lat="52.420672" lon="-4.038727">
+<time>Fri Feb 21 15:13:38 2014
+</time>
+</wpt>
+<wpt lat="52.420592" lon="-4.038822">
+<time>Fri Feb 21 15:13:39 2014
+</time>
+</wpt>
+<wpt lat="52.420513" lon="-4.038903">
+<time>Fri Feb 21 15:13:40 2014
+</time>
+</wpt>
+<wpt lat="52.420433" lon="-4.038970">
+<time>Fri Feb 21 15:13:41 2014
+</time>
+</wpt>
+<wpt lat="52.420365" lon="-4.039052">
+<time>Fri Feb 21 15:13:42 2014
+</time>
+</wpt>
+<wpt lat="52.420292" lon="-4.039133">
+<time>Fri Feb 21 15:13:43 2014
+</time>
+</wpt>
+<wpt lat="52.420207" lon="-4.039215">
+<time>Fri Feb 21 15:13:44 2014
+</time>
+</wpt>
+<wpt lat="52.420127" lon="-4.039295">
+<time>Fri Feb 21 15:13:45 2014
+</time>
+</wpt>
+<wpt lat="52.420053" lon="-4.039362">
+<time>Fri Feb 21 15:13:46 2014
+</time>
+</wpt>
+<wpt lat="52.419982" lon="-4.039430">
+<time>Fri Feb 21 15:13:47 2014
+</time>
+</wpt>
+<wpt lat="52.419913" lon="-4.039512">
+<time>Fri Feb 21 15:13:48 2014
 </time>
 </wpt>
 <wpt lat="52.419860" lon="-4.039577">
@@ -1364,6 +1612,126 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 </wpt>
 <wpt lat="52.410197" lon="-4.051847">
 <time>Fri Feb 21 15:17:08 2014
+</time>
+</wpt>
+<wpt lat="52.410247" lon="-4.051885">
+<time>Fri Feb 21 15:17:09 2014
+</time>
+</wpt>
+<wpt lat="52.410253" lon="-4.051842">
+<time>Fri Feb 21 15:17:10 2014
+</time>
+</wpt>
+<wpt lat="52.410280" lon="-4.051798">
+<time>Fri Feb 21 15:17:11 2014
+</time>
+</wpt>
+<wpt lat="52.410313" lon="-4.051757">
+<time>Fri Feb 21 15:17:12 2014
+</time>
+</wpt>
+<wpt lat="52.410340" lon="-4.051700">
+<time>Fri Feb 21 15:17:13 2014
+</time>
+</wpt>
+<wpt lat="52.410355" lon="-4.051643">
+<time>Fri Feb 21 15:17:14 2014
+</time>
+</wpt>
+<wpt lat="52.410350" lon="-4.051568">
+<time>Fri Feb 21 15:17:15 2014
+</time>
+</wpt>
+<wpt lat="52.410338" lon="-4.051523">
+<time>Fri Feb 21 15:17:16 2014
+</time>
+</wpt>
+<wpt lat="52.410315" lon="-4.051478">
+<time>Fri Feb 21 15:17:17 2014
+</time>
+</wpt>
+<wpt lat="52.410292" lon="-4.051432">
+<time>Fri Feb 21 15:17:18 2014
+</time>
+</wpt>
+<wpt lat="52.410268" lon="-4.051400">
+<time>Fri Feb 21 15:17:19 2014
+</time>
+</wpt>
+<wpt lat="52.410250" lon="-4.051340">
+<time>Fri Feb 21 15:17:20 2014
+</time>
+</wpt>
+<wpt lat="52.410238" lon="-4.051310">
+<time>Fri Feb 21 15:17:21 2014
+</time>
+</wpt>
+<wpt lat="52.410213" lon="-4.051278">
+<time>Fri Feb 21 15:17:22 2014
+</time>
+</wpt>
+<wpt lat="52.410190" lon="-4.051247">
+<time>Fri Feb 21 15:17:23 2014
+</time>
+</wpt>
+<wpt lat="52.410145" lon="-4.051242">
+<time>Fri Feb 21 15:17:24 2014
+</time>
+</wpt>
+<wpt lat="52.410107" lon="-4.051268">
+<time>Fri Feb 21 15:17:25 2014
+</time>
+</wpt>
+<wpt lat="52.410080" lon="-4.051310">
+<time>Fri Feb 21 15:17:26 2014
+</time>
+</wpt>
+<wpt lat="52.410040" lon="-4.051352">
+<time>Fri Feb 21 15:17:27 2014
+</time>
+</wpt>
+<wpt lat="52.410008" lon="-4.051393">
+<time>Fri Feb 21 15:17:28 2014
+</time>
+</wpt>
+<wpt lat="52.409935" lon="-4.051308">
+<time>Fri Feb 21 15:17:29 2014
+</time>
+</wpt>
+<wpt lat="52.409892" lon="-4.051385">
+<time>Fri Feb 21 15:17:30 2014
+</time>
+</wpt>
+<wpt lat="52.409853" lon="-4.051465">
+<time>Fri Feb 21 15:17:31 2014
+</time>
+</wpt>
+<wpt lat="52.409818" lon="-4.051533">
+<time>Fri Feb 21 15:17:32 2014
+</time>
+</wpt>
+<wpt lat="52.409775" lon="-4.051592">
+<time>Fri Feb 21 15:17:33 2014
+</time>
+</wpt>
+<wpt lat="52.409755" lon="-4.051652">
+<time>Fri Feb 21 15:17:34 2014
+</time>
+</wpt>
+<wpt lat="52.409747" lon="-4.051688">
+<time>Fri Feb 21 15:17:35 2014
+</time>
+</wpt>
+<wpt lat="52.409747" lon="-4.051723">
+<time>Fri Feb 21 15:17:36 2014
+</time>
+</wpt>
+<wpt lat="52.409755" lon="-4.051750">
+<time>Fri Feb 21 15:17:37 2014
+</time>
+</wpt>
+<wpt lat="52.409763" lon="-4.051775">
+<time>Fri Feb 21 15:17:38 2014
 </time>
 </wpt>
 <wpt lat="52.409773" lon="-4.051788">

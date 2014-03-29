@@ -173,12 +173,12 @@ public class GPSReader {
 				}
 			}
 		}
-		 // if thise line is reached, satellites are NOT ok
+		 // if this line is reached, satellites are NOT ok
 		this.satellitesOK = false;
 	}
 
 	/**
-	 * Processes a RMC sentence. Gets the date time and the new cooridnates.
+	 * Processes a RMC sentence. Gets the date time and the new coordinates.
 	 * 
 	 * @param rmcData
 	 */

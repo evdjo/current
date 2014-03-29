@@ -131,8 +131,7 @@ void proccess_gsv(char lines[][BUFFER_SIZE],
 
             // skip each 4 tokens, to the to the next SNR
             for (j = 0; j < 4 && current != NULL
-                    && num_satellites > 0;
-                    ++j, --num_satellites) {
+                    && num_satellites > 0; ++j  ) {
 
                 current = strsep(&asterix_getter, ",");
             }
@@ -154,6 +153,7 @@ void proccess_gsv(char lines[][BUFFER_SIZE],
                     }
                 }
             }
+            --num_satellites;
         }
     }
     // no three satellites met the criteria 
