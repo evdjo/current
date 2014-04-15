@@ -42,7 +42,7 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=-Wall
+CFLAGS=-m64 -Wall
 
 # CC Compiler Flags
 CCFLAGS=-Werror -Wall

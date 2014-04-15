@@ -40,6 +40,7 @@
       </toolsSet>
       <compileType>
         <cTool>
+          <architecture>2</architecture>
           <commandlineTool>gcc</commandlineTool>
           <commandLine>-Wall</commandLine>
           <warningLevel>3</warningLevel>
