@@ -17,11 +17,15 @@ private:
      */
     unsigned short possible_values[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     /**
-     * Integer to keep track of how many possible valule are there left.
+     * Integer to keep track of how many possible value are there left.
      */
     int count_possible_values = 9;
 
     bool remove(const unsigned short& removed_value) {
+        if (removed_value <= static_cast<unsigned short> (0) ||
+                removed_value >= static_cast<unsigned short> (10)) {
+            throw invalid_argument("Removed value must be in the range 1-9");
+        }
         if (solved()) {
             throw logic_error("Only one value left - cannot remove!");
         }
@@ -52,7 +56,7 @@ private:
 
         for (unsigned short i = 0; i < 9; i++) {
             if (possible_values[i] != 0) {
-                return possible_values[i+1];
+                return possible_values[i + 1];
             }
         }
 
