@@ -14,7 +14,7 @@ class CellPossibleValuesTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(CellPossibleValuesTest);
 
     CPPUNIT_TEST(last_value_throws_logical_error);
-    CPPUNIT_TEST(testFailedMethod);
+    CPPUNIT_TEST(remove_8_times_causes_cell_to_be_solved);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -26,7 +26,7 @@ public:
 
 private:
     void last_value_throws_logical_error();
-    void testFailedMethod();
+    void remove_8_times_causes_cell_to_be_solved();
 };
 
 #endif	/* CELLPOSSIBLEVALUESTEST_H */
