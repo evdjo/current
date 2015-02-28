@@ -35,7 +35,7 @@ void CellPossibleValuesTest::last_value_throws_logical_error() {
     CPPUNIT_FAIL("Should have thrown logical_error!");
 }
 
-void CellPossibleValuesTest::testFailedMethod() {
+void CellPossibleValuesTest::remove_8_times_causes_cell_to_be_solved() {
     CellPossibleValues cpv;
     for(unsigned short i = 0 ; i < 7 ; ++i) {
         CPPUNIT_ASSERT_MESSAGE("Should have been able to remove!",cpv.remove(i));
