@@ -1,10 +1,3 @@
-/*
- * File:   SudokuTestRunner.cpp
- * Author: evdjoint
- *
- * Created on 28-Feb-2015, 10:50:28
- */
-
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>

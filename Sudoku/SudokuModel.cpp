@@ -16,22 +16,24 @@ void SudokuModel::solve() {
 
 SudokuModel::SudokuModel(const string& filename) {
     ifstream * input_stream = open_sudoku_file(filename);
-    unsigned short ** arr = *read(input_stream);
+    u_short ** arr = *read(input_stream);
 
     the_sudoku = new SudokuCell*[9];
-    for (unsigned short row = 0; row < 9; row++) {
+    for (u_short row = 0; row < 9; row++) {
         the_sudoku[row] = new SudokuCell[9];
-        for (unsigned short column = 0; column < 9; column++) {
-            the_sudoku[row][column].value = arr[row][column];
+        for (u_short column = 0; column < 9; column++) {
+            get_cell_value(row, column) = arr[row][column];
         }
     }
 }
 
 SudokuModel::~SudokuModel() {
-    for (unsigned short row = 0; row < 9; row++) {
+    for (u_short row = 0; row < 9; row++) {
         if (the_sudoku[row] != NULL)
             delete[] the_sudoku[row];
     }
+    if (the_sudoku != NULL)
+        delete[] the_sudoku;
 }
 
 ifstream * SudokuModel::open_sudoku_file(const string & filename) {
@@ -43,18 +45,20 @@ ifstream * SudokuModel::open_sudoku_file(const string & filename) {
     return input;
 }
 
-unsigned short *** SudokuModel::read(ifstream * input) {
+u_short *** SudokuModel::read(ifstream * input) {
 
     string line;
-    unsigned short *** array_ptr = new unsigned short**;
-    (*array_ptr) = new unsigned short*[9];
+    u_short *** array_ptr = new u_short**;
+    (*array_ptr) = new u_short*[9];
 
     for (int row = 0; row < 9; ++row) {
         getline(*input, line);
-        (*array_ptr)[row] = new unsigned short[9];
+        (*array_ptr)[row] = new u_short[9];
         for (int column = 0; column < 9; ++column) {
             const char token = line.at(column);
-            if (token != ' ') (*array_ptr)[row][column] = (unsigned short) strtoul(&token, NULL, 0);
+            if (token != ' ')
+                (*array_ptr)[row][column] =
+                    (u_short) strtoul(&token, NULL, 0);
         }
     }
     input->close();
@@ -64,32 +68,37 @@ unsigned short *** SudokuModel::read(ifstream * input) {
 void SudokuModel::print() {
     for (int row = 0; row < 9; row++) {
         for (int column = 0; column < 9; column++) {
-            cout << the_sudoku[row][column].value;
-            if ((8 - column) % 3 == 0) cout << " "; // print space each three columns
+            cout << get_cell_value(row, column);
+            // print space each three columns
+            if ((8 - column) % 3 == 0) cout << " ";
         }
         cout << endl;
-        if ((8 - row) % 3 == 0) cout << endl; // print new line each three columns
+        // print new line each three columns
+        if ((8 - row) % 3 == 0) cout << endl;
+
     }
 }
 
 void SudokuModel::print_possible_values() {
 
-    for (unsigned short i = 0; i < 9; i++) {
-        for (unsigned short z = 0; z < 9; z++) {
+    for (u_short row = 0; row < 9; row++) {
+        for (u_short column = 0; column < 9; column++) {
 
-            if (the_sudoku[i][z].is_unknown()) {
-                cout << "The cell at row  " << i << " and column " << z << " could contain :   ";
-                the_sudoku[i][z].cpv.print_possible_values();
+            cout << "The cell at row  ";
+            cout << row;
+            cout << " and column ";
+            cout << column;
+
+            if (get_cell(row, column).is_unknown()) {
+                cout << " could contain :   ";
+                get_cell(row, column).cpv.print_possible_values();
                 cout << endl;
             } else {
-                cout << "The cell at row  " << i << " and column " << z << "  contains     :    ";
-                cout << the_sudoku[i][z].value;
+                cout << " contains      :    ";
+                cout << get_cell_value(row, column);
                 cout << endl;
             }
-
-
         }
-
     }
 }
 
@@ -99,113 +108,108 @@ void SudokuModel::print_possible_values() {
  * @return were any candidates removed.
  */
 bool SudokuModel::eliminate_rows() {
-    int changes_occurred = 0;
-    for (unsigned short current_row = 0; current_row < 9; current_row++) {
-        for (unsigned short current_clmn = 0; current_clmn < 9; current_clmn++) {
+    bool change_occurred = false;
+    for (u_short row = 0; row < 9; row++) {
+        for (u_short column = 0; column < 9; column++) {
 
-            unsigned short current_value = the_sudoku[current_row][current_clmn].value;
+            u_short& val = get_cell_value(row, column);
 
-            if (current_value != 0
-                    && eliminate_row(current_value, current_row, current_clmn)) {
-                changes_occurred++;
+            if (val != 0 && eliminate_row(val, row, column))
+                change_occurred = true;
+
+        }
+    }
+    return change_occurred;
+}
+
+bool SudokuModel::eliminate_columns() {
+    bool change_occurred = false;
+    for (u_short row = 0; row < 9; row++) {
+        for (u_short column = 0; column < 9; column++) {
+
+            u_short val = get_cell_value(row, column);
+
+            if (val != 0 && eliminate_column(val, row, column)) {
+                change_occurred = true;
             }
         }
     }
-    return changes_occurred != 0;
+    return change_occurred;
+}
+
+bool SudokuModel::eliminate_3x3squares() {
+    bool change_occurred = false;
+    for (u_short current_row = 0; current_row < 9; current_row++) {
+        for (u_short current_clmn = 0; current_clmn < 9; current_clmn++) {
+
+            u_short current_value = the_sudoku[current_row][current_clmn].value;
+            if (current_value != 0
+                    && eliminate_3x3square
+                    (current_value, current_row, current_clmn)) {
+                change_occurred++;
+            }
+        }
+    }
+    return change_occurred;
 }
 
 /**
  * Iterate over a single row. 
  * Exclude current_value from each cell's list of candidates.
  * @param current_value the value to exlude
- * @param current_row the row to iterate over
- * @param current_clmn the column that holds current_value
+ * @param row the row to iterate over
+ * @param column the column that holds current_value
  * @return  whether values were excluded
  */
-bool SudokuModel::eliminate_row(const unsigned short& current_value,
-        const unsigned short& current_row, const unsigned short& current_clmn) {
-    int changes_occurred = 0;
+bool SudokuModel::eliminate_row(const u_short& value,
+        const u_short& row, const u_short& column) {
+    bool change_occurred = false;
 
-    for (unsigned short i = 0; i < 9; i++) {
-        if (current_clmn != i // when this is true we've gotten to the cell we're getting the current_value from - skip this cell
-                && the_sudoku[current_row][i].is_unknown()) {
-            if (the_sudoku[current_row][i].remove(current_value)) {
-                changes_occurred++;
-            }
+    for (u_short column_ = 0; column_ < 9; column_++) {
+        if (column != column_
+                && get_cell(row, column_).is_unknown()
+                && get_cell(row, column_).remove_candidate(value)) {
+            change_occurred = true;
         }
     }
-
-    return changes_occurred != 0;
+    return change_occurred;
 }
 
-bool SudokuModel::eliminate_columns() {
-    int changes_occurred = 0;
-    for (unsigned short current_row = 0; current_row < 9; current_row++) {
-        for (unsigned short current_clmn = 0; current_clmn < 9; current_clmn++) {
+bool SudokuModel::eliminate_column(const u_short& current_value,
+        const u_short& row, const u_short& column) {
+    bool change_occurred = false;
 
-            unsigned short current_value = the_sudoku[current_row][current_clmn].value;
+    for (u_short row_ = 0; row_ < 9; row_++) {
 
-            if (current_value != 0
-                    && eliminate_column(current_value, current_row, current_clmn)) {
-                changes_occurred++;
-            }
+        if (row != row_
+                && get_cell(row_, column).is_unknown()
+                && get_cell(row_, column).remove_candidate(current_value)) {
+            change_occurred = true;
         }
     }
-    return changes_occurred != 0;
+    return change_occurred;
 }
 
-bool SudokuModel::eliminate_column(const unsigned short& current_value,
-        const unsigned short& current_row, const unsigned short& current_clmn) {
-    int changes_occurred = 0;
+bool SudokuModel::eliminate_3x3square(const u_short& current_value,
+        const u_short& row, const u_short& column) {
+    bool change_occurred = false;
 
-    for (unsigned short i = 0; i < 9; i++) {
-        if (current_row != i // when this is true we've gotten to the cell we're getting the current_value from - skip this cell
-                && the_sudoku[i][current_clmn].is_unknown()) {
-            if (the_sudoku[i][current_clmn].remove(current_value)) {
-                changes_occurred++;
+    // for 0-1-2 return 0 for 3-4-5 return 1, for 6-7-8 return 2
+    // used to locate the local 3x3 square begin index row and column
+    u_short row_0 = (u_short) ((row / 3) * 3);
+    u_short clmn_0 = (u_short) ((column / 3) * 3);
+
+    for (u_short row_ = row_0; row_ < row_0 + 3; row_++) {
+        for (u_short column_ = clmn_0; column_ < clmn_0 + 3; column_++) {
+
+
+            if (row != row_ && column != column_
+                    && get_cell(row_, column_).is_unknown()
+                    && get_cell(row_, column_).remove_candidate(current_value)) {
+                change_occurred = true;
             }
         }
     }
-
-    return changes_occurred != 0;
-}
-
-bool SudokuModel::eliminate_3x3squares() {
-    int changes_occurred = 0;
-    for (unsigned short current_row = 0; current_row < 9; current_row++) {
-        for (unsigned short current_clmn = 0; current_clmn < 9; current_clmn++) {
-
-            unsigned short current_value = the_sudoku[current_row][current_clmn].value;
-            if (current_value != 0
-                    && eliminate_3x3square(current_value, current_row, current_clmn)) {
-                changes_occurred++;
-            }
-        }
-    }
-    return changes_occurred != 0;
-
-}
-
-bool SudokuModel::eliminate_3x3square(const unsigned short& current_value,
-        const unsigned short& current_row, const unsigned short& current_clmn) {
-    int changes_occurred = 0;
-
-    unsigned short square_row_start = (unsigned short) ((current_row / 3) * 3); // for 0, 1 and 2 return 0, for 3,4 and 5  return 1
-    unsigned short square_clmn_start = (unsigned short) ((current_clmn / 3) * 3); // for 6, 7 and 8 return 2
-
-    for (unsigned short local_row = square_row_start; local_row < square_row_start + 3; local_row++) {
-        for (unsigned short local_clmn = square_clmn_start; local_clmn < square_clmn_start + 3; local_clmn++) {
-
-
-            if (current_row != local_row && current_clmn != local_clmn) {
-                if (the_sudoku[local_row][local_clmn].is_unknown()) {
-                    if (the_sudoku[local_row][local_clmn].remove(current_value)) {
-                        changes_occurred++;
-                    }
-                }
-            }
-        }
-    }
-    return changes_occurred != 0;
+    return change_occurred;
 }
 

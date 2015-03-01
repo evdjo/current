@@ -21,16 +21,30 @@ private:
      */
     int count_possible_values = 9;
 
-    bool remove(const unsigned short& removed_value) {
-        if (removed_value <= static_cast<unsigned short> (0) ||
-                removed_value >= static_cast<unsigned short> (10)) {
-            throw invalid_argument("Removed value must be in the range 1-9");
+    /**
+     * Checks that a value is within the 1-9 range.
+     * Throw invalid argument if the value is not the range.    
+     * @param checked_value the value to check
+     */
+    void assert_value_within_range(const unsigned short& checked_value) {
+        if (checked_value <= static_cast<unsigned short> (0) ||
+                checked_value >= static_cast<unsigned short> (10)) {
+            throw invalid_argument("Value must be in the range 1-9"
+                    " - actual value " + to_string(checked_value));
         }
+    }
+
+    unsigned short& get_value(const unsigned short& value) {     
+        return possible_values[value - 1 ];
+    }
+
+    bool remove(const unsigned short& removed_value) {
+        assert_value_within_range(removed_value);
         if (solved()) {
             throw logic_error("Only one value left - cannot remove!");
         }
-        if (possible_values[removed_value - 1] == removed_value) {
-            possible_values[removed_value - 1] = 0;
+        if (get_value(removed_value) == removed_value) {
+            get_value(removed_value) = 0; 
             --count_possible_values;
             return true;
         }
@@ -56,7 +70,7 @@ private:
 
         for (unsigned short i = 0; i < 9; i++) {
             if (possible_values[i] != 0) {
-                return possible_values[i + 1];
+                return possible_values[i];
             }
         }
 

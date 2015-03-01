@@ -18,7 +18,7 @@ class SudokuCell {
     virtual ~SudokuCell() {
     }
 
-    bool remove(const unsigned short& removed_value) {
+    bool remove_candidate(const unsigned short& removed_value) {
         bool removal_occurred = cpv.remove(removed_value);
         if (removal_occurred && cpv.solved()) {
             value = cpv.last_value();

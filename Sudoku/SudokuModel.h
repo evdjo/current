@@ -3,6 +3,8 @@
 #include "SudokuCell.h"
 #include <string>
 
+typedef unsigned short u_short;
+
 using namespace std;
 
 class SudokuModel {
@@ -10,7 +12,7 @@ public:
     void solve();
     SudokuModel(const string& filename);
     virtual ~SudokuModel();
-    
+
     /**
      * Utility method that prints the sudoku.
      */
@@ -38,17 +40,25 @@ private:
      * @param input the ifstream pointer which leads us to the file
      * @return Pointer to 9x9 array containing the sudoku
      */
-    unsigned short *** read(ifstream * input);
+    u_short *** read(ifstream * input);
+
+    inline u_short& get_cell_value(const int& row, const int& column) {
+        return get_cell(row, column).value;
+    }
+
+    inline SudokuCell& get_cell(const int& row, const int& column) {
+        return the_sudoku[row][column];
+    }
 
     bool eliminate_rows();
     bool eliminate_columns();
     bool eliminate_3x3squares();
-    bool eliminate_3x3square(const unsigned short& current_value,
-            const unsigned short& current_row, const unsigned short& current_clmn);
-    bool eliminate_column(const unsigned short& current_value,
-            const unsigned short& current_row, const unsigned short& current_clmn);
-    bool eliminate_row(const unsigned short& current_value,
-            const unsigned short& row_index, const unsigned short& clmn_index);
+    bool eliminate_3x3square(const u_short& value,
+            const u_short& row, const u_short& column);
+    bool eliminate_column(const u_short& value,
+            const u_short& row, const u_short& column);
+    bool eliminate_row(const u_short& value,
+            const u_short& row, const u_short& column);
 
 };
 
