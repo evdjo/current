@@ -17,3 +17,8 @@
 /CppApplication_2/dist/
 /bored/dist/
 /bored/build/
+/sudoku_solver/sudoku_solver/build/
+/sudoku_solver/sudoku_solver/dist/
+/Sudoku/build/*
+/Sudoku/dist/*
+Sudoku/nbproject/*

@@ -1,24 +1,22 @@
 #ifndef SUDOKUCELL_H
 #define	SUDOKUCELL_H
-#include "CellPossibleValues.h"
 #include <stdexcept>
+#include "SudokuUtils.h"
+#include "CellPossibleValues.h"
 
 using namespace std;
 
-class SudokuCell {
+class SudokuCell final {
     friend class SudokuModel;
 
     CellPossibleValues cpv;
-    unsigned short value;
+    u_short value;
 
     SudokuCell() {
         value = 0;
     }
 
-    virtual ~SudokuCell() {
-    }
-
-    bool remove_candidate(const unsigned short& removed_value) {
+    bool remove_candidate(const u_short& removed_value) {
         bool removal_occurred = cpv.remove(removed_value);
         if (removal_occurred && cpv.solved()) {
             value = cpv.last_value();
@@ -32,4 +30,3 @@ class SudokuCell {
 };
 
 #endif	/* SUDOKUCELL_H */
-
