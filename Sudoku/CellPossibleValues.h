@@ -17,13 +17,13 @@ private:
      */
     unsigned short possible_values[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
     /**
-     * Integer to keep track of how many possible value are there left.
+     * To keep track of how many possible values are left. When this number
+     * drops to 1, it means we have solved the cell.
      */
     int count_possible_values = 9;
 
     /**
-     * Checks that a value is within the 1-9 range.
-     * Throw invalid argument if the value is not the range.    
+     * Verifies that the passed value is within the 1-9 range.
      * @param checked_value the value to check
      */
     void assert_value_within_range(const unsigned short& checked_value) {
