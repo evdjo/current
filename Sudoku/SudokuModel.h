@@ -33,12 +33,12 @@ private:
         return the_sudoku[row][column];
     }
 
-    bool eliminate(); 
-    bool eliminate_3x3square(const u_short& value,
+    bool eliminate();
+    bool eliminate_3x3square(const u_short& val,
             const u_short& row, const u_short& column);
-    bool eliminate_column(const u_short& value,
+    bool eliminate_column(const u_short& val,
             const u_short& row, const u_short& column);
-    bool eliminate_row(const u_short& value,
+    bool eliminate_row(const u_short& val,
             const u_short& row, const u_short& column);
 
 };

@@ -1,6 +1,4 @@
-#ifndef CELLPOSSIBLEVALUESTEST_H
-#define	CELLPOSSIBLEVALUESTEST_H
-
+#include "../SudokuModel.h"
 #include <cppunit/extensions/HelperMacros.h>
 
 class CellPossibleValuesTest : public CPPUNIT_NS::TestFixture {
@@ -25,6 +23,3 @@ private:
     void remove_with_invalid_args_throws_invalid_arg();
     void remove_9_times_throws_logical_error();
 };
-
-#endif	/* CELLPOSSIBLEVALUESTEST_H */
-
