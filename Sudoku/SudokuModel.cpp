@@ -1,29 +1,33 @@
+#include <new>
+
 #include "SudokuModel.h"
 
-void SudokuModel::solve() {
+SudokuModel::SudokuModel() {
+}
 
+SudokuModel::SudokuModel(const string& filename) {
+
+    try {
+        u_short ** arr = *(SudokuUtils::read(filename));
+        the_sudoku = new SudokuCell*[9];
+        for (u_short row = 0; row < 9; row++) {
+            the_sudoku[row] = new SudokuCell[9];
+            for (u_short column = 0; column < 9; column++) {
+                get_cell_value(row, column) = arr[row][column];
+            }
+        }
+    } catch (const bad_alloc& ba) {
+        cerr << "Could not allocate memory for the sudoku...";
+        throw ba;
+    }
+}
+
+void SudokuModel::solve() {
     print();
     while (eliminate());
     cout << endl << endl;
     print_possible_values();
     print();
-}
-
-SudokuModel::SudokuModel(const string& filename) {
-    ifstream * input_stream = SudokuUtils::open_sudoku_file(filename);
-    u_short ** arr;
-    try {
-        arr = *(SudokuUtils::read(input_stream));
-    } catch (const std::bad_alloc& ba) {
-        std::cerr << "bad_alloc caught: " << ba.what() << '\n';
-    }
-    the_sudoku = new SudokuCell*[9];
-    for (u_short row = 0; row < 9; row++) {
-        the_sudoku[row] = new SudokuCell[9];
-        for (u_short column = 0; column < 9; column++) {
-            get_cell_value(row, column) = arr[row][column];
-        }
-    }
 }
 
 SudokuModel::~SudokuModel() {
@@ -52,23 +56,31 @@ void SudokuModel::print() {
 void SudokuModel::print_possible_values() {
 
     for (u_short row = 0; row < 9; row++) {
+        cout << endl;
         for (u_short column = 0; column < 9; column++) {
+            cout << '[' << row;
+            cout << "x";
+            cout << column << ']';
+            cout << "=";
 
-            cout << "The cell at row  ";
-            cout << row;
-            cout << " and column ";
-            cout << column;
-
-            if (get_cell(row, column).is_unknown()) {
-                cout << " could contain :   ";
+            if (get_cell(row, column).is_unknown())
                 get_cell(row, column).cpv.print_possible_values();
-                cout << endl;
-            } else {
-                cout << " contains      :    ";
-                cout << get_cell_value(row, column);
-                cout << endl;
+            else {
+                for (u_short i = 1; i < 10; i++)
+                    if (i == get_cell_value(row, column))
+                        cout << get_cell_value(row, column);
+                    else
+                        cout << " ";
             }
+            cout << "   ";
+
+            // print space each three columns
+            if ((8 - column) % 3 == 0) cout << "   ";
         }
+
+        // print new line each three columns
+        if ((8 - row) % 3 == 0) cout << endl;
+
     }
 }
 
@@ -85,11 +97,15 @@ bool SudokuModel::eliminate() {
 
             u_short& val = get_cell_value(row, column);
 
-            if (val != 0
-                    && (eliminate_row(val, row, column)
-                    || eliminate_column(val, row, column)
-                    || eliminate_3x3square(val, row, column)))
-                change_occurred = true;
+            if (val != 0) {
+                bool change_row = eliminate_row(val, row, column);
+                bool change_column = eliminate_column(val, row, column);
+                bool change_3x3 = eliminate_3x3square(val, row, column);
+                if (change_row || change_column || change_3x3)
+                    change_occurred = true;
+
+            }
+
 
 
 
@@ -116,6 +132,7 @@ bool SudokuModel::eliminate_row(const u_short& val,
         if (column != column_ // unnecessary check ?
                 && get_cell(row, column_).is_unknown()
                 && get_cell(row, column_).remove_candidate(val)) {
+
             change_occurred = true;
         }
     }
@@ -130,6 +147,7 @@ bool SudokuModel::eliminate_column(const u_short& val,
         if (row != row_ // unnecessary check ?
                 && get_cell(row_, column).is_unknown()
                 && get_cell(row_, column).remove_candidate(val)) {
+
             change_occurred = true;
         }
     }

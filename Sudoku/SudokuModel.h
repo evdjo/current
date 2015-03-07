@@ -9,11 +9,17 @@
 using namespace std;
 
 class SudokuModel final {
+    friend class SudokuAlgorithmsTest;
 public:
     void solve();
     explicit SudokuModel(const string& filename);
     virtual ~SudokuModel();
+    
+    
 private:
+    SudokuCell ** the_sudoku;
+    SudokuModel();
+    
     /**
      * Utility method that prints the sudoku.
      */
@@ -23,7 +29,7 @@ private:
      * or if unknown it prints the candidates.
      */
     void print_possible_values();
-    SudokuCell ** the_sudoku;
+    
 
     inline u_short& get_cell_value(const u_short& row, const u_short& column) {
         return get_cell(row, column).value;

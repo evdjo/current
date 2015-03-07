@@ -8,6 +8,7 @@ using namespace std;
 
 class SudokuCell final {
     friend class SudokuModel;
+    friend class SudokuAlgorithmsTest;
 
     CellPossibleValues cpv;
     u_short value;

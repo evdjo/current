@@ -6,10 +6,11 @@
 
 using namespace std;
 
-class CellPossibleValues final{
+class CellPossibleValues final {
     friend class SudokuCell;
     friend class SudokuModel;
     friend class CellPossibleValuesTest;
+    friend class SudokuAlgorithmsTest;
 
     /**
      * Array to keep track of the possible values for a cell. 
@@ -65,26 +66,18 @@ class CellPossibleValues final{
      non zero value
      */
     u_short last_value() {
+        if (!solved()) throw logic_error("Not solved yet!");
 
-        if (!solved()) {
-            throw logic_error("Not solved yet!");
-        }
-
-        for (u_short i = 0; i < 9; i++) {
-            if (possible_values[i] != 0) {
-                return possible_values[i];
-            }
-        }
+        for (u_short i = 0; i < 9; i++)
+            if (possible_values[i] != 0) return possible_values[i];
 
         throw logic_error("Could not find the value!");
     }
 
     void print_possible_values() {
-        for (u_short i = 0; i < 9; i++) {
-            if (possible_values[i] != 0) {
-                cout << possible_values[i];
-            }
-        }
+        for (u_short i = 0; i < 9; i++)
+            if (possible_values[i] != 0) cout << possible_values[i];
+            else cout << " ";
     }
 };
 

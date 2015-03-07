@@ -16,18 +16,12 @@ private:
     SudokuUtils();
 public:
     /**
-     * Get a handle of the sudoku file.
-     * @param filename path to the file containing the sudoku
-     * @return ifstream pointer to the file
-     */
-   static ifstream * open_sudoku_file(const string & filename);
-    /**
      * Parses the sudoku input file and returns pointer to 
      * a 9x9 array of shorts ints. Each unknown value is represented as 0.
      * @param input the ifstream pointer which leads us to the file
      * @return Pointer to 9x9 array containing the sudoku
      */
-   static u_short *** read(ifstream * input);
+   static u_short *** read(const string & filename);
 #endif	/* SUDOKUUTILS_HPP */
 };
 

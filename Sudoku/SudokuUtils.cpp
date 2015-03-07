@@ -1,30 +1,27 @@
 #include "SudokuUtils.h"
 
-ifstream * SudokuUtils::open_sudoku_file(const string & filename) {
-    ifstream * input = new ifstream;
-    input->open(filename.c_str());
-    if (input == NULL) {
-        throw invalid_argument("File not found");
-    }
-    return input;
-}
+u_short *** SudokuUtils::read(const string & filename) {
 
-u_short *** SudokuUtils::read(ifstream * input) {
-
+    ifstream input(filename);
     string line;
     u_short *** array_ptr = new u_short**;
     (*array_ptr) = new u_short*[9];
 
-    for (int row = 0; row < 9; ++row) {
-        getline(*input, line);
-        (*array_ptr)[row] = new u_short[9];
-        for (int column = 0; column < 9; ++column) {
-            const char token = line.at(column);
-            if (token != ' ')
-                (*array_ptr)[row][column] =
-                    (u_short) strtoul(&token, NULL, 0);
+    try {
+        for (int row = 0; row < 9; ++row) {
+            getline(input, line);
+            (*array_ptr)[row] = new u_short[9];
+            for (int column = 0; column < 9; ++column) {
+                const char token = line.at(column);
+                if (token != ' ')
+                    (*array_ptr)[row][column] =
+                        static_cast<u_short> (strtoul(&token, NULL, 0));
+            }
         }
+        return array_ptr;
+    } catch (const bad_alloc& ba) {
+        cout << "OOM while reading the file" << endl;
+        throw ba;
     }
-    input->close();
-    return array_ptr;
+
 }
