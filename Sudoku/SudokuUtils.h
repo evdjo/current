@@ -1,7 +1,5 @@
 #ifndef SUDOKUUTILS_H
 #define	SUDOKUUTILS_H
-#ifndef SUDOKUUTILS_HPP
-#define	SUDOKUUTILS_HPP
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -12,7 +10,7 @@ typedef unsigned short u_short;
 using namespace std;
 
 class SudokuUtils final {
-private: 
+private:
     SudokuUtils();
 public:
     /**
@@ -21,8 +19,7 @@ public:
      * @param input the ifstream pointer which leads us to the file
      * @return Pointer to 9x9 array containing the sudoku
      */
-   static u_short *** read(const string & filename);
-#endif	/* SUDOKUUTILS_HPP */
+    static u_short *** read(const string & filename);  
 };
 
 #endif	/* SUDOKUUTILS_H */
