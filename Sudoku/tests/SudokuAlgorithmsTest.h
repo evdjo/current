@@ -19,11 +19,11 @@ public:
     void setUp();
     void tearDown();
     SudokuModel sm;
-    u_short expected_full[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    u expected_full[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
 private:
     void eliminate_row_test();
     void eliminate_column_test();
     void eliminate_3x3square_test();
-    void assert_eliminated(const u_short* expected,const SudokuCell& sc);
+    void assert_eliminated(const u* expected,const SudokuCell& sc);
 };

@@ -26,10 +26,10 @@ void SudokuAlgorithmsTest::tearDown() {
 
 void SudokuAlgorithmsTest::eliminate_row_test() {
     //set up
-    const u_short removed_value = 5;
-    const u_short expected[9] = {1, 2, 3, 4, 0, 6, 7, 8, 9};
-    u_short known_val_row = 3;
-    u_short known_val_column = 6;
+    const u removed_value = 5;
+    const u expected[9] = {1, 2, 3, 4, 0, 6, 7, 8, 9};
+    u known_val_row = 3;
+    u known_val_column = 6;
 
     // execute code under test
     sm.cell_val(known_val_row, known_val_column) = removed_value;
@@ -45,9 +45,9 @@ void SudokuAlgorithmsTest::eliminate_row_test() {
 
 void SudokuAlgorithmsTest::eliminate_column_test() {
     //set up
-    const u_short expected[9] = {1, 2, 3, 4, 5, 6, 0, 8, 9};
-    u_short known_val_row = 2;
-    u_short known_val_column = 6;
+    const u expected[9] = {1, 2, 3, 4, 5, 6, 0, 8, 9};
+    u known_val_row = 2;
+    u known_val_column = 6;
     sm.cell_val(known_val_row, known_val_column) = 7;
 
     // execute code under test
@@ -63,9 +63,9 @@ void SudokuAlgorithmsTest::eliminate_column_test() {
 
 void SudokuAlgorithmsTest::eliminate_3x3square_test() {
     //set up
-    const u_short expected[9] = {1, 0, 3, 4, 5, 6, 7, 8, 9};
-    u_short known_val_row = 3;
-    u_short known_val_column = 5;
+    const u expected[9] = {1, 0, 3, 4, 5, 6, 7, 8, 9};
+    u known_val_row = 3;
+    u known_val_column = 5;
     sm.cell_val(known_val_row, known_val_column) = 2;
 
     // execute code under test
@@ -84,10 +84,10 @@ void SudokuAlgorithmsTest::eliminate_3x3square_test() {
 }
 
 void SudokuAlgorithmsTest::
-assert_eliminated(const u_short* expected, const SudokuCell& sc) {
+assert_eliminated(const u* expected, const SudokuCell& sc) {
     for (int z = 0; z < 9; z++) {
-        u_short expected_val = expected[z];
-        u_short actual_val = sc.cc->candidates[z];
+        u expected_val = expected[z];
+        u actual_val = sc.cc->candidates[z];
         CPPUNIT_ASSERT_EQUAL(expected_val, actual_val);
     }
 }

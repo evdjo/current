@@ -11,7 +11,7 @@ class SudokuCell final {
     friend class SudokuAlgorithmsTest;
 
     CellCandidates *cc = NULL;
-    u_short val = 0;
+    u val = 0;
 
     SudokuCell() {
     }
@@ -22,7 +22,7 @@ class SudokuCell final {
      * @return was the value in the candidate list && was it removed?
      */
 
-    bool rm_candidate(const u_short& rm_val) {
+    bool rm_candidate(const u& rm_val) {
 
         if (!unknown()) exit(-1); // should never happen
 
@@ -31,30 +31,30 @@ class SudokuCell final {
         if (removal_occurred && cc->one_candidate_left()) {
             set_val(cc->last_value());
             delete cc;
-            cc = NULL;
+            cc = nullptr;
         }
         return removal_occurred;
     }
 
     /**
      * Sets the value to indicate that the cell was solved.
-     * @param val the value of the cell
+     * @param val_ the value of the cell
      */
-    void set_val(const u_short& val) {
-        this->val = val;
-        if (cc != NULL) {
+    void set_val(const u& val_) {
+        val = val_;
+        if (cc != nullptr) {
             delete cc;
-            cc = NULL;
+            cc = nullptr;
         }
     }
 
     /**
      * Check if the val is candidate for this cell.
-     * @param val the checked val
+     * @param val_ the checked val
      * @return is the val a candidate for this cell ?
      */
-    bool is_candidate(const u_short& val) {
-        return cc->candidate(val) == val;
+    bool is_candidate(const u& val_) {
+        return cc->candidate(val_) == val_;
     }
 
     /**
@@ -67,11 +67,11 @@ class SudokuCell final {
 
     /**
      * Initialise the cell value.
-     * @param val the cell value that this cell will have.
+     * @param val_ the cell value that this cell will have.
      */
-    void init_val(const u_short& val) {
-        this->val = val;
-        if (val == 0)
+    void init_val(const u& val_) {
+        val = val_;
+        if (val_ == 0)
             cc = new CellCandidates();
     }
 

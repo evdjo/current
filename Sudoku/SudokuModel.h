@@ -30,32 +30,34 @@ private:
      */
     void print_possible_values();
 
-    inline u_short cell_val(const u_short& row, const u_short& column) {
+    inline u& cell_val(const u& row, const u& column) {
         return cell(row, column).val;
     }
 
-    void set_cell_val(const u_short& row, const u_short& column,
-            const u_short& val) {
+    void set_cell_val(const u& row, const u& column,
+            const u& val) {
         cell(row, column).set_val(val);
         while (eliminate_known_vals());
     }
 
-    inline SudokuCell& cell(const u_short& row, const u_short& column) {
+    inline SudokuCell& cell(const u& row, const u& column) {
         return the_sudoku[row][column];
     }
 
     // Easy Techniques 
     bool eliminate_known_vals();
-    bool eliminate_3x3square(const u_short& val,
-            const u_short& row, const u_short& column);
-    bool eliminate_column(const u_short& val,
-            const u_short& row, const u_short& column);
-    bool eliminate_row(const u_short& val,
-            const u_short& row, const u_short& column);
+    bool eliminate_3x3square(const u& val,
+            const u& row, const u& column);
+    bool eliminate_column(const u& val,
+            const u& row, const u& column);
+    bool eliminate_row(const u& val,
+            const u& row, const u& column);
     bool hidden_singles_rows();
     bool hidden_singles_columns();
-    void check_cell_candidates(const u_short& row,
-            const u_short& column, u_short* values);
+    bool hidden_singles_3x3();
+    void count_occurences(const u& row,
+            const u& column, occurr_t* values);
+    bool lock_single_candidates(const occurr_t* occurrences);
 
     //Medium Techniques 
     bool naked_pairs();

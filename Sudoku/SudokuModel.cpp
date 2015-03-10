@@ -6,12 +6,12 @@ SudokuModel::SudokuModel() {
 SudokuModel::SudokuModel(const string& filename) {
 
     try {
-        u_short ** arr = *(SudokuUtils::read(filename));
+        u ** arr = *(SudokuUtils::read(filename));
         the_sudoku = new SudokuCell*[9];
-        for (u_short row = 0; row < 9; row++) {
+        for (u row = 0; row < 9; row++) {
             the_sudoku[row] = new SudokuCell[9];
-            for (u_short column = 0; column < 9; column++) {
-                u_short& val = arr[row][column];
+            for (u column = 0; column < 9; column++) {
+                u& val = arr[row][column];
                 the_sudoku[row][column].init_val(val);
             }
         }
@@ -22,7 +22,7 @@ SudokuModel::SudokuModel(const string& filename) {
 }
 
 SudokuModel::~SudokuModel() {
-    for (u_short row = 0; row < 9; row++) {
+    for (u row = 0; row < 9; row++) {
         if (the_sudoku[row] != NULL)
             delete[] the_sudoku[row];
     }
@@ -31,75 +31,95 @@ SudokuModel::~SudokuModel() {
 }
 
 void SudokuModel::solve() {
-    while (eliminate_known_vals());
-    cout << endl << endl;
-
-    cout << endl << endl;
-    hidden_singles_rows();
+    while (eliminate_known_vals() ||
+            hidden_singles_rows() ||
+            hidden_singles_columns() ||
+            hidden_singles_3x3());
+    
     print();
+
 
 }
 
 bool SudokuModel::hidden_singles_rows() {
     bool singles_found = false;
-    for (u_short row = 0; row < 9; ++row) {
-        u_short values[9]{0};
-        for (u_short column = 0; column < 9; ++column) {
+    for (u row = 0; row < 9; ++row) {
+        occurr_t occurrences[9];
+        for (u column = 0; column < 9; ++column) {
             if (!cell(row, column).unknown()) continue;
-            check_cell_candidates(row, column, values);
+            count_occurences(row, column, occurrences);
         }
 
-        for (u_short i = 0; i < 9; ++i) {
-            if (values[i] == 1) {
-                for (u_short column_ = 0; column_ < 9; ++column_) {
-                    SudokuCell& sc = cell(row, column_);
-                    if (sc.unknown() && sc.is_candidate(i + 1)) {
-                        set_cell_val(row, column_, i + 1);                        
-                        singles_found = true;
-                    }
-                }
-            }
-        }
+        singles_found = lock_single_candidates(occurrences)
+                ? true : singles_found;
+        if (singles_found) while (eliminate_known_vals());
+
     }
     return singles_found;
-}
-
-void SudokuModel::check_cell_candidates
-(const u_short& row, const u_short& column, u_short* values) {
-
-    SudokuCell& sc = cell(row, column);
-    for (u_short i = 0; i < 9; ++i) {
-
-        if (sc.is_candidate(i))
-            values[i]++;
-
-    }
 }
 
 bool SudokuModel::hidden_singles_columns() {
     bool singles_found = false;
-    for (u_short column = 0; column < 9; ++column) {
-        u_short values[9]{0};
-        for (u_short row = 0; row < 9; ++row) {
+    for (u column = 0; column < 9; ++column) {
+        occurr_t occurrences[9];
+        for (u row = 0; row < 9; ++row) {
             if (!cell(row, column).unknown()) continue;
-            check_cell_candidates(row, column, values);
+            count_occurences(row, column, occurrences);
         }
+        singles_found = lock_single_candidates(occurrences)
+                ? true : singles_found;
+        if (singles_found) while (eliminate_known_vals());
 
-        for (u_short i = 0; i < 9; ++i) {
-            if (values[i] == 1) {
-                for (u_short row_ = 0; row_ < 9; ++row_) {
-                    SudokuCell& sc = cell(row_, column);
-                    if (sc.unknown() && sc.is_candidate(i + 1)) {
-                        set_cell_val(row_, column, i + 1);
-                        singles_found = true;
-                    }
+    }
+    return singles_found;
+}
+
+bool SudokuModel::hidden_singles_3x3() {
+    bool singles_found = false;
+    for (u srow = 0; srow <= 6; srow += 3) {
+        for (u scmn = 0; scmn <= 6; scmn += 3) {
+
+            occurr_t occurrences[9];
+
+            for (u row = srow; row < srow + 3; ++row) {
+                for (u cmn = scmn; cmn < scmn + 3; ++cmn) {
+                    if (!cell(row, cmn).unknown()) continue;
+                    count_occurences(row, cmn, occurrences);
                 }
             }
+            singles_found = lock_single_candidates(occurrences)
+                    ? true : singles_found;
+            if (singles_found) while (eliminate_known_vals());
+
         }
     }
     return singles_found;
 }
 
+bool SudokuModel::
+lock_single_candidates(const occurr_t* ocr) {
+    bool singles_found = false;
+    for (u i = 0; i < 9; ++i) {
+        if (ocr[i].count == 1) {
+            singles_found = true;
+            cell(ocr[i].x, ocr[i].y).set_val(i + 1);
+        }
+    }
+    return singles_found;
+}
+
+void SudokuModel::count_occurences
+(const u& row, const u& column, occurr_t * occurrences) {
+
+    SudokuCell& sc = cell(row, column);
+    for (u i = 0; i < 9; ++i) {
+        if (sc.is_candidate(i + 1)) {
+            occurrences[i].count++;
+            occurrences[i].x = row;
+            occurrences[i].y = column;
+        }
+    }
+}
 
 /**
  * Iterate over the SudokuCells. For any known value, 
@@ -109,10 +129,10 @@ bool SudokuModel::hidden_singles_columns() {
  */
 bool SudokuModel::eliminate_known_vals() {
     bool change_occurred = false;
-    for (u_short row = 0; row < 9; ++row) {
-        for (u_short column = 0; column < 9; ++column) {
+    for (u row = 0; row < 9; ++row) {
+        for (u column = 0; column < 9; ++column) {
 
-            u_short val = cell_val(row, column);
+            u val = cell_val(row, column);
 
             if (val != 0) {
                 bool change_row = eliminate_row(val, row, column);
@@ -135,11 +155,11 @@ bool SudokuModel::eliminate_known_vals() {
  * @param column the column that holds current_value
  * @return  whether values were excluded
  */
-bool SudokuModel::eliminate_row(const u_short& val,
-        const u_short& row, const u_short& column) {
+bool SudokuModel::eliminate_row(const u& val,
+        const u& row, const u & column) {
     bool change_occurred = false;
 
-    for (u_short column_ = 0; column_ < 9; ++column_) {
+    for (u column_ = 0; column_ < 9; ++column_) {
         if (column != column_ // unnecessary check ?
                 && cell(row, column_).unknown()
                 && cell(row, column_).rm_candidate(val)) {
@@ -150,11 +170,11 @@ bool SudokuModel::eliminate_row(const u_short& val,
     return change_occurred;
 }
 
-bool SudokuModel::eliminate_column(const u_short& val,
-        const u_short& row, const u_short& column) {
+bool SudokuModel::eliminate_column(const u& val,
+        const u& row, const u & column) {
     bool change_occurred = false;
 
-    for (u_short row_ = 0; row_ < 9; ++row_) {
+    for (u row_ = 0; row_ < 9; ++row_) {
         if (row != row_ // unnecessary check ?
                 && cell(row_, column).unknown()
                 && cell(row_, column).rm_candidate(val)) {
@@ -165,17 +185,17 @@ bool SudokuModel::eliminate_column(const u_short& val,
     return change_occurred;
 }
 
-bool SudokuModel::eliminate_3x3square(const u_short& val,
-        const u_short& row, const u_short& column) {
+bool SudokuModel::eliminate_3x3square(const u& val,
+        const u& row, const u & column) {
     bool change_occurred = false;
 
     // for 0-1-2 return 0 * 3 for 3-4-5 return 1 * 3, for 6-7-8 return 2 * 3
     // used to locate the local 3x3 square begin index row and column
-    u_short row_0 = (u_short) ((row / 3) * 3);
-    u_short clmn_0 = (u_short) ((column / 3) * 3);
+    u row_0 = (u) ((row / 3) * 3);
+    u clmn_0 = (u) ((column / 3) * 3);
 
-    for (u_short row_ = row_0; row_ < (row_0 + 3); ++row_) {
-        for (u_short column_ = clmn_0; column_ < (clmn_0 + 3); ++column_) {
+    for (u row_ = row_0; row_ < (row_0 + 3); ++row_) {
+        for (u column_ = clmn_0; column_ < (clmn_0 + 3); ++column_) {
 
 
             if (row != row_ && column != column_ // unnecessary check ?
@@ -194,8 +214,8 @@ bool SudokuModel::naked_pairs() {
 }
 
 void SudokuModel::print() {
-    for (u_short row = 0; row < 9; row++) {
-        for (u_short column = 0; column < 9; column++) {
+    for (u row = 0; row < 9; row++) {
+        for (u column = 0; column < 9; column++) {
             cout << cell_val(row, column);
             // print space each three columns
             if ((8 - column) % 3 == 0) cout << " ";
@@ -209,9 +229,9 @@ void SudokuModel::print() {
 
 void SudokuModel::print_possible_values() {
 
-    for (u_short row = 0; row < 9; row++) {
+    for (u row = 0; row < 9; row++) {
         cout << endl;
-        for (u_short column = 0; column < 9; column++) {
+        for (u column = 0; column < 9; column++) {
             cout << '[' << row;
             cout << "x";
             cout << column << ']';
@@ -220,7 +240,7 @@ void SudokuModel::print_possible_values() {
             if (cell(row, column).unknown())
                 cell(row, column).print();
             else {
-                for (u_short i = 1; i < 10; i++)
+                for (u i = 1; i < 10; i++)
                     if (i == cell_val(row, column))
                         cout << cell_val(row, column);
                     else

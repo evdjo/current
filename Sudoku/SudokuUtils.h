@@ -5,7 +5,7 @@
 #include <string>
 #include <stdexcept>
 
-typedef unsigned short u_short;
+typedef unsigned short u;
 
 using namespace std;
 
@@ -19,8 +19,15 @@ public:
      * @param input the ifstream pointer which leads us to the file
      * @return Pointer to 9x9 array containing the sudoku
      */
-    static u_short *** read(const string & filename);  
+    static u *** read(const string & filename);
 };
+
+struct occurr_t {    
+    u count = 0;
+    u x = -1;
+    u y = -1;
+};
+
 
 #endif	/* SUDOKUUTILS_H */
 
