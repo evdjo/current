@@ -22,10 +22,10 @@ public:
     static u *** read(const string & filename);
 };
 
-struct occurr_t {    
+struct occurr_t {    // TODO make this into linked list of occurrences
     u count = 0;
-    u x = -1;
-    u y = -1;
+    u last_row = -1;
+    u last_column = -1;
 };
 
 

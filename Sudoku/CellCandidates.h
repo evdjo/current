@@ -37,21 +37,6 @@ class CellCandidates final {
     }
 
     /**
-     * Remove all but the passed not_rm value 
-     * from the candidate list.
-     * @param not_rm the only val to not remove
-     */
-
-    void remove_all(const u& not_rm) {
-        assert_value_within_range(not_rm);
-        for (u candidate_index = 0; candidate_index < 9; ++candidate_index) {
-            if (candidate_index != not_rm - 1) {
-                candidates[candidate_index] = 0;
-            }
-        }
-    }
-
-    /**
      * Remove the rm_val from the candidate list
      * @param rm_val the value to remove
      * @return whether the value was present & removed

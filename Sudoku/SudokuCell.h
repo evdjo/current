@@ -10,8 +10,8 @@ class SudokuCell final {
     friend class SudokuModel;
     friend class SudokuAlgorithmsTest;
 
-    CellCandidates *cc = NULL;
-    u val = 0;
+    CellCandidates *m_cc = NULL;
+    u m_val = 0;
 
     SudokuCell() {
     }
@@ -22,16 +22,17 @@ class SudokuCell final {
      * @return was the value in the candidate list && was it removed?
      */
 
+public:
     bool rm_candidate(const u& rm_val) {
 
         if (!unknown()) exit(-1); // should never happen
 
-        bool removal_occurred = cc->remove(rm_val);
+        bool removal_occurred = m_cc->remove(rm_val);
 
-        if (removal_occurred && cc->one_candidate_left()) {
-            set_val(cc->last_value());
-            delete cc;
-            cc = nullptr;
+        if (removal_occurred && m_cc->one_candidate_left()) {
+            set_val(m_cc->last_value());
+            delete m_cc;
+            m_cc = nullptr;
         }
         return removal_occurred;
     }
@@ -41,10 +42,10 @@ class SudokuCell final {
      * @param val_ the value of the cell
      */
     void set_val(const u& val_) {
-        val = val_;
-        if (cc != nullptr) {
-            delete cc;
-            cc = nullptr;
+        m_val = val_;
+        if (m_cc != nullptr) {
+            delete m_cc;
+            m_cc = nullptr;
         }
     }
 
@@ -54,7 +55,7 @@ class SudokuCell final {
      * @return is the val a candidate for this cell ?
      */
     bool is_candidate(const u& val_) {
-        return cc->candidate(val_) == val_;
+        return m_cc->candidate(val_) == val_;
     }
 
     /**
@@ -62,7 +63,7 @@ class SudokuCell final {
      * @return is the cell value unknown
      */
     bool unknown() {
-        return val == 0;
+        return m_val == 0;
     }
 
     /**
@@ -70,21 +71,28 @@ class SudokuCell final {
      * @param val_ the cell value that this cell will have.
      */
     void init_val(const u& val_) {
-        val = val_;
+        m_val = val_;
         if (val_ == 0)
-            cc = new CellCandidates();
+            m_cc = new CellCandidates();
     }
 
     /**
      * Print the possible candidates of this cell
      */
     void print() {
-        cc->print_possible_values();
+        m_cc->print_possible_values();
+    }
+
+    /**
+     * @return the value of the cell
+     */
+    u val() {
+        return m_val;
     }
 
     ~SudokuCell() {
-        if (cc != NULL)
-            delete cc;
+        if (m_cc != NULL)
+            delete m_cc;
     }
 
 };

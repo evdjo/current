@@ -87,7 +87,7 @@ void SudokuAlgorithmsTest::
 assert_eliminated(const u* expected, const SudokuCell& sc) {
     for (int z = 0; z < 9; z++) {
         u expected_val = expected[z];
-        u actual_val = sc.cc->candidates[z];
+        u actual_val = sc.m_cc->candidates[z];
         CPPUNIT_ASSERT_EQUAL(expected_val, actual_val);
     }
 }
