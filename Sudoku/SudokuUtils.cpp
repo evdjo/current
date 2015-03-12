@@ -3,6 +3,9 @@
 u *** SudokuUtils::read(const string & filename) {
 
     ifstream input(filename);
+    if(!input.good()) {
+        throw logic_error("Sudoku file not found");
+    }
     string line;
     u *** array_ptr = new u**;
     (*array_ptr) = new u*[9];

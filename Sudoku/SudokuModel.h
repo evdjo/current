@@ -12,17 +12,9 @@ public:
     void solve();
     explicit SudokuModel(const string& filename);
     virtual ~SudokuModel();
-    /**
-     * Utility method that prints the sudoku.
-     */
+   
     void print();
-
-    /**
-     * Utility method that prints either the cell value,
-     * or if unknown it prints the candidates.
-     */
     void print_possible_values();
-
 
 private:
     SudokuCell ** the_sudoku;

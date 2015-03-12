@@ -18,7 +18,7 @@ SudokuModel::SudokuModel(const string& filename) {
     } catch (const bad_alloc& ba) {
         cerr << "Could not allocate memory for the sudoku...";
         throw ba;
-    }
+    } 
 }
 
 SudokuModel::~SudokuModel() {

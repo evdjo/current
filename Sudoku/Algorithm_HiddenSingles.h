@@ -29,8 +29,8 @@ private:
     }
     
     void count_occurences(const u& row,
-            const u& column, occurr_t* values);
-    bool lock_single_candidates(const occurr_t* occurrences);   
+            const u& column, occurences_list* values);
+    bool lock_single_candidates(const occurences_list* occurrences);   
    
 
 };

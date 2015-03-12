@@ -1,11 +1,10 @@
 #include "Algorithm_NakedSingles.h"
 
-Algorithm_NakedSingles::Algorithm_NakedSingles(SudokuCell ** sudoku) :
-the_sudoku(sudoku) {
-};
+Algorithm_NakedSingles::
+Algorithm_NakedSingles(SudokuCell ** sudoku)
+: the_sudoku(sudoku) {};
 
-Algorithm_NakedSingles::~Algorithm_NakedSingles() {
-};
+Algorithm_NakedSingles::~Algorithm_NakedSingles() {};
 
 /**
  * Iterate over the SudokuCells. For any known value, 
@@ -13,22 +12,29 @@ Algorithm_NakedSingles::~Algorithm_NakedSingles() {
  *  on the same row, column or local 3x3 square.
  * @return were any candidates removed.
  */
-bool Algorithm_NakedSingles::eliminate_known_vals() {
+bool Algorithm_NakedSingles::
+eliminate_known_vals() {
+    check_sudoku();
     bool change_occurred = false;
     for (u row = 0; row < 9; ++row) {
         for (u column = 0; column < 9; ++column) {
             u val = cell_val(row, column);
             if (val != 0) {
-                bool change_row = eliminate_row(val, row, column);
-                bool change_column = eliminate_column(val, row, column);
-                bool change_3x3 = eliminate_3x3square(val, row, column);
-                if (change_row || change_column || change_3x3)
-                    change_occurred = true;
-
+                change_occurred = eliminate_val(row, column, val) ?
+                        true : change_occurred;
             }
         }
     }
     return change_occurred;
+}
+
+bool Algorithm_NakedSingles::
+eliminate_val(const u& row, const u& column, const u& val) {
+    check_sudoku();
+    bool _rows = eliminate_row(row, column, val);
+    bool _columns = eliminate_column(row, column, val);
+    bool _3x3 = eliminate_3x3square(row, column, val);
+    return (_rows || _columns || _3x3);
 }
 
 /**
@@ -39,8 +45,8 @@ bool Algorithm_NakedSingles::eliminate_known_vals() {
  * @param column the column that holds current_value
  * @return  whether values were excluded
  */
-bool Algorithm_NakedSingles::eliminate_row(const u& val,
-        const u& row, const u & column) {
+bool Algorithm_NakedSingles::
+eliminate_row(const u& row, const u & column, const u& val) {
     bool change_occurred = false;
 
     for (u column_ = 0; column_ < 9; ++column_) {
@@ -54,8 +60,8 @@ bool Algorithm_NakedSingles::eliminate_row(const u& val,
     return change_occurred;
 }
 
-bool Algorithm_NakedSingles::eliminate_column(const u& val,
-        const u& row, const u & column) {
+bool Algorithm_NakedSingles::
+eliminate_column(const u& row, const u & column, const u& val) {
     bool change_occurred = false;
 
     for (u row_ = 0; row_ < 9; ++row_) {
@@ -69,22 +75,21 @@ bool Algorithm_NakedSingles::eliminate_column(const u& val,
     return change_occurred;
 }
 
-bool Algorithm_NakedSingles::eliminate_3x3square(const u& val,
-        const u& row, const u & column) {
+bool Algorithm_NakedSingles::
+eliminate_3x3square(const u& row, const u & column, const u& val) {
     bool change_occurred = false;
 
     // for 0-1-2 return 0 * 3 for 3-4-5 return 1 * 3, for 6-7-8 return 2 * 3
     // used to locate the local 3x3 square begin index row and column
-    u row_0 = (u) ((row / 3) * 3);
-    u clmn_0 = (u) ((column / 3) * 3);
+    u row_0 = static_cast<u> ((row / 3) * 3);
+    u clmn_0 = static_cast<u> ((column / 3) * 3);
 
     for (u row_ = row_0; row_ < (row_0 + 3); ++row_) {
         for (u column_ = clmn_0; column_ < (clmn_0 + 3); ++column_) {
-
-
             if (row != row_ && column != column_ // unnecessary check ?
                     && cell(row_, column_).unknown()
                     && cell(row_, column_).rm_candidate(val)) {
+
                 change_occurred = true;
             }
         }

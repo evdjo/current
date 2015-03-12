@@ -4,13 +4,10 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    SudokuModel sm("book58.sud");
+    SudokuModel sm("book56.sud");
     sm.solve();   
-    sm.print_possible_values();
-    
-    sm.print();
-    
-       
+    sm.print_possible_values();    
+    sm.print();       
     return 0;
 }
 

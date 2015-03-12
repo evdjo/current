@@ -22,10 +22,55 @@ public:
     static u *** read(const string & filename);
 };
 
-struct occurr_t {    // TODO make this into linked list of occurrences
+struct occur_node {
+
+    occur_node(const u&_row, const u&_column)
+    : row(_row), column(_column) {
+    }
+
+    u row;
+    u column;
+    occur_node * next = nullptr;
+};
+
+struct occurences_list { // TODO make this into linked list of occurrences
     u count = 0;
-    u last_row = -1;
-    u last_column = -1;
+    occur_node * first = nullptr;
+    occur_node ** next_ = &first;
+
+    void add(const u& row, const u& column) {
+        if (first == nullptr)
+            first = new occur_node(row, column);
+
+    }
+
+    void add_(const u& row, const u& column) {
+        *next_ = new occur_node(row, column);
+        next_ = &((*next_)->next);
+        *next_ = NULL;
+        ++count;
+    }
+
+    void print_list() {
+        occur_node * curr = first;
+        while (curr != nullptr) {
+            cout << "[" << curr->row << "x";
+            cout << curr->column << "]";
+            
+            curr = curr->next;
+        }
+    }
+
+    ~occurences_list() {
+        occur_node * curr = first;
+
+        while (curr != nullptr) {
+            occur_node * temp = curr->next;
+            delete curr;
+            curr = temp;
+        }
+
+    }
 };
 
 
