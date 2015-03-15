@@ -32,13 +32,13 @@ SudokuModel::~SudokuModel() {
 
 void SudokuModel::solve() {
     if (the_sudoku == nullptr) return;
-    
-    Known_Values kvr(the_sudoku);
+
+    KnownValues kvr(the_sudoku);
     HiddenSingles_NakedPairs hs(the_sudoku);
-    
-    kvr.eliminate_known_vals(); 
+
+    kvr.eliminate_known_vals();
     hs.seek_hidden_singles();
-  
+
 
     print_possible_values();
     print();
@@ -54,7 +54,6 @@ void SudokuModel::print() {
         }
         cout << endl;
         // print new line each three columns
-
         if ((8 - row) % 3 == 0) cout << endl;
 
     }
@@ -69,7 +68,6 @@ void SudokuModel::print_possible_values() {
             cout << "x";
             cout << column << ']';
             cout << "=";
-
             if (cell(row, column).unknown())
                 cell(row, column).print();
             else {
@@ -80,13 +78,10 @@ void SudokuModel::print_possible_values() {
                         cout << " ";
             }
             cout << " ";
-
             // print space each three columns
             if ((8 - column) % 3 == 0) cout << "   ";
         }
-
         // print new line each three columns
         if ((8 - row) % 3 == 0) cout << endl << endl;
-
     }
 }

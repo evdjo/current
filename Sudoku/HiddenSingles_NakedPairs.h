@@ -2,7 +2,7 @@
 #define	HIDDENSINGLES_H
 #include "SudokuUtils.h"
 #include "SudokuCell.h"
-#include "Known_Values.h"
+#include "KnownValues.h"
 
 class HiddenSingles_NakedPairs {
 public:
@@ -13,7 +13,7 @@ public:
 
 private:
     SudokuCell ** the_sudoku;
-    Known_Values ns;
+    KnownValues ns;
 
     void lock_single(const occurences_list& current, const u& value);
     bool seek_pair(const occurences_list& current, const u& value);

@@ -2,7 +2,7 @@
 #define	SUDOKUMODEL_H
 #include <string>
 #include <stdexcept>
-#include "Known_Values.h"
+#include "KnownValues.h"
 #include "HiddenSingles_NakedPairs.h"
 #include "SudokuUtils.h"
 using namespace std;

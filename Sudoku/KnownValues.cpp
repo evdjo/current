@@ -1,9 +1,9 @@
-#include "Known_Values.h"
+#include "KnownValues.h"
 
-Known_Values::Known_Values(SudokuCell ** sudoku) : the_sudoku(sudoku) {
+KnownValues::KnownValues(SudokuCell ** sudoku) : the_sudoku(sudoku) {
 };
 
-Known_Values::~Known_Values() {
+KnownValues::~KnownValues() {
 };
 
 /**
@@ -12,7 +12,7 @@ Known_Values::~Known_Values() {
  *  on the same row, column or local 3x3 square.
  * @return were any candidates removed.
  */
-void Known_Values::eliminate_known_vals() {
+void KnownValues::eliminate_known_vals() {
     check_sudoku();
     bool keep_goin = true;
     while (keep_goin) {
@@ -29,7 +29,7 @@ void Known_Values::eliminate_known_vals() {
     }
 }
 
-bool Known_Values::eliminate_val(const u& row, const u& column, const u& val) {
+bool KnownValues::eliminate_val(const u& row, const u& column, const u& val) {
     check_sudoku();
     bool _rows = rows(row, column, val);
     bool _columns = columns(row, column, val);
@@ -45,7 +45,7 @@ bool Known_Values::eliminate_val(const u& row, const u& column, const u& val) {
  * @param column the column that holds current_value
  * @return whether values were excluded
  */
-bool Known_Values::rows(const u& row, const u & column, const u& val) {
+bool KnownValues::rows(const u& row, const u & column, const u& val) {
     bool change_occurred = false;
 
     for (u column_ = 0; column_ < 9; ++column_) {
@@ -58,7 +58,7 @@ bool Known_Values::rows(const u& row, const u & column, const u& val) {
     return change_occurred;
 }
 
-bool Known_Values::columns(const u& row, const u & column, const u& val) {
+bool KnownValues::columns(const u& row, const u & column, const u& val) {
     bool change_occurred = false;
 
     for (u row_ = 0; row_ < 9; ++row_) {
@@ -70,7 +70,7 @@ bool Known_Values::columns(const u& row, const u & column, const u& val) {
     return change_occurred;
 }
 
-bool Known_Values::squares(const u& row, const u & column, const u& val) {
+bool KnownValues::squares(const u& row, const u & column, const u& val) {
     bool change_occurred = false;
 
     // for 0-1-2 return 0 * 3 for 3-4-5 return 1 * 3, for 6-7-8 return 2 * 3

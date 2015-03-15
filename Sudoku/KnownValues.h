@@ -3,10 +3,10 @@
 #include "SudokuUtils.h"
 #include "SudokuCell.h"
 
-class Known_Values final {
+class KnownValues final {
 public:
-    explicit Known_Values(SudokuCell ** the_sudoku);
-    virtual ~Known_Values();
+    explicit KnownValues(SudokuCell ** the_sudoku);
+    virtual ~KnownValues();
     void eliminate_known_vals();
     bool eliminate_val(const u& row, const u& column, const u& val);
     
