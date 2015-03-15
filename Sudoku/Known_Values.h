@@ -3,21 +3,21 @@
 #include "SudokuUtils.h"
 #include "SudokuCell.h"
 
-class Algorithm_NakedSingles final {
+class Known_Values final {
 public:
-    explicit Algorithm_NakedSingles(SudokuCell ** the_sudoku);
-    virtual ~Algorithm_NakedSingles();
-    bool eliminate_known_vals();
+    explicit Known_Values(SudokuCell ** the_sudoku);
+    virtual ~Known_Values();
+    void eliminate_known_vals();
     bool eliminate_val(const u& row, const u& column, const u& val);
-
-
+    
+  
 
 private:
     SudokuCell ** the_sudoku;
 
-    bool eliminate_3x3square(const u& row, const u& column, const u& val);
-    bool eliminate_column(const u& row, const u& column, const u& val);
-    bool eliminate_row(const u& row, const u& column, const u& val);
+    bool squares(const u& row, const u& column, const u& val);
+    bool columns(const u& row, const u& column, const u& val);
+    bool rows(const u& row, const u& column, const u& val);
 
     inline u cell_val(const u& row, const u& column) {
         return cell(row, column).val();

@@ -28,3 +28,7 @@ u *** SudokuUtils::read(const string & filename) {
     }
 
 }
+
+u SudokuUtils::zero_index(const u& index) {
+    return static_cast<u> ((index / 3) * 3);
+}

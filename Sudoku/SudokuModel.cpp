@@ -18,7 +18,7 @@ SudokuModel::SudokuModel(const string& filename) {
     } catch (const bad_alloc& ba) {
         cerr << "Could not allocate memory for the sudoku...";
         throw ba;
-    } 
+    }
 }
 
 SudokuModel::~SudokuModel() {
@@ -31,12 +31,21 @@ SudokuModel::~SudokuModel() {
 }
 
 void SudokuModel::solve() {
-    Algorithm_NakedSingles kvr(the_sudoku);
-    Algorithm_HiddenSingles hs(the_sudoku);
-    while (kvr.eliminate_known_vals() || hs.seek_hidden_singles());
+    if (the_sudoku == nullptr) return;
+    
+    Known_Values kvr(the_sudoku);
+    HiddenSingles_NakedPairs hs(the_sudoku);
+    
+    kvr.eliminate_known_vals(); 
+    hs.seek_hidden_singles();
+  
+
+    print_possible_values();
+    print();
 }
 
 void SudokuModel::print() {
+    if (the_sudoku == nullptr) return;
     for (u row = 0; row < 9; row++) {
         for (u column = 0; column < 9; column++) {
             cout << cell_val(row, column);
@@ -52,7 +61,7 @@ void SudokuModel::print() {
 }
 
 void SudokuModel::print_possible_values() {
-
+    if (the_sudoku == nullptr) return;
     for (u row = 0; row < 9; row++) {
         cout << endl;
         for (u column = 0; column < 9; column++) {
@@ -70,7 +79,7 @@ void SudokuModel::print_possible_values() {
                     else
                         cout << " ";
             }
-            cout << "   ";
+            cout << " ";
 
             // print space each three columns
             if ((8 - column) % 3 == 0) cout << "   ";

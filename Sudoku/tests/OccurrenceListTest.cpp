@@ -20,16 +20,32 @@ void OccurrenceListTest::setUp() {
 }
 
 void OccurrenceListTest::tearDown() {
-    
-    
+
+
 }
 
 void OccurrenceListTest::testListInsertion() {
-    for (u i = 1; i < 5; ++i) {
-        ol.add_(i, i);
+
+    CPPUNIT_ASSERT_THROW(ol.at(0), invalid_argument);
+    CPPUNIT_ASSERT_THROW(ol.at(-1), invalid_argument);
+    CPPUNIT_ASSERT_THROW(ol.at(100), invalid_argument);
+    CPPUNIT_ASSERT_THROW(ol.at(-100), invalid_argument);
+    ol.add_(5, 5);
+    CPPUNIT_ASSERT_THROW(ol.at(1), invalid_argument);
+    CPPUNIT_ASSERT_THROW(ol.at(100), invalid_argument);
+    CPPUNIT_ASSERT_THROW(ol.at(-100), invalid_argument);
+    {
+        occur_node node(5, 5);
+        CPPUNIT_ASSERT(node == ol.first());
     }
-    ol.print_list();
-   
+    {
+        occur_node node(1, 1);
+        ol.add_(1, 1);
+        CPPUNIT_ASSERT(node == ol.last());
+    }
+    
+
+
 }
 
 

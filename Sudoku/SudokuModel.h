@@ -2,8 +2,8 @@
 #define	SUDOKUMODEL_H
 #include <string>
 #include <stdexcept>
-#include "Algorithm_NakedSingles.h"
-#include "Algorithm_HiddenSingles.h"
+#include "Known_Values.h"
+#include "HiddenSingles_NakedPairs.h"
 #include "SudokuUtils.h"
 using namespace std;
 
