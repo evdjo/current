@@ -19,7 +19,7 @@ public:
     void tearDown();
 
 private:
-    occurences_list ol;
+    ocurr_list ol;
     void testListInsertion(); 
 };
 

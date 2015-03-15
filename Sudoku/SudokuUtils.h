@@ -37,7 +37,7 @@ struct occur_node {
     occur_node * next = nullptr;
 };
 
-struct occurences_list {
+struct ocurr_list {
     u m_count = 0;
     occur_node * m_first = nullptr;
     occur_node * m_last = nullptr;
@@ -89,7 +89,7 @@ struct occurences_list {
         return m_count;
     }
 
-    ~occurences_list() {
+    ~ocurr_list() {
         occur_node * curr = m_first;
         while (curr != nullptr) {
             occur_node * temp = curr->next;

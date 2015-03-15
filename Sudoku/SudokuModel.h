@@ -3,7 +3,7 @@
 #include <string>
 #include <stdexcept>
 #include "KnownValues.h"
-#include "HiddenSingles_NakedPairs.h"
+#include "SingleCandidate.h"
 #include "SudokuUtils.h"
 using namespace std;
 

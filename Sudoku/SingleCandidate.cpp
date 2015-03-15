@@ -1,60 +1,52 @@
-#include "HiddenSingles_NakedPairs.h"
+#include "SingleCandidate.h"
 
-HiddenSingles_NakedPairs::
-HiddenSingles_NakedPairs(SudokuCell ** sudoku)
-: the_sudoku(sudoku), ns(sudoku) {
-}
-
-HiddenSingles_NakedPairs::~HiddenSingles_NakedPairs() {
-}
-
-void HiddenSingles_NakedPairs::seek_hidden_singles() {
+void SingleCandidate::apply() {
 
     bool _rows = true, _columns = true, _3x3squares = true;
     while (_rows || _columns || _3x3squares) {
-        _rows = hidden_singles_rows();
-        _columns = hidden_singles_columns();
-        _3x3squares = hidden_singles_3x3();
+        _rows = rows();
+        _columns = columns();
+        _3x3squares = squares();
     }
 }
 
-bool HiddenSingles_NakedPairs::hidden_singles_rows() {
+bool SingleCandidate::rows() {
     bool singles_found = false;
     for (u row = 0; row < 9; ++row) {
-        occurences_list occurrences[9];
+        ocurr_list occurrences[9];
         for (u column = 0; column < 9; ++column) {
             if (!cell(row, column).unknown()) continue;
             count_occurences(row, column, occurrences);
         }
 
-        singles_found = lock_single_candidates(occurrences)
+        singles_found = search(occurrences)
                 ? true : singles_found;
 
     }
     return singles_found;
 }
 
-bool HiddenSingles_NakedPairs::hidden_singles_columns() {
+bool SingleCandidate::columns() {
     bool singles_found = false;
     for (u column = 0; column < 9; ++column) {
-        occurences_list occurrences[9];
+        ocurr_list occurrences[9];
         for (u row = 0; row < 9; ++row) {
             if (!cell(row, column).unknown()) continue;
             count_occurences(row, column, occurrences);
         }
-        singles_found = lock_single_candidates(occurrences)
+        singles_found = search(occurrences)
                 ? true : singles_found;
 
     }
     return singles_found;
 }
 
-bool HiddenSingles_NakedPairs::hidden_singles_3x3() {
+bool SingleCandidate::squares() {
     bool singles_found = false;
     for (u srow = 0; srow <= 6; srow += 3) {
         for (u scmn = 0; scmn <= 6; scmn += 3) {
 
-            occurences_list occurrences[9];
+            ocurr_list occurrences[9];
 
             for (u row = srow; row < srow + 3; ++row) {
                 for (u cmn = scmn; cmn < scmn + 3; ++cmn) {
@@ -62,7 +54,7 @@ bool HiddenSingles_NakedPairs::hidden_singles_3x3() {
                     count_occurences(row, cmn, occurrences);
                 }
             }
-            singles_found = lock_single_candidates(occurrences)
+            singles_found = search(occurrences)
                     ? true : singles_found;
 
         }
@@ -70,21 +62,21 @@ bool HiddenSingles_NakedPairs::hidden_singles_3x3() {
     return singles_found;
 }
 
-void HiddenSingles_NakedPairs::count_occurences
-(const u& row, const u& column, occurences_list * occurrences) {
+void SingleCandidate::count_occurences
+(const u& row, const u& column, ocurr_list * list) {
 
     SudokuCell& sc = cell(row, column);
     for (u i = 0; i < 9; ++i) {
         if (sc.is_candidate(i + 1)) {
-            occurrences[i].add_(row, column);
+            list[i].add_(row, column);
         }
     }
 }
 
-bool HiddenSingles_NakedPairs::lock_single_candidates(occurences_list* ocr) {
+bool SingleCandidate::search(ocurr_list* list) {
     bool change_occurred = false;
     for (u i = 0; i < 9; ++i) {
-        occurences_list& current = ocr[i];
+        ocurr_list& current = list[i];
         if (current.m_count == 1) {
             lock_single(current, i + 1);
             change_occurred = true;
@@ -98,17 +90,17 @@ bool HiddenSingles_NakedPairs::lock_single_candidates(occurences_list* ocr) {
     return change_occurred;
 }
 
-void HiddenSingles_NakedPairs::
-lock_single(const occurences_list& current, const u& value) {
-    u row = current.first().row;
-    u column = current.first().column;
+void SingleCandidate::
+lock_single(const ocurr_list& list, const u& value) {
+    u row = list.first().row;
+    u column = list.first().column;
     cell(row, column).set_val(value);
-    if (ns.eliminate_val(row, column, value)) // if value was eliminated
-        ns.eliminate_known_vals();
+    if (hs.eliminate_val(row, column, value)) // if value was eliminated
+        hs.apply();
 }
 
-bool HiddenSingles_NakedPairs::
-seek_pair(const occurences_list& current, const u& value) {
+bool SingleCandidate::
+seek_pair(const ocurr_list& current, const u& value) {
     bool change_occurred = false;
     u rw1 = current.first().row;
     u rw2 = current.last().row;
@@ -130,12 +122,53 @@ seek_pair(const occurences_list& current, const u& value) {
         if (eliminate_pair(cm2, rw2, value, false)) {
             change_occurred = true;
         }
+    } else if (_flag && zero_rw1 == zero_rw2 && zero_cm1 == zero_cm2) {
+
+
+        if (rw1 == rw2) {
+            cout << "WHOHOO";
+            if (eliminate_pair(rw1, cm1, value, false)) {
+                change_occurred = true;
+            }
+
+        } else if (cm1 == cm2) {
+            cout << "WHOHOO";
+            if (eliminate_pair(rw1, cm1, value, true))
+                change_occurred = true;
+        }
     }
+
     return change_occurred;
 }
 
-bool HiddenSingles_NakedPairs::eliminate_pair
-(const u& x, const u & y, const u& val, bool row_column_flag) {
+bool SingleCandidate::
+pair_3x3(const u& x, const u& y, const u& val, bool flag) {
+    bool change_occurred = false;
+    u zero_row = SudokuUtils::zero_index(x);
+    u zero_column = SudokuUtils::zero_index(y);
+    for (u i = zero_row; i < zero_row + 3; ++i) {
+
+        for (u o = zero_column; o < zero_column + 3; ++o) {
+
+            if (flag) {
+                if (i == x) continue;
+            } else {
+                if (o == y) continue;
+            }
+
+            if (cell(i, o).rm_candidate(val)) {
+                change_occurred = true;
+            }
+
+        }
+
+    }
+    return change_occurred;
+
+}
+
+bool SingleCandidate::eliminate_pair
+(const u& x, const u& y, const u& val, bool flag) {
     bool change_occurred = false;
 
     u zero_index = SudokuUtils::zero_index(y);
@@ -143,8 +176,7 @@ bool HiddenSingles_NakedPairs::eliminate_pair
     for (u iter_over = 0; iter_over < 9; ++iter_over) {
         if (iter_over < zero_index || iter_over >= zero_index + 3) {
 
-            SudokuCell& sc = row_column_flag
-                    ? cell(x, iter_over) : cell(iter_over, x);
+            SudokuCell& sc = flag ? cell(x, iter_over) : cell(iter_over, x);
 
             if (sc.unknown() && sc.rm_candidate(val)) {
                 change_occurred = true;

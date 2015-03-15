@@ -1,18 +1,12 @@
 #include "KnownValues.h"
 
-KnownValues::KnownValues(SudokuCell ** sudoku) : the_sudoku(sudoku) {
-};
-
-KnownValues::~KnownValues() {
-};
-
 /**
- * Iterate over the SudokuCells. For any known value, 
+ * Iterate over the SudokuCells. For any known value,
  * exclude the value from the candidate lists of the cells
  *  on the same row, column or local 3x3 square.
  * @return were any candidates removed.
  */
-void KnownValues::eliminate_known_vals() {
+void KnownValues::apply() {
     check_sudoku();
     bool keep_goin = true;
     while (keep_goin) {
@@ -38,7 +32,7 @@ bool KnownValues::eliminate_val(const u& row, const u& column, const u& val) {
 }
 
 /**
- * Iterate over a single row. 
+ * Iterate over a single row.
  * Exclude current_value from each cell's list of candidates.
  * @param current_value the value to exlude
  * @param row the row to iterate over

@@ -33,15 +33,18 @@ SudokuModel::~SudokuModel() {
 void SudokuModel::solve() {
     if (the_sudoku == nullptr) return;
 
-    KnownValues kvr(the_sudoku);
-    HiddenSingles_NakedPairs hs(the_sudoku);
+    KnownValues kv(the_sudoku);
+    SingleCandidate sc(the_sudoku);
 
-    kvr.eliminate_known_vals();
-    hs.seek_hidden_singles();
-
+    kv.apply();
+    sc.apply();
 
     print_possible_values();
     print();
+
+    sc._flag = true;
+    sc.apply();
+
 }
 
 void SudokuModel::print() {

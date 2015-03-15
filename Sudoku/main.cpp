@@ -7,8 +7,10 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-    //    SudokuModel sm("book68.sud");
-    //    sm.solve();
+    SudokuModel sm("book68.sud");
+    //    SudokuModel sm("book55.sud");
+    sm.solve();
+
 
     return 0;
 }
