@@ -74,9 +74,12 @@ void SingleCandidate::count_occurences
 }
 
 bool SingleCandidate::search(ocurr_list* list) {
+    u two_occurrences_count = 0 ;
+    ocurr_list pairs;
     bool change_occurred = false;
     for (u i = 0; i < 9; ++i) {
-        ocurr_list& current = list[i];
+            ocurr_list& current = list[i];
+        
         if (current.m_count == 1) {
             lock_single(current, i + 1);
             change_occurred = true;
@@ -85,8 +88,24 @@ bool SingleCandidate::search(ocurr_list* list) {
             if (seek_pair(current, i + 1)) {
                 change_occurred = true;
             }
+            occur_node& first_ = current.first();
+            occur_node& second_ = current.last();
+            pairs.add_(first_.m_row,first_.m_column,first_.m_val);
+            pairs.add_(second_.m_row,second_.m_column,second_.m_val);
+            ++two_occurrences_count;
         }
+        
     }
+    
+    if(two_occurrences_count == 2) {
+        if(pairs.first().m_row == pairs.last().m_row &&
+            pairs.first().m_column == pairs.last().m_column &&
+            pairs.first().m_val == pairs.last().m_val) {
+                cout << "wait what ?" ;
+            }
+        
+    } 
+    
     return change_occurred;
 }
 
