@@ -2,7 +2,7 @@
 #define	SUDOKUMODEL_H
 #include <string>
 #include <stdexcept>
-#include "KnownValues.h"
+#include "SinglePosition.h"
 #include "SingleCandidate.h"
 #include "SudokuUtils.h"
 using namespace std;
@@ -12,7 +12,7 @@ public:
     void solve();
     explicit SudokuModel(const string& filename);
     virtual ~SudokuModel();
-   
+
     void print();
     void print_possible_values();
 

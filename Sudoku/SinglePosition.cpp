@@ -1,4 +1,4 @@
-#include "KnownValues.h"
+#include "SinglePosition.h"
 
 /**
  * Iterate over the SudokuCells. For any known value,
@@ -6,7 +6,7 @@
  *  on the same row, column or local 3x3 square.
  * @return were any candidates removed.
  */
-void KnownValues::apply() {
+void SinglePosition::apply() {
     check_sudoku();
     bool keep_goin = true;
     while (keep_goin) {
@@ -23,7 +23,7 @@ void KnownValues::apply() {
     }
 }
 
-bool KnownValues::eliminate_val(const u& row, const u& column, const u& val) {
+bool SinglePosition::eliminate_val(const u& row, const u& column, const u& val) {
     check_sudoku();
     bool _rows = rows(row, column, val);
     bool _columns = columns(row, column, val);
@@ -39,7 +39,7 @@ bool KnownValues::eliminate_val(const u& row, const u& column, const u& val) {
  * @param column the column that holds current_value
  * @return whether values were excluded
  */
-bool KnownValues::rows(const u& row, const u & column, const u& val) {
+bool SinglePosition::rows(const u& row, const u & column, const u& val) {
     bool change_occurred = false;
 
     for (u column_ = 0; column_ < 9; ++column_) {
@@ -52,7 +52,7 @@ bool KnownValues::rows(const u& row, const u & column, const u& val) {
     return change_occurred;
 }
 
-bool KnownValues::columns(const u& row, const u & column, const u& val) {
+bool SinglePosition::columns(const u& row, const u & column, const u& val) {
     bool change_occurred = false;
 
     for (u row_ = 0; row_ < 9; ++row_) {
@@ -64,7 +64,7 @@ bool KnownValues::columns(const u& row, const u & column, const u& val) {
     return change_occurred;
 }
 
-bool KnownValues::squares(const u& row, const u & column, const u& val) {
+bool SinglePosition::squares(const u& row, const u & column, const u& val) {
     bool change_occurred = false;
 
     // for 0-1-2 return 0 * 3 for 3-4-5 return 1 * 3, for 6-7-8 return 2 * 3

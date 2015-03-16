@@ -2,7 +2,7 @@
 #define	HIDDENSINGLES_H
 #include "SudokuUtils.h"
 #include "SudokuCell.h"
-#include "KnownValues.h"
+#include "SinglePosition.h"
 
 class SingleCandidate final : public SudokuAlgorithm {
 public:
@@ -13,7 +13,7 @@ public:
     }
     void apply();
 private:
-    KnownValues hs;
+    SinglePosition hs;
 
     bool rows();
     bool columns();

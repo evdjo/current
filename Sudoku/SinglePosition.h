@@ -4,7 +4,7 @@
 #include "SudokuCell.h"
 #include "SudokuAlgorithm.h"
 
-class KnownValues : public SudokuAlgorithm {
+class SinglePosition : public SudokuAlgorithm {
     using SudokuAlgorithm::SudokuAlgorithm;
 public:
     void apply();

@@ -33,18 +33,14 @@ SudokuModel::~SudokuModel() {
 void SudokuModel::solve() {
     if (the_sudoku == nullptr) return;
 
-    KnownValues kv(the_sudoku);
+    SinglePosition kv(the_sudoku);
     SingleCandidate sc(the_sudoku);
-
+    sc._flag = true;
     kv.apply();
     sc.apply();
 
     print_possible_values();
     print();
-
-    sc._flag = true;
-    sc.apply();
-
 }
 
 void SudokuModel::print() {
