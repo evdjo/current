@@ -5,6 +5,7 @@
 #include "SinglePosition.h"
 #include "SingleCandidate.h"
 #include "SudokuUtils.h"
+#include "SudokuCell.h"
 using namespace std;
 
 class SudokuModel final {

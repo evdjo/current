@@ -7,13 +7,14 @@
 using namespace std;
 
 class CellCandidates final {
+    friend class SingleCandidate;
     friend class SudokuCell;
     friend class CellCandidatesTest;
     friend class SudokuAlgorithmsTest;
 
 
     /**
-     * Array to keep track of the possible values for a cell. 
+     * Array to keep track of the possible values for a cell.
      * Value of 0 at a position means that the position's original value
      * is not a candidate anymore.
      */
@@ -26,7 +27,7 @@ class CellCandidates final {
     u candidates_count = 9;
 
     /**
-     * Get the candidate from the list of candidates. 
+     * Get the candidate from the list of candidates.
      * If the the val is in the list it will return the val itself,
      * else it will return 0
      * @param val the value to get
@@ -61,7 +62,7 @@ class CellCandidates final {
         return candidates_count == 1;
     }
 
-    /**     
+    /**
      * @return returns the last and only value
      * in the possible_values array with non zero value
      */
@@ -93,6 +94,14 @@ class CellCandidates final {
         for (u i = 0; i < 9; i++)
             if (candidates[i] != 0) cout << candidates[i];
             else cout << " ";
+    }
+
+    bool operator==(const CellCandidates& other) {
+        for (u i = 0; i < 9; ++i) {
+            if (candidates[i] != other.candidates[i])
+                return false;
+        }
+        return true;
     }
 
 

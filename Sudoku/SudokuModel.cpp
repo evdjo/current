@@ -12,7 +12,7 @@ SudokuModel::SudokuModel(const string& filename) {
             the_sudoku[row] = new SudokuCell[9];
             for (u column = 0; column < 9; column++) {
                 u& val = arr[row][column];
-                the_sudoku[row][column].init_val(val);
+                the_sudoku[row][column].init(val);
             }
         }
     } catch (const bad_alloc& ba) {
@@ -35,12 +35,13 @@ void SudokuModel::solve() {
 
     SinglePosition kv(the_sudoku);
     SingleCandidate sc(the_sudoku);
-    sc._flag = true;
+
     kv.apply();
     sc.apply();
 
-    print_possible_values();
-    print();
+    kv.apply();
+    sc.apply();
+
 }
 
 void SudokuModel::print() {
@@ -68,7 +69,7 @@ void SudokuModel::print_possible_values() {
             cout << column << ']';
             cout << "=";
             if (cell(row, column).unknown())
-                cell(row, column).print();
+                cell(row, column).print_possible_values();
             else {
                 for (u i = 1; i < 10; i++)
                     if (i == cell_val(row, column))

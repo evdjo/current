@@ -1,8 +1,8 @@
 /*
- * File:   SudokuTestRunner.cpp
+ * File:   SudokuTestsRunner.cpp
  * Author: evdjoint
  *
- * Created on 11-Mar-2015, 21:52:48
+ * Created on 17-Mar-2015, 19:19:06
  */
 
 #include <cppunit/BriefTestProgressListener.h>

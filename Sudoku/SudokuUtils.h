@@ -14,7 +14,7 @@ private:
     SudokuUtils();
 public:
     /**
-     * Parses the sudoku input file and returns pointer to 
+     * Parses the sudoku input file and returns pointer to
      * a 9x9 array of shorts ints. Each unknown value is represented as 0.
      * @param input the ifstream pointer which leads us to the file
      * @return Pointer to 9x9 array containing the sudoku
@@ -25,26 +25,36 @@ public:
 
 struct occur_node {
 
-    occur_node(const u&_row, const u&_column)
-    : row(_row), column(_column) {
+    occur_node(const u&_row, const u&_column, const u& _val = 0)
+    : row(_row), column(_column), val(_val) {
     }
 
     bool operator==(const occur_node& other) {
         return row == other.row && column == other.column;
     }
+
+    bool equals_row(const occur_node& other) {
+        return column == other.column && val == other.val;
+    }
+
+    bool equals_column(const occur_node& other) {
+        return row == other.row && val == other.val;
+    }
+
+    u val;
     u row;
     u column;
     occur_node * next = nullptr;
 };
 
-struct ocurr_list {
+struct occurr_list {
     u m_count = 0;
     occur_node * m_first = nullptr;
     occur_node * m_last = nullptr;
     occur_node ** m_next_free = &m_first;
 
-    void add_(const u& row, const u& column) {
-        *m_next_free = new occur_node(row, column);
+    void add_(const u& row, const u& column, const u&val = 0) {
+        *m_next_free = new occur_node(row, column, val);
         m_last = *m_next_free;
         m_next_free = &((*m_next_free)->next);
         *m_next_free = nullptr;
@@ -60,7 +70,7 @@ struct ocurr_list {
         }
     }
 
-     occur_node& first() const {
+    occur_node& first() const {
         if (m_first == nullptr) throw logic_error("First is null...");
         return *m_first;
     }
@@ -68,6 +78,10 @@ struct ocurr_list {
     occur_node& last() const {
         if (m_first == nullptr) throw logic_error("First is null...");
         return *m_last;
+    }
+
+    occur_node& operator[](const u& index) {
+        return at(index);
     }
 
     occur_node& at(const u& index) {
@@ -89,7 +103,7 @@ struct ocurr_list {
         return m_count;
     }
 
-    ~ocurr_list() {
+    ~occurr_list() {
         occur_node * curr = m_first;
         while (curr != nullptr) {
             occur_node * temp = curr->next;
