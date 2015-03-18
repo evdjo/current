@@ -7,6 +7,12 @@
 
 typedef unsigned short u;
 
+enum outcome {
+    NOTHING_FOUND = 0,
+    CANDIDATES_EXCLUDED = 1,
+    NEW_VALUE_FOUND = 2
+};
+
 using namespace std;
 
 class SudokuUtils final {
@@ -21,6 +27,7 @@ public:
      */
     static u *** read(const string & filename);
     static u zero_index(const u& index);
+    static outcome max(const outcome& first, const outcome& second);
 };
 
 struct occur_node {
@@ -112,6 +119,8 @@ struct occurr_list {
         }
     }
 };
+
+
 
 
 #endif	/* SUDOKUUTILS_H */

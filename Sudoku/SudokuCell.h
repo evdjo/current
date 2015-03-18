@@ -58,7 +58,7 @@ public:
      * @param candidate the value to remove
      * @return true if the value was in the list & was removed, false otherwise
      */
-    bool rm_candidate(const u& candidate) {
+    outcome rm_cand(const u& candidate) {
         if (!unknown())
             throw logic_error("The cell is solved!");
 
@@ -73,12 +73,11 @@ public:
 
             if (m_cnds->count == 1) {
                 m_val = last_candidate();
+                return NEW_VALUE_FOUND;
             }
-
-
-            return true;
+            return CANDIDATES_EXCLUDED;
         } else {
-            return false;
+            return NOTHING_FOUND;
         }
     }
 
@@ -93,6 +92,7 @@ public:
      * @return how many values are possible solution for this cell
      */
     u cand_count() {
+        if (!unknown()) throw logic_error("The cell is solved!");
         return m_cnds->count;
     }
 
@@ -132,6 +132,20 @@ public:
                 return false;
         }
         return true;
+    }
+
+    u get_cand(const u& num) {
+        if (!unknown() || m_cnds == nullptr)
+            if (!unknown()) throw logic_error("The cell is solved!");
+        if (num < 0 || num > 8)
+            throw invalid_argument("Value must be in the 0-8 range!");
+
+        u o = 0;
+        for (u i = 0; i < 9; ++i) {
+            if (m_cnds->candidates[i] != 0 && o++ == num)
+                return m_cnds->candidates[i];
+        }
+
     }
 
     /**

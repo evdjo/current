@@ -1,73 +1,85 @@
 #include "SingleCandidate.h"
 
 void SingleCandidate::apply() {
+    while (true) {
+        outcome _rows = rows();
+        if (_rows == NEW_VALUE_FOUND) {
+            hs.apply();
+            continue;
+        }
+        outcome _columns = columns();
+        if (_columns == NEW_VALUE_FOUND) {
+            hs.apply();
+            continue;
+        }
+        outcome _squares = squares();
+        if (_squares == NEW_VALUE_FOUND) {
+            hs.apply();
+            continue;
+        }
+        if (_squares == NOTHING_FOUND &&
+                _columns == NOTHING_FOUND &&
+                _rows == NOTHING_FOUND) {
+            break;
+        }
 
-    bool _rows = true, _columns = true, _3x3squares = true;
-    while (_rows || _columns || _3x3squares) {
-        _rows = rows();
-        _columns = columns();
-        _3x3squares = squares();
     }
+
+
 }
 
-bool SingleCandidate::rows() {
-    bool singles_found = false;
+outcome SingleCandidate::rows() {
+    outcome outcome_rows = NOTHING_FOUND;
     for (u row = 0; row < 9; ++row) {
         occurr_list occurrences[9];
         for (u column = 0; column < 9; ++column) {
             if (!cell(row, column).unknown()) continue;
             count_occurences(row, column, occurrences);
         }
-
-        singles_found = search(occurrences)
-                ? true : singles_found;
-
+        outcome row_outcome = search(occurrences);
+        outcome_rows = SudokuUtils::max(outcome_rows, row_outcome);
+        if (outcome_rows == NEW_VALUE_FOUND) break;
     }
-    return singles_found;
+    return outcome_rows;
 }
 
-bool SingleCandidate::columns() {
-    bool singles_found = false;
+outcome SingleCandidate::columns() {
+    outcome outcome_columns = NOTHING_FOUND;
     for (u column = 0; column < 9; ++column) {
         occurr_list occurrences[9];
         for (u row = 0; row < 9; ++row) {
             if (!cell(row, column).unknown()) continue;
             count_occurences(row, column, occurrences);
         }
-        singles_found = search(occurrences)
-                ? true : singles_found;
+        outcome outcome_column = search(occurrences);
+        outcome_columns = SudokuUtils::max(outcome_columns, outcome_column);
+        if (outcome_columns == NEW_VALUE_FOUND) break;
 
     }
-    return singles_found;
+    return outcome_columns;
 }
 
-bool SingleCandidate::squares() {
-    bool singles_found = false;
+outcome SingleCandidate::squares() {
+    outcome outcome_squares = NOTHING_FOUND;
     for (u srow = 0; srow <= 6; srow += 3) {
         for (u scmn = 0; scmn <= 6; scmn += 3) {
-
-            if (srow == 6 && scmn == 0 && _daflag) {
-                cout << "WOW !";
-            }
             occurr_list occurrences[9];
-
             for (u row = srow; row < srow + 3; ++row) {
                 for (u cmn = scmn; cmn < scmn + 3; ++cmn) {
                     if (!cell(row, cmn).unknown()) continue;
                     count_occurences(row, cmn, occurrences);
                 }
             }
-            singles_found = search(occurrences)
-                    ? true : singles_found;
-
+            outcome outcome_square = search(occurrences);
+            outcome_squares = SudokuUtils::max(outcome_squares, outcome_square);
+            if (outcome_squares == NEW_VALUE_FOUND) break;
         }
     }
-    return singles_found;
+    return outcome_squares;
 }
 
 void SingleCandidate::count_occurences
 (const u& row, const u& column, occurr_list * list) {
-
     SudokuCell& sc = cell(row, column);
     for (u i = 0; i < 9; ++i) {
         if (sc.is_candidate(i + 1)) {
@@ -76,108 +88,100 @@ void SingleCandidate::count_occurences
     }
 }
 
-bool SingleCandidate::search(occurr_list* list) {
-    bool change_occurred = false;
+outcome SingleCandidate::search(occurr_list* list) {
+    outcome outcome_ = NOTHING_FOUND;
     for (u ocurring_val = 0; ocurring_val < 9; ++ocurring_val) {
 
         if (list[ocurring_val].m_count == 0)
-            continue; // not interested in those cases
+            continue; // not interested if there are no occurrences
 
         occurr_list & current = list[ocurring_val];
         u val = ocurring_val + 1;
 
         if (current.m_count == 1) { // hidden single
-            lock_single(current, val);
-            change_occurred = true;
-        } else if (_daflag && current.m_count == 2) {
-            if (seek_pair(current, val)) {
-                change_occurred = true; // single pair
-            }
+            lock_single_candidate(current, val);
+            outcome_ = NEW_VALUE_FOUND;
+        } else if (current.m_count == 2) {
+            outcome_ = seek_single_pair(current, val); // single pair
+        } else {
+            outcome_ = seek_double_pair(current);
+        }
+        if (outcome_ == NEW_VALUE_FOUND) break;
+    }
+    return outcome_;
+}
 
-        } else if (_daflag) {
-            occurr_list loc_list;
-            for (u i = 0; i < current.m_count; ++i) {
-                occur_node& node = current[i];
-                SudokuCell& sc = cell(node.row, node.column);
-                if (sc.cand_count() == 2) {
-                    //refactor to accept node... come on dude !
-                    loc_list.add_(node.row, node.column);
-                }
-            }
-            if (loc_list.m_count == 2) {
+outcome SingleCandidate::seek_double_pair(occurr_list& current) {
+    outcome outcome_ = NOTHING_FOUND;
+    occurr_list loc_list;
+    for (u i = 0; i < current.m_count; ++i) {
+        occur_node& node = current[i];
+        SudokuCell& sc = cell(node.row, node.column);
+        if (sc.unknown() && sc.cand_count() == 2) {
+            //refactor to accept node... come on dude !
+            loc_list.add_(node.row, node.column);
+        }
+    }
+    if (loc_list.m_count == 2) {
 
-                SudokuCell& sc_1 = cell(loc_list[0].row, loc_list[0].column);
-                SudokuCell& sc_2 = cell(loc_list[1].row, loc_list[1].column);
+        u rw1 = loc_list[0].row;
+        u rw2 = loc_list[1].row;
+        u cm1 = loc_list[0].column;
+        u cm2 = loc_list[1].column;
+        SudokuCell& sc_1 = cell(rw1, cm1);
+        SudokuCell& sc_2 = cell(rw2, cm2);
 
-                if (sc_1 == sc_2) {
+        if (sc_1 == sc_2) {
+            u val1 = sc_1.get_cand(0);
+            u val2 = sc_1.get_cand(1);
 
-                    u val_1;
-                    u val_2;
-                    for (u i = 0; i < 9; ++i) {
-                        if (sc_1.cands()[i] != 0)
-                            val_1 = sc_1.cands()[i];
-                    }
-                    for (u i = 8; i != 0; --i) {
-                        if (sc_1.cands()[i] != 0)
-                            val_2 = sc_1.cands()[i];
-                    }
+            if (rw1 == rw2) {
+                outcome_ = elim_double_pair(val1, val2, cm1, cm2, rw2, true);
 
-
-                    //get the two values
-                    if (loc_list[0].row == loc_list[1].row) {
-                        //  and exclude them from the row
-
-                        if (exclude_pair(val_1, val_2, loc_list[0].column,
-                                loc_list[1].column, loc_list[1].row, true)) {
-
-                            change_occurred = true;
-                        }
-
-
-                    } else if (loc_list[0].column == loc_list[1].column) {
-                        // and exclude them from the column
-                        if (exclude_pair(val_1, val_2, loc_list[0].row,
-                                loc_list[1].row, loc_list[1].column, false)) {
-
-                            change_occurred = true;
-                        }
-                    }
-                }
+            } else if (cm1 == cm2) {
+                outcome_ = elim_double_pair(val1, val2, rw1, rw2, cm2, false);
             }
         }
     }
-    return change_occurred;
+    return outcome_;
 }
 
-bool SingleCandidate::exclude_pair(const u& val_1, const u& val_2,
+outcome SingleCandidate::elim_double_pair(const u& val_1, const u& val_2,
         const u& rw_cm_1, const u& rw_cm_2, const u& rw_cm, bool flag) {
-    bool change_occurred = false;
-    for (u iter_over = 0; iter_over < 9; ++iter_over) {
-        if (iter_over != rw_cm_1 || iter_over != rw_cm_2) {
+    outcome outcome_ = NOTHING_FOUND;
+    for (u iter = 0; iter < 9; ++iter) {
+        if (iter != rw_cm_1 && iter != rw_cm_2) {
             if (flag) {
-                if (cell(rw_cm, iter_over).unknown()) {
-                    if (cell(rw_cm, iter_over).rm_candidate(val_1) ||
-                            cell(rw_cm, iter_over).rm_candidate(val_2)) {
-                        change_occurred = true;
-                    }
+                if (cell(rw_cm, iter).unknown()) {
+
+                    outcome outcome_1 = cell(rw_cm, iter).rm_cand(val_1);
+                    if (outcome_1 == NEW_VALUE_FOUND) return NEW_VALUE_FOUND;
+
+                    outcome outcome_2 = cell(rw_cm, iter).rm_cand(val_2);
+                    outcome_ = SudokuUtils::max(outcome_1, outcome_2);
+
                 }
             } else {
-                if (cell(iter_over, rw_cm).unknown()) {
-                    if (cell(iter_over, rw_cm).rm_candidate(val_1) ||
-                            cell(iter_over, rw_cm).rm_candidate(val_2)) {
-                        change_occurred = true;
-                    }
-                }
+                if (cell(iter, rw_cm).unknown()) {
 
+                    outcome outcome_1 = cell(iter, rw_cm).rm_cand(val_1);
+                    if (outcome_1 == NEW_VALUE_FOUND) return NEW_VALUE_FOUND;
+
+                    outcome outcome_2 = cell(iter, rw_cm).rm_cand(val_2);
+                    outcome_ = SudokuUtils::max(outcome_1, outcome_2);
+
+                }
             }
+            if (outcome_ == NEW_VALUE_FOUND) break;
         }
+        if (outcome_ == NEW_VALUE_FOUND) break;
     }
 
-    return change_occurred;
+    return outcome_;
 }
 
-void SingleCandidate::
-lock_single(const occurr_list& list, const u & value) {
+void SingleCandidate::lock_single_candidate
+(const occurr_list& list, const u & value) {
     u row = list.first().row;
     u column = list.first().column;
     cell(row, column).set_val(value);
@@ -186,9 +190,9 @@ lock_single(const occurr_list& list, const u & value) {
         hs.apply();
 }
 
-bool SingleCandidate::
-seek_pair(const occurr_list& current, const u & value) {
-    bool change_occurred = false;
+outcome SingleCandidate::seek_single_pair
+(const occurr_list& current, const u & value) {
+    outcome outcome_ = NOTHING_FOUND;
     u rw1 = current.first().row;
     u rw2 = current.last().row;
 
@@ -202,73 +206,30 @@ seek_pair(const occurr_list& current, const u & value) {
     u zero_cm2 = SudokuUtils::zero_index(cm2);
 
     if (rw1 == rw2 && zero_cm1 == zero_cm2) {
-        if (eliminate_pair(rw1, cm1, value, true)) {
-            change_occurred = true;
-        }
+        outcome_ = elim_single_pair(rw1, cm1, value, true);
     } else if (cm1 == cm2 && zero_rw1 == zero_rw2) {
-        if (eliminate_pair(cm2, rw2, value, false)) {
-            change_occurred = true;
-        }
+        outcome_ == elim_single_pair(cm2, rw2, value, false);
     } else if (zero_rw1 == zero_rw2 && zero_cm1 == zero_cm2) {
-
-
         if (rw1 == rw2) {
-            if (eliminate_pair(rw1, cm1, value, false)) {
-                change_occurred = true;
-            }
-
+            outcome_ = elim_single_pair(rw1, cm1, value, false);
         } else if (cm1 == cm2) {
-            if (eliminate_pair(rw1, cm1, value, true))
-                change_occurred = true;
+            outcome_ = elim_single_pair(rw1, cm1, value, true);
         }
     }
-
-    return change_occurred;
+    return outcome_;
 }
 
-bool SingleCandidate::
-pair_3x3(const u& x, const u& y, const u& val, bool flag) {
-    bool change_occurred = false;
-    u zero_row = SudokuUtils::zero_index(x);
-    u zero_column = SudokuUtils::zero_index(y);
-    for (u i = zero_row; i < zero_row + 3; ++i) {
-
-        for (u o = zero_column; o < zero_column + 3; ++o) {
-
-            if (flag) {
-                if (i == x) continue;
-            } else {
-                if (o == y) continue;
-            }
-
-            if (cell(i, o).rm_candidate(val)) {
-
-                change_occurred = true;
-            }
-
-        }
-
-    }
-    return change_occurred;
-
-}
-
-bool SingleCandidate::eliminate_pair
+outcome SingleCandidate::elim_single_pair
 (const u& x, const u& y, const u& val, bool flag) {
-    bool change_occurred = false;
-
+    outcome outcome_ = NOTHING_FOUND;
     u zero_index = SudokuUtils::zero_index(y);
-
     for (u iter_over = 0; iter_over < 9; ++iter_over) {
         if (iter_over < zero_index || iter_over >= zero_index + 3) {
-
             SudokuCell& sc = flag ? cell(x, iter_over) : cell(iter_over, x);
-
-            if (sc.unknown() && sc.rm_candidate(val)) {
-                change_occurred = true;
+            if (sc.unknown()) {
+                outcome_ = sc.rm_cand(val);
             }
         }
     }
-    return change_occurred;
+    return outcome_;
 }
-

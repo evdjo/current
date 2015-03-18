@@ -5,10 +5,8 @@
 using namespace std;
 
 int main(int argc, char** argv) {
-
-    SudokuModel sm("book68.sud");
+    SudokuModel sm("book65.sud");
     sm.solve();
-
     return 0;
 }
 

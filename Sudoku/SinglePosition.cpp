@@ -15,20 +15,25 @@ void SinglePosition::apply() {
             for (u column = 0; column < 9; ++column) {
                 u val = cell_val(row, column);
                 if (val != 0) { // if value is known
-                    keep_goin = eliminate_val(row, column, val) ?
-                            true : keep_goin;
+                    if (eliminate_val(row, column, val))
+                        keep_goin = true;
                 }
             }
         }
     }
 }
 
-bool SinglePosition::eliminate_val(const u& row, const u& column, const u& val) {
+outcome SinglePosition::
+eliminate_val(const u& row, const u& column, const u& val) {
     check_sudoku();
-    bool _rows = rows(row, column, val);
-    bool _columns = columns(row, column, val);
-    bool _squares = squares(row, column, val);
-    return (_rows || _columns || _squares);
+    outcome _outcome = NOTHING_FOUND;
+
+    outcome rows = eliminate_row(row, column, val);
+    outcome columns = eliminate_column(row, column, val);
+    outcome squares = eliminate_square(row, column, val);
+
+    return SudokuUtils::max(rows, SudokuUtils::max(columns, squares));
+
 }
 
 /**
@@ -39,33 +44,39 @@ bool SinglePosition::eliminate_val(const u& row, const u& column, const u& val) 
  * @param column the column that holds current_value
  * @return whether values were excluded
  */
-bool SinglePosition::rows(const u& row, const u & column, const u& val) {
-    bool change_occurred = false;
-
+outcome SinglePosition::
+eliminate_row(const u& row, const u & column, const u& val) {
+    outcome row_outcome = NOTHING_FOUND;
     for (u column_ = 0; column_ < 9; ++column_) {
-        if (cell(row, column_).unknown()
-                && cell(row, column_).rm_candidate(val)) {
-
-            change_occurred = true;
+        SudokuCell& _cell = cell(row, column_);
+        if (column != column_ && _cell.unknown()) {
+            outcome cell_outcome = _cell.rm_cand(val);
+            if (row_outcome < cell_outcome) {
+                row_outcome = cell_outcome;
+            }
         }
     }
-    return change_occurred;
+    return row_outcome;
 }
 
-bool SinglePosition::columns(const u& row, const u & column, const u& val) {
-    bool change_occurred = false;
-
+outcome SinglePosition::
+eliminate_column(const u& row, const u & column, const u& val) {
+    outcome column_outcome = NOTHING_FOUND;
     for (u row_ = 0; row_ < 9; ++row_) {
-        if (cell(row_, column).unknown()
-                && cell(row_, column).rm_candidate(val)) {
-            change_occurred = true;
+        SudokuCell& _cell = cell(row_, column);
+        if (row_ != row && _cell.unknown()) {
+            outcome cell_outcome = _cell.rm_cand(val);
+            if (column_outcome < cell_outcome) {
+                column_outcome = cell_outcome;
+            }
         }
     }
-    return change_occurred;
+    return column_outcome;
 }
 
-bool SinglePosition::squares(const u& row, const u & column, const u& val) {
-    bool change_occurred = false;
+outcome SinglePosition::
+eliminate_square(const u& row, const u & column, const u& val) {
+    outcome square_outcome = NOTHING_FOUND;
 
     // for 0-1-2 return 0 * 3 for 3-4-5 return 1 * 3, for 6-7-8 return 2 * 3
     // used to locate the local 3x3 square begin index row and column
@@ -74,13 +85,15 @@ bool SinglePosition::squares(const u& row, const u & column, const u& val) {
 
     for (u row_ = row_0; row_ < (row_0 + 3); ++row_) {
         for (u column_ = clmn_0; column_ < (clmn_0 + 3); ++column_) {
-            if (cell(row_, column_).unknown()
-                    && cell(row_, column_).rm_candidate(val)) {
-
-                change_occurred = true;
+            SudokuCell& _cell = cell(row_, column_);
+            if (_cell.unknown()) {
+                outcome cell_outcome = _cell.rm_cand(val);
+                if (square_outcome < cell_outcome) {
+                    square_outcome = cell_outcome;
+                }
             }
         }
     }
-    return change_occurred;
+    return square_outcome;
 }
 

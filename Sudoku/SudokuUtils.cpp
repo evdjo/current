@@ -3,7 +3,7 @@
 u *** SudokuUtils::read(const string & filename) {
 
     ifstream input(filename);
-    if(!input.good()) {
+    if (!input.good()) {
         throw logic_error("Sudoku file not found");
     }
     string line;
@@ -22,13 +22,17 @@ u *** SudokuUtils::read(const string & filename) {
             }
         }
         return array_ptr;
-    } catch (const bad_alloc& ba) {
-        cout << "OOM while reading the file" << endl;
-        throw ba;
+    } catch (const exception& e) {
+        cout << "Error whilst reading the sudoku file..." << endl;
+        throw e;
     }
 
 }
 
 u SudokuUtils::zero_index(const u& index) {
     return static_cast<u> ((index / 3) * 3);
+}
+
+outcome SudokuUtils::max(const outcome& first, const outcome& second) {
+    return first >= second ? first : second;
 }

@@ -13,6 +13,7 @@ class SudokuTests : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_init_unknown_val);
     CPPUNIT_TEST(test_rm_candidate);
     CPPUNIT_TEST(test_last_value);
+    CPPUNIT_TEST(test_get_cand);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -27,6 +28,7 @@ private:
     void test_init_unknown_val();
     void test_rm_candidate();
     void test_last_value();
+    void test_get_cand();
 };
 
 #endif	/* SUDOKUTESTS_H */

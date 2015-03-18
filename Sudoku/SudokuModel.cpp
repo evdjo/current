@@ -32,22 +32,12 @@ SudokuModel::~SudokuModel() {
 
 void SudokuModel::solve() {
     if (the_sudoku == nullptr) return;
-
     SinglePosition kv(the_sudoku);
     SingleCandidate sc(the_sudoku);
-
-
     kv.apply();
     sc.apply();
-
-    kv.apply();
-    sc.apply();
-
     print_possible_values();
     print();
-
-
-
 }
 
 void SudokuModel::print() {
@@ -61,7 +51,6 @@ void SudokuModel::print() {
         cout << endl;
         // print new line each three columns
         if ((8 - row) % 3 == 0) cout << endl;
-
     }
 }
 

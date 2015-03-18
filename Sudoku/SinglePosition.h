@@ -8,12 +8,12 @@ class SinglePosition : public SudokuAlgorithm {
     using SudokuAlgorithm::SudokuAlgorithm;
 public:
     void apply();
-    bool eliminate_val(const u& row, const u& column, const u& val);
+    outcome eliminate_val(const u& row, const u& column, const u& val);
 
 private:
-    bool squares(const u& row, const u& column, const u& val);
-    bool columns(const u& row, const u& column, const u& val);
-    bool rows(const u& row, const u& column, const u& val);
+    outcome eliminate_square(const u& row, const u& column, const u& val);
+    outcome eliminate_column(const u& row, const u& column, const u& val);
+    outcome eliminate_row(const u& row, const u& column, const u& val);
 };
 
 #endif	/* KNOWNVALUESREMOVER_H */

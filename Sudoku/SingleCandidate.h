@@ -6,7 +6,6 @@
 
 class SingleCandidate final : public SudokuAlgorithm {
 public:
-    bool _daflag = false;
 
     SingleCandidate(SudokuCell**sudoku)
     : SudokuAlgorithm(sudoku), hs(sudoku) {
@@ -14,23 +13,23 @@ public:
     void apply();
 private:
     SinglePosition hs;
-    bool rows();
-    bool columns();
-    bool squares();
+    outcome rows();
+    outcome columns();
+    outcome squares();
     // look for single candidates or naked pair
     void count_occurences(const u&, const u&, occurr_list*);
     //analyze the occurrences
-    bool search(occurr_list*);
+    outcome search(occurr_list*);
     // singles
-    void lock_single(const occurr_list&, const u&);
+    void lock_single_candidate(const occurr_list&, const u&);
     // pairs
-    bool seek_pair(const occurr_list&, const u&);
-    bool eliminate_pair(const u&, const u&, const u&, bool);
-    // 3x3 pairs
-    bool pair_3x3(const u& x, const u& y, const u& val, bool flag);
+    outcome seek_single_pair(const occurr_list&, const u&);
+    outcome elim_single_pair(const u&, const u&, const u&, bool);
 
 
-    bool exclude_pair(const u& val_1, const u& val_2,
+
+    outcome seek_double_pair(occurr_list& current);
+    outcome elim_double_pair(const u& val_1, const u& val_2,
             const u& rw_cm_1, const u& rw_cm_2, const u& rw_cm, bool flag);
 };
 #endif	/* HIDDENSINGLES_H */

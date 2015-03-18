@@ -43,7 +43,7 @@ void SudokuTests::test_init_known_val() {
 
     CPPUNIT_ASSERT_THROW(sc.cand_count(), logic_error);
     CPPUNIT_ASSERT_THROW(sc.cands(), logic_error);
-    CPPUNIT_ASSERT_THROW(sc.rm_candidate(5), logic_error);
+    CPPUNIT_ASSERT_THROW(sc.rm_cand(5), logic_error);
     CPPUNIT_ASSERT_THROW(sc == sc, logic_error);
     CPPUNIT_ASSERT_THROW(sc.is_candidate(5), logic_error);
     CPPUNIT_ASSERT_THROW(sc.init(5), logic_error);
@@ -64,12 +64,26 @@ void SudokuTests::test_last_value() {
     sc.init(0);
 
     for (u i = 1; i < 9; ++i)
-        sc.rm_candidate(i);
+        sc.rm_cand(i);
 
 
     CPPUNIT_ASSERT_EQUAL(static_cast<u> (9), sc.last_candidate());
 
     CPPUNIT_ASSERT_EQUAL(static_cast<u> (9), sc.val());
+}
+
+void SudokuTests::test_get_cand() {
+    SudokuCell sc;
+    sc.init(0);
+    sc.rm_cand(1);
+    sc.rm_cand(2);
+    sc.rm_cand(4);
+    sc.rm_cand(6);
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<u> (3), sc.get_cand(0));
+    CPPUNIT_ASSERT_EQUAL(static_cast<u> (5), sc.get_cand(1));
+    CPPUNIT_ASSERT_EQUAL(static_cast<u> (7), sc.get_cand(2));
+    CPPUNIT_ASSERT_EQUAL(static_cast<u> (8), sc.get_cand(3));
 }
 
 
