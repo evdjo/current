@@ -127,7 +127,7 @@ public:
         if (m_cnds->count != other.m_cnds->count)
             return false;
 
-        for (u i = 0; i < m_cnds->count; i++) {
+        for (u i = 0; i < 9; i++) {
             if (m_cnds->candidates[i] != other.m_cnds->candidates[i])
                 return false;
         }

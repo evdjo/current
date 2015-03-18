@@ -36,13 +36,11 @@ void SudokuModel::solve() {
     SinglePosition kv(the_sudoku);
     SingleCandidate sc(the_sudoku);
 
+
     kv.apply();
     sc.apply();
 
-    print_possible_values();
-    print();
-
-    sc._daflag = true;
+    kv.apply();
     sc.apply();
 
     print_possible_values();

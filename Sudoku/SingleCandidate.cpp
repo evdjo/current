@@ -129,10 +129,7 @@ bool SingleCandidate::search(occurr_list* list) {
 
                         if (exclude_pair(val_1, val_2, loc_list[0].column,
                                 loc_list[1].column, loc_list[1].row, true)) {
-                            _daflag = false;
-                            this->apply();
-                            hs.apply();
-                            _daflag = true;
+
                             change_occurred = true;
                         }
 
@@ -141,10 +138,7 @@ bool SingleCandidate::search(occurr_list* list) {
                         // and exclude them from the column
                         if (exclude_pair(val_1, val_2, loc_list[0].row,
                                 loc_list[1].row, loc_list[1].column, false)) {
-                            _daflag = false;
-                            this->apply();
-                            hs.apply();
-                            _daflag = true;
+
                             change_occurred = true;
                         }
                     }
