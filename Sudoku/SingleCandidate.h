@@ -6,6 +6,7 @@
 
 class SingleCandidate final : public SudokuAlgorithm {
 public:
+    bool _daflag = false;
 
     SingleCandidate(SudokuCell**sudoku)
     : SudokuAlgorithm(sudoku), hs(sudoku) {

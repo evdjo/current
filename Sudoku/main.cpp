@@ -9,9 +9,6 @@ int main(int argc, char** argv) {
     SudokuModel sm("book68.sud");
     sm.solve();
 
-    sm.print_possible_values();
-
-    sm.print();
     return 0;
 }
 

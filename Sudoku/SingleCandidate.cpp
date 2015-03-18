@@ -46,6 +46,9 @@ bool SingleCandidate::squares() {
     for (u srow = 0; srow <= 6; srow += 3) {
         for (u scmn = 0; scmn <= 6; scmn += 3) {
 
+            if (srow == 6 && scmn == 0 && _daflag) {
+                cout << "WOW !";
+            }
             occurr_list occurrences[9];
 
             for (u row = srow; row < srow + 3; ++row) {
@@ -86,12 +89,12 @@ bool SingleCandidate::search(occurr_list* list) {
         if (current.m_count == 1) { // hidden single
             lock_single(current, val);
             change_occurred = true;
-        } else if (current.m_count == 2) {
+        } else if (_daflag && current.m_count == 2) {
             if (seek_pair(current, val)) {
                 change_occurred = true; // single pair
             }
 
-        } else {
+        } else if (_daflag) {
             occurr_list loc_list;
             for (u i = 0; i < current.m_count; ++i) {
                 occur_node& node = current[i];
@@ -116,31 +119,40 @@ bool SingleCandidate::search(occurr_list* list) {
                     }
                     for (u i = 8; i != 0; --i) {
                         if (sc_1.cands()[i] != 0)
-                            val_1 = sc_1.cands()[i];
+                            val_2 = sc_1.cands()[i];
                     }
 
 
                     //get the two values
                     if (loc_list[0].row == loc_list[1].row) {
                         //  and exclude them from the row
-                        exclude_pair(val_1, val_2, loc_list[0].column,
-                                loc_list[1].column, loc_list[1].row, true);
+
+                        if (exclude_pair(val_1, val_2, loc_list[0].column,
+                                loc_list[1].column, loc_list[1].row, true)) {
+                            _daflag = false;
+                            this->apply();
+                            hs.apply();
+                            _daflag = true;
+                            change_occurred = true;
+                        }
 
 
                     } else if (loc_list[0].column == loc_list[1].column) {
                         // and exclude them from the column
-                        exclude_pair(val_1, val_2, loc_list[0].row,
-                                loc_list[1].row, loc_list[1].column, false);
+                        if (exclude_pair(val_1, val_2, loc_list[0].row,
+                                loc_list[1].row, loc_list[1].column, false)) {
+                            _daflag = false;
+                            this->apply();
+                            hs.apply();
+                            _daflag = true;
+                            change_occurred = true;
+                        }
                     }
                 }
-
-
             }
-
-
         }
-        return change_occurred;
     }
+    return change_occurred;
 }
 
 bool SingleCandidate::exclude_pair(const u& val_1, const u& val_2,
@@ -149,14 +161,18 @@ bool SingleCandidate::exclude_pair(const u& val_1, const u& val_2,
     for (u iter_over = 0; iter_over < 9; ++iter_over) {
         if (iter_over != rw_cm_1 || iter_over != rw_cm_2) {
             if (flag) {
-                if (cell(rw_cm, iter_over).rm_candidate(val_1) ||
-                        cell(rw_cm, iter_over).rm_candidate(val_2)) {
-                    change_occurred = true;
+                if (cell(rw_cm, iter_over).unknown()) {
+                    if (cell(rw_cm, iter_over).rm_candidate(val_1) ||
+                            cell(rw_cm, iter_over).rm_candidate(val_2)) {
+                        change_occurred = true;
+                    }
                 }
             } else {
-                if (cell(iter_over, rw_cm).rm_candidate(val_1) ||
-                        cell(iter_over, rw_cm).rm_candidate(val_2)) {
-                    change_occurred = true;
+                if (cell(iter_over, rw_cm).unknown()) {
+                    if (cell(iter_over, rw_cm).rm_candidate(val_1) ||
+                            cell(iter_over, rw_cm).rm_candidate(val_2)) {
+                        change_occurred = true;
+                    }
                 }
 
             }
@@ -203,14 +219,11 @@ seek_pair(const occurr_list& current, const u & value) {
 
 
         if (rw1 == rw2) {
-            cout << "WHOHOO";
             if (eliminate_pair(rw1, cm1, value, false)) {
                 change_occurred = true;
             }
 
         } else if (cm1 == cm2) {
-            cout << "WHOHOO";
-
             if (eliminate_pair(rw1, cm1, value, true))
                 change_occurred = true;
         }

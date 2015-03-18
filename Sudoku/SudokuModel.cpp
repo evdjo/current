@@ -39,8 +39,16 @@ void SudokuModel::solve() {
     kv.apply();
     sc.apply();
 
-    kv.apply();
+    print_possible_values();
+    print();
+
+    sc._daflag = true;
     sc.apply();
+
+    print_possible_values();
+    print();
+
+
 
 }
 
