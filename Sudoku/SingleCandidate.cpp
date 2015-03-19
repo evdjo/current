@@ -4,23 +4,20 @@ void SingleCandidate::apply() {
     while (true) {
         outcome _rows = rows();
         if (_rows == NEW_VALUE_FOUND) {
-            hs.apply();
-            continue;
+            hs.apply(); continue;
         }
         outcome _columns = columns();
         if (_columns == NEW_VALUE_FOUND) {
-            hs.apply();
-            continue;
+            hs.apply(); continue;
         }
         outcome _squares = squares();
         if (_squares == NEW_VALUE_FOUND) {
-            hs.apply();
-            continue;
+            hs.apply(); continue;
         }
         if (_squares == NOTHING_FOUND &&
                 _columns == NOTHING_FOUND &&
                 _rows == NOTHING_FOUND) {
-            break;
+            return;
         }
 
     }
