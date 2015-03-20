@@ -224,7 +224,7 @@ outcome SingleCandidate::elim_single_pair
         if (iter_over < zero_index || iter_over >= zero_index + 3) {
             SudokuCell& sc = flag ? cell(x, iter_over) : cell(iter_over, x);
             if (sc.unknown()) {
-                outcome_ = sc.rm_cand(val);
+                outcome_ = SudokuUtils::max(outcome_, sc.rm_cand(val));
             }
         }
     }
