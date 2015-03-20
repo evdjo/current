@@ -25,7 +25,7 @@ public:
      * @param input the ifstream pointer which leads us to the file
      * @return Pointer to 9x9 array containing the sudoku
      */
-    static u *** read(const string & filename);
+    static void read(const string & filename, u *** array_ptr);
     static u zero_index(const u& index);
     static outcome max(const outcome& first, const outcome& second);
 };

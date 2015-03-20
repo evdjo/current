@@ -4,17 +4,25 @@ SudokuModel::SudokuModel() {
 }
 
 SudokuModel::SudokuModel(const string& filename) {
-
     try {
-        u ** arr = *(SudokuUtils::read(filename));
+        u ** array = new u*[9];
         the_sudoku = new SudokuCell*[9];
+
+        for (u i = 0; i < 9; ++i) {
+            array[i] = new u[9];
+            the_sudoku[i] = new SudokuCell[9];
+        }
+
+        SudokuUtils::read(filename, &array);
+
         for (u row = 0; row < 9; row++) {
-            the_sudoku[row] = new SudokuCell[9];
             for (u column = 0; column < 9; column++) {
-                u& val = arr[row][column];
+                u& val = array[row][column];
                 the_sudoku[row][column].init(val);
             }
+            delete[] array[row];
         }
+        delete[] array;
     } catch (const bad_alloc& ba) {
         cerr << "Could not allocate memory for the sudoku...";
         throw ba;

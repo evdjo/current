@@ -42,6 +42,7 @@ public:
 
         m_val = _val;
         delete m_cnds;
+        m_cnds = nullptr;
 
     }
 
