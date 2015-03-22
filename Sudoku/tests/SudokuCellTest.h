@@ -14,6 +14,9 @@ class SudokuTests : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_rm_candidate);
     CPPUNIT_TEST(test_last_value);
     CPPUNIT_TEST(test_get_cand);
+    CPPUNIT_TEST(test_rm_all_but_pair_cands_excluded);
+    CPPUNIT_TEST(test_rm_all_but_pair_new_val_found);
+    CPPUNIT_TEST(test_rm_all_but_pair_nothing_found);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -29,6 +32,9 @@ private:
     void test_rm_candidate();
     void test_last_value();
     void test_get_cand();
+    void test_rm_all_but_pair_cands_excluded();
+    void test_rm_all_but_pair_new_val_found();
+    void test_rm_all_but_pair_nothing_found();
 };
 
 #endif	/* SUDOKUTESTS_H */

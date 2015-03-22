@@ -92,6 +92,7 @@ eliminate_square(const u& row, const u & column, const u& val) {
                     square_outcome = cell_outcome;
                 }
             }
+
         }
     }
     return square_outcome;

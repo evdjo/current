@@ -149,6 +149,20 @@ public:
 
     }
 
+    outcome rmall_but(const u& first, const u& second) {
+        outcome outcome_ = NOTHING_FOUND;
+        for (u i = 1; i < 10; ++i) {
+            if (i == first || i == second) continue;
+            else {
+                outcome curr = rm_cand(i);
+                outcome_ = SudokuUtils::max(outcome_, curr);
+                if (outcome_ == NEW_VALUE_FOUND)
+                    break;
+            }
+        }
+        return outcome_;
+    }
+
     /**
      * Prints the possible values.
      */

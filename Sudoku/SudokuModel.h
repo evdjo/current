@@ -2,6 +2,10 @@
 #define	SUDOKUMODEL_H
 #include <string>
 #include <stdexcept>
+#include <fstream>
+#include <iostream>
+
+#include <string>
 #include "SinglePosition.h"
 #include "SingleCandidate.h"
 #include "SudokuUtils.h"
@@ -10,16 +14,21 @@ using namespace std;
 
 class SudokuModel final {
 public:
-    void solve();
     explicit SudokuModel(const string& filename);
     virtual ~SudokuModel();
+
+    void solve();
+    bool is_good();
+    void verify();
 
     void print();
     void print_possible_values();
 
 private:
-    SudokuCell ** the_sudoku;
+    SudokuCell ** the_sudoku = nullptr;
     SudokuModel();
+
+    bool good = false;
 
     inline u cell_val(const u& row, const u& column) {
         return cell(row, column).val();

@@ -4,25 +4,25 @@ void SingleCandidate::apply() {
     while (true) {
         outcome _rows = rows();
         if (_rows == NEW_VALUE_FOUND) {
-            hs.apply(); continue;
+            hs.apply();
+            continue;
         }
         outcome _columns = columns();
         if (_columns == NEW_VALUE_FOUND) {
-            hs.apply(); continue;
+            hs.apply();
+            continue;
         }
         outcome _squares = squares();
         if (_squares == NEW_VALUE_FOUND) {
-            hs.apply(); continue;
+            hs.apply();
+            continue;
         }
         if (_squares == NOTHING_FOUND &&
                 _columns == NOTHING_FOUND &&
                 _rows == NOTHING_FOUND) {
             return;
         }
-
     }
-
-
 }
 
 outcome SingleCandidate::rows() {
@@ -87,6 +87,9 @@ void SingleCandidate::count_occurences
 
 outcome SingleCandidate::search(occurr_list* list) {
     outcome outcome_ = NOTHING_FOUND;
+    occurr_list pairs;
+    u tripple_count = 0;
+
     for (u ocurring_val = 0; ocurring_val < 9; ++ocurring_val) {
 
         if (list[ocurring_val].m_count == 0)
@@ -95,20 +98,57 @@ outcome SingleCandidate::search(occurr_list* list) {
         occurr_list & current = list[ocurring_val];
         u val = ocurring_val + 1;
 
-        if (current.m_count == 1) { // hidden single
+        if (current.m_count == 1) { // single candidate
             lock_single_candidate(current, val);
             outcome_ = NEW_VALUE_FOUND;
         } else if (current.m_count == 2) {
-            outcome_ = seek_single_pair(current, val); // single pair
+            outcome single_pair = seek_single_pair(current, val);
+            outcome_ = SudokuUtils::max(outcome_, single_pair);
+
+            pairs.add_(current.first(), val);
+            pairs.add_(current.last(), val);
+
         } else {
-            outcome_ = seek_double_pair(current);
+            outcome double_pair = seek_naked_pairs(current);
+            outcome_ = SudokuUtils::max(outcome_, double_pair);
         }
-        if (outcome_ == NEW_VALUE_FOUND) break;
+        if (outcome_ == NEW_VALUE_FOUND) return NEW_VALUE_FOUND;
     }
+
+    if (pairs.count() == 4) {
+        outcome hidden_pairs = seek_hidden_pairs(pairs);
+        outcome_ = SudokuUtils::max(outcome_, hidden_pairs);
+    }
+
     return outcome_;
 }
 
-outcome SingleCandidate::seek_double_pair(occurr_list& current) {
+outcome SingleCandidate::seek_hidden_pairs(occurr_list & pairs) {
+    if (pairs.at(0) == (pairs.at(2)) && pairs.at(1) == (pairs.at(3))) {
+        SudokuCell& cell_1 = cell(pairs.at(0).row, pairs.at(0).column);
+        SudokuCell& cell_2 = cell(pairs.at(1).row, pairs.at(1).column);
+
+        if (pairs.at(0).val == pairs.at(1).val
+                && pairs.at(2).val == pairs.at(3).val) {
+
+            outcome pair_1 = cell_1.rmall_but(pairs.at(0).val, pairs.at(2).val);
+            if (pair_1 == NEW_VALUE_FOUND) return NEW_VALUE_FOUND;
+
+            outcome pair_2 = cell_2.rmall_but(pairs.at(0).val, pairs.at(2).val);
+            if (pair_2 == NEW_VALUE_FOUND) return NEW_VALUE_FOUND;
+
+            outcome pairs = SudokuUtils::max(pair_1, pair_2);
+            return pairs;
+        } else {
+            cerr << "THIS SHOUOLD NOT HAPPENZZZ" << endl;
+            // to verify that this cant happen...
+            exit(0);
+        }
+    }
+    return NOTHING_FOUND;
+}
+
+outcome SingleCandidate::seek_naked_pairs(occurr_list & current) {
     outcome outcome_ = NOTHING_FOUND;
     occurr_list loc_list;
     for (u i = 0; i < current.m_count; ++i) {
@@ -120,30 +160,25 @@ outcome SingleCandidate::seek_double_pair(occurr_list& current) {
         }
     }
     if (loc_list.m_count == 2) {
-
         u rw1 = loc_list[0].row;
         u rw2 = loc_list[1].row;
         u cm1 = loc_list[0].column;
         u cm2 = loc_list[1].column;
         SudokuCell& sc_1 = cell(rw1, cm1);
         SudokuCell& sc_2 = cell(rw2, cm2);
-
         if (sc_1 == sc_2) {
             u val1 = sc_1.get_cand(0);
             u val2 = sc_1.get_cand(1);
-
-            if (rw1 == rw2) {
-                outcome_ = elim_double_pair(val1, val2, cm1, cm2, rw2, true);
-
-            } else if (cm1 == cm2) {
-                outcome_ = elim_double_pair(val1, val2, rw1, rw2, cm2, false);
-            }
+            if (rw1 == rw2)
+                outcome_ = elim_naked_pairs(val1, val2, cm1, cm2, rw2, true);
+            else if (cm1 == cm2)
+                outcome_ = elim_naked_pairs(val1, val2, rw1, rw2, cm2, false);
         }
     }
     return outcome_;
 }
 
-outcome SingleCandidate::elim_double_pair(const u& val_1, const u& val_2,
+outcome SingleCandidate::elim_naked_pairs(const u& val_1, const u& val_2,
         const u& rw_cm_1, const u& rw_cm_2, const u& rw_cm, bool flag) {
     outcome outcome_ = NOTHING_FOUND;
     for (u iter = 0; iter < 9; ++iter) {

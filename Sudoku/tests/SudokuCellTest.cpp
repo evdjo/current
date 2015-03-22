@@ -86,7 +86,53 @@ void SudokuTests::test_get_cand() {
     CPPUNIT_ASSERT_EQUAL(static_cast<u> (8), sc.get_cand(3));
 }
 
+void SudokuTests::test_rm_all_but_pair_cands_excluded() {
+    SudokuCell sc;
+    sc.init(0);
+
+    outcome outcome_ = sc.rmall_but(5, 7);
+
+    CPPUNIT_ASSERT_EQUAL(CANDIDATES_EXCLUDED, outcome_);
+    CPPUNIT_ASSERT_EQUAL(static_cast<u> (5), sc.get_cand(0));
+    CPPUNIT_ASSERT_EQUAL(static_cast<u> (7), sc.get_cand(1));
+}
+
+void SudokuTests::test_rm_all_but_pair_new_val_found() {
+    SudokuCell sc;
+    sc.init(0);
+    sc.rm_cand(1);
+    sc.rm_cand(2);
+    //  sc.rm_cand(3);
+    sc.rm_cand(4);
+    //  sc.rm_cand(5);
+    sc.rm_cand(6);
+    sc.rm_cand(7);
+    sc.rm_cand(8);
+    sc.rm_cand(9);
+
+    outcome outcome_ = sc.rmall_but(3, 4);
+
+    CPPUNIT_ASSERT_EQUAL(NEW_VALUE_FOUND, outcome_);
+
+    CPPUNIT_ASSERT_THROW(sc.get_cand(0), logic_error);
+}
+
+void SudokuTests::test_rm_all_but_pair_nothing_found() {
+
+    SudokuCell sc;
+    sc.init(0);
+    //  sc.rm_cand(1);
+    sc.rm_cand(2);
+    //  sc.rm_cand(3);
+    sc.rm_cand(4);
+    sc.rm_cand(5);
+    sc.rm_cand(6);
+    sc.rm_cand(7);
+    sc.rm_cand(8);
+    sc.rm_cand(9);
+
+    outcome outcome_ = sc.rmall_but(1, 3);
+    CPPUNIT_ASSERT_EQUAL(NOTHING_FOUND, outcome_);
 
 
-
-
+}

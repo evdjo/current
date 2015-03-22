@@ -1,7 +1,6 @@
 #ifndef SUDOKUUTILS_H
 #define	SUDOKUUTILS_H
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <stdexcept>
 
@@ -19,13 +18,6 @@ class SudokuUtils final {
 private:
     SudokuUtils();
 public:
-    /**
-     * Parses the sudoku input file and returns pointer to
-     * a 9x9 array of shorts ints. Each unknown value is represented as 0.
-     * @param input the ifstream pointer which leads us to the file
-     * @return Pointer to 9x9 array containing the sudoku
-     */
-    static void read(const string & filename, u *** array_ptr);
     static u zero_index(const u& index);
     static outcome max(const outcome& first, const outcome& second);
 };
@@ -33,8 +25,7 @@ public:
 struct occur_node {
 
     occur_node(const u&_row, const u&_column, const u& _val = 0)
-    : row(_row), column(_column), val(_val) {
-    }
+    : row(_row), column(_column), val(_val) { }
 
     bool operator==(const occur_node& other) {
         return row == other.row && column == other.column;
@@ -48,6 +39,10 @@ struct occur_node {
         return row == other.row && val == other.val;
     }
 
+    bool equals(const occur_node& other) {
+        return row == other.row && column == other.column && val == other.val;
+    }
+
     u val;
     u row;
     u column;
@@ -59,6 +54,10 @@ struct occurr_list {
     occur_node * m_first = nullptr;
     occur_node * m_last = nullptr;
     occur_node ** m_next_free = &m_first;
+
+    void add_(const occur_node& added, const u& val) {
+        add_(added.row, added.column, val);
+    }
 
     void add_(const u& row, const u& column, const u&val = 0) {
         *m_next_free = new occur_node(row, column, val);
@@ -119,9 +118,4 @@ struct occurr_list {
         }
     }
 };
-
-
-
-
 #endif	/* SUDOKUUTILS_H */
-

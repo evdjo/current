@@ -7,8 +7,7 @@ public:
 
     virtual void apply() = 0;
 
-    explicit SudokuAlgorithm(SudokuCell ** sudoku) : the_sudoku(sudoku) {
-    };
+    explicit SudokuAlgorithm(SudokuCell ** sudoku) : the_sudoku(sudoku) { };
 
 
 protected:
