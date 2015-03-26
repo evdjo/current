@@ -3,16 +3,15 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+using namespace std;
 
 typedef unsigned short u;
 
 enum outcome {
-    NOTHING_FOUND = 0,
-    CANDIDATES_EXCLUDED = 1,
-    NEW_VALUE_FOUND = 2
+    NOTHING = 0,
+    EXCLUDED_CAND = 1,
+    NEW_VALUE = 2
 };
-
-using namespace std;
 
 class SudokuUtils final {
 private:
@@ -22,100 +21,109 @@ public:
     static outcome max(const outcome& first, const outcome& second);
 };
 
-struct occur_node {
+template<class T> class sud_list final {
 
-    occur_node(const u&_row, const u&_column, const u& _val = 0)
-    : row(_row), column(_column), val(_val) { }
+    class list_node {
+        friend class sud_list;
+        list_node(const T& elem) : element(elem) { };
+        T element;
+        list_node * next;
+    };
 
-    bool operator==(const occur_node& other) {
-        return row == other.row && column == other.column;
-    }
-
-    bool equals_row(const occur_node& other) {
-        return column == other.column && val == other.val;
-    }
-
-    bool equals_column(const occur_node& other) {
-        return row == other.row && val == other.val;
-    }
-
-    bool equals(const occur_node& other) {
-        return row == other.row && column == other.column && val == other.val;
-    }
-
-    u val;
-    u row;
-    u column;
-    occur_node * next = nullptr;
-};
-
-struct occurr_list {
     u m_count = 0;
-    occur_node * m_first = nullptr;
-    occur_node * m_last = nullptr;
-    occur_node ** m_next_free = &m_first;
-
-    void add_(const occur_node& added, const u& val) {
-        add_(added.row, added.column, val);
+    list_node * m_first = nullptr;
+    list_node ** m_next_free = &m_first;
+public:
+    u size() const {
+        return m_count;
     }
-
-    void add_(const u& row, const u& column, const u&val = 0) {
-        *m_next_free = new occur_node(row, column, val);
-        m_last = *m_next_free;
+    void add(const T& element) {
+        *m_next_free = new list_node(element);
         m_next_free = &((*m_next_free)->next);
         *m_next_free = nullptr;
         ++m_count;
     }
-
-    void print_list() {
-        occur_node * curr = m_first;
-        while (curr != nullptr) {
-            cout << "[" << curr->row << "x";
-            cout << curr->column << "]";
-            curr = curr->next;
+    T& operator[](const u& index) const {
+        if (index < 0 || index >= m_count) {
+            throw invalid_argument("Out of bound! Requested element index=" +
+                                   std::to_string(index) +
+                                   ", list size=" +
+                                   std::to_string(m_count));
         }
+        list_node * current = m_first;
+        u i = 0;
+        while (current != nullptr && i++ != index && (current = current->next));
+        return (current->element);
     }
-
-    occur_node& first() const {
-        if (m_first == nullptr) throw logic_error("First is null...");
-        return *m_first;
-    }
-
-    occur_node& last() const {
-        if (m_first == nullptr) throw logic_error("First is null...");
-        return *m_last;
-    }
-
-    occur_node& operator[](const u& index) {
-        return at(index);
-    }
-
-    occur_node& at(const u& index) {
-        if (m_count > 0 && index < m_count) {
-            occur_node * curr = m_first;
-            for (u i = 0; i != index; ++i) {
-                curr = curr->next;
+    bool operator==(const sud_list&other) {
+        if (m_count == other.m_count) {
+            list_node * this_node = m_first;
+            list_node * other_node = other.m_first;
+            for (u i = 0; i < m_count; ++i) {
+                if (this_node->element != other_node->element) {
+                    return false;
+                }
+                this_node = this_node->next;
+                other_node = other_node->next;
             }
-            if (curr == nullptr)
-                throw logic_error("Could not find node!");
-
-            return *curr;
+            return true;
         }
-        throw invalid_argument("Bad index!");
-
+        return false;
+    }
+    bool operator!=(const sud_list&other) {
+        return !(operator==(other));
+    }
+    void print() {
+        for_each([](list_node * node){
+            cout << node->element;
+        });
+    }
+    sud_list() { }
+    sud_list(const sud_list& other) {
+        for (u i = 0; i < other.size(); ++i) {
+            this->add(other[i]);
+        }
+    }
+    virtual ~sud_list() {
+        for_each([](list_node * node){
+            delete node;
+        });
+    }
+    void for_each(void(*function) (list_node*)) {
+        list_node * current = m_first;
+        while (current != nullptr) {
+            list_node * temp = current->next;
+            function(current);
+            current = temp;
+        }
     }
 
-    u count() {
-        return m_count;
-    }
+};
 
-    ~occurr_list() {
-        occur_node * curr = m_first;
-        while (curr != nullptr) {
-            occur_node * temp = curr->next;
-            delete curr;
-            curr = temp;
-        }
+struct sud_node {
+    u rw = 0;
+    u cm = 0;
+    u val = 0;
+    sud_node(const u& row = 0, const u& column = 0, const u& value = 0) :
+    rw(row), cm(column), val(value) { }
+    bool operator==(const sud_node& other) {
+        return rw == other.rw && cm == other.cm && val == other.val;
+    }
+    bool equals_row(const sud_node& other) {
+        return rw == other.rw && val == other.val;
+    }
+    bool equals_column(const sud_node& other) {
+        return val == other.val && cm == other.cm;
+    }
+    bool operator!=(const sud_node& other) {
+        return !(*this == (other));
+    }
+    friend std::ostream& operator<<(std::ostream& out, const sud_node& s) {
+        out << "[" << s.rw << "x" << s.cm << "]" << "=" << s.val << "   ";
+        return out;
     }
 };
+
+
+
 #endif	/* SUDOKUUTILS_H */

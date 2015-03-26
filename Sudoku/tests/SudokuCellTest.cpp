@@ -8,36 +8,32 @@
 #include "SudokuCellTest.h"
 #include "../SudokuUtils.h"
 
-CPPUNIT_TEST_SUITE_REGISTRATION(SudokuTests);
+CPPUNIT_TEST_SUITE_REGISTRATION(SudokuCellTests);
 
-SudokuTests::SudokuTests() {
-}
+SudokuCellTests::SudokuCellTests() { }
 
-SudokuTests::~SudokuTests() {
-}
+SudokuCellTests::~SudokuCellTests() { }
 
-void SudokuTests::setUp() {
-}
+void SudokuCellTests::setUp() { }
 
-void SudokuTests::tearDown() {
-}
+void SudokuCellTests::tearDown() { }
 
-void SudokuTests::test_init_unknown_val() {
+void SudokuCellTests::test_init_unknown_val() {
 
     SudokuCell sc;
-    sc.init(0);
+    sc.init(0, 3, 3);
     CPPUNIT_ASSERT_EQUAL(sc.cand_count(), static_cast<u> (9));
 
     for (u i = 1; i < 10; ++i)
-        CPPUNIT_ASSERT(sc.is_candidate(i));
+        CPPUNIT_ASSERT(sc.is_cand(i));
 
 
 
 }
 
-void SudokuTests::test_init_known_val() {
+void SudokuCellTests::test_init_known_val() {
     SudokuCell sc;
-    sc.init(1);
+    sc.init(1, 3, 3);
 
     CPPUNIT_ASSERT(!sc.unknown());
 
@@ -45,23 +41,23 @@ void SudokuTests::test_init_known_val() {
     CPPUNIT_ASSERT_THROW(sc.cands(), logic_error);
     CPPUNIT_ASSERT_THROW(sc.rm_cand(5), logic_error);
     CPPUNIT_ASSERT_THROW(sc == sc, logic_error);
-    CPPUNIT_ASSERT_THROW(sc.is_candidate(5), logic_error);
-    CPPUNIT_ASSERT_THROW(sc.init(5), logic_error);
+    CPPUNIT_ASSERT_THROW(sc.is_cand(5), logic_error);
+    CPPUNIT_ASSERT_THROW(sc.init(5, 3, 3), logic_error);
 
 }
 
-void SudokuTests::test_rm_candidate() {
+void SudokuCellTests::test_rm_candidate() {
     SudokuCell sc;
-    sc.init(0);
+    sc.init(0, 3, 3);
     CPPUNIT_ASSERT_EQUAL(sc.cand_count(), static_cast<u> (9));
 
     for (u i = 1; i < 10; ++i)
-        CPPUNIT_ASSERT(sc.is_candidate(i));
+        CPPUNIT_ASSERT(sc.is_cand(i));
 }
 
-void SudokuTests::test_last_value() {
+void SudokuCellTests::test_last_value() {
     SudokuCell sc;
-    sc.init(0);
+    sc.init(0, 3, 3);
 
     for (u i = 1; i < 9; ++i)
         sc.rm_cand(i);
@@ -72,9 +68,9 @@ void SudokuTests::test_last_value() {
     CPPUNIT_ASSERT_EQUAL(static_cast<u> (9), sc.val());
 }
 
-void SudokuTests::test_get_cand() {
+void SudokuCellTests::test_get_cand() {
     SudokuCell sc;
-    sc.init(0);
+    sc.init(0, 3, 3);
     sc.rm_cand(1);
     sc.rm_cand(2);
     sc.rm_cand(4);
@@ -86,20 +82,20 @@ void SudokuTests::test_get_cand() {
     CPPUNIT_ASSERT_EQUAL(static_cast<u> (8), sc.get_cand(3));
 }
 
-void SudokuTests::test_rm_all_but_pair_cands_excluded() {
+void SudokuCellTests::test_rm_all_but_pair_cands_excluded() {
     SudokuCell sc;
-    sc.init(0);
+    sc.init(0, 3, 3);
 
     outcome outcome_ = sc.rmall_but(5, 7);
 
-    CPPUNIT_ASSERT_EQUAL(CANDIDATES_EXCLUDED, outcome_);
+    CPPUNIT_ASSERT_EQUAL(EXCLUDED_CAND, outcome_);
     CPPUNIT_ASSERT_EQUAL(static_cast<u> (5), sc.get_cand(0));
     CPPUNIT_ASSERT_EQUAL(static_cast<u> (7), sc.get_cand(1));
 }
 
-void SudokuTests::test_rm_all_but_pair_new_val_found() {
+void SudokuCellTests::test_rm_all_but_pair_new_val_found() {
     SudokuCell sc;
-    sc.init(0);
+    sc.init(0, 3, 3);
     sc.rm_cand(1);
     sc.rm_cand(2);
     //  sc.rm_cand(3);
@@ -112,15 +108,15 @@ void SudokuTests::test_rm_all_but_pair_new_val_found() {
 
     outcome outcome_ = sc.rmall_but(3, 4);
 
-    CPPUNIT_ASSERT_EQUAL(NEW_VALUE_FOUND, outcome_);
+    CPPUNIT_ASSERT_EQUAL(NEW_VALUE, outcome_);
 
     CPPUNIT_ASSERT_THROW(sc.get_cand(0), logic_error);
 }
 
-void SudokuTests::test_rm_all_but_pair_nothing_found() {
+void SudokuCellTests::test_rm_all_but_pair_nothing_found() {
 
     SudokuCell sc;
-    sc.init(0);
+    sc.init(0, 3, 3);
     //  sc.rm_cand(1);
     sc.rm_cand(2);
     //  sc.rm_cand(3);
@@ -132,7 +128,7 @@ void SudokuTests::test_rm_all_but_pair_nothing_found() {
     sc.rm_cand(9);
 
     outcome outcome_ = sc.rmall_but(1, 3);
-    CPPUNIT_ASSERT_EQUAL(NOTHING_FOUND, outcome_);
+    CPPUNIT_ASSERT_EQUAL(NOTHING, outcome_);
 
 
 }

@@ -19,11 +19,11 @@ void SudokuModel::verify() {
         for (u o = 0; o < 9; ++o) {
             if (occur_row[o] != 1) {
                 cout << "Verify failed..." << endl;
-                cout << o << " row, has occurrence > 1" << endl;
+                cout << i << " row, " << o + 1 << " has occurrence > 1" << endl;
                 return;
             } else if (occur_column[o] != 1) {
                 cout << "Verify failed..." << endl;
-                cout << o << " column, has occurrence > 1" << endl;
+                cout << i << " column, " << o + 1 << " has occurrence > 1" << endl;
                 return;
             }
         }
@@ -54,7 +54,7 @@ SudokuModel::SudokuModel(const string& filename) {
                 const char val = lines[row].at(column);
                 u val_ = (val == ' ') ? 0 : val - '0';
                 if (val_ >= 0 && val_ < 10) {
-                    the_sudoku[row][column].init(val_);
+                    the_sudoku[row][column].init(val_, row, column);
                 } else {
                     cerr << "Input file is not a valid sudoku." << endl;
                     return;
@@ -84,6 +84,7 @@ void SudokuModel::solve() {
     SingleCandidate sc(the_sudoku);
     kv.apply();
     sc.apply();
+
 }
 
 void SudokuModel::print() {

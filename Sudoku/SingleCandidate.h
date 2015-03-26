@@ -1,12 +1,12 @@
 #ifndef HIDDENSINGLES_H
 #define	HIDDENSINGLES_H
+#include <list>
 #include "SudokuUtils.h"
 #include "SudokuCell.h"
 #include "SinglePosition.h"
 
 class SingleCandidate final : public SudokuAlgorithm {
 public:
-
     SingleCandidate(SudokuCell**sudoku)
     : SudokuAlgorithm(sudoku), hs(sudoku) { }
     void apply();
@@ -17,26 +17,21 @@ private:
     outcome squares();
 
     // look for single candidates or naked pair
-    void count_occurences(const u&, const u&, occurr_list*);
+    void count_candidates(const u&, const u&, sud_list<sud_node>*);
 
     //analyze the occurrences
-    outcome search(occurr_list*);
+    outcome search(sud_list<sud_node>* list);
 
     // singles
-    void lock_single_candidate(const occurr_list&, const u&);
+    void lock_single_candidate(const sud_list<sud_node>&, const u&);
 
     // pairs
 
-    // naked single pair
-    outcome seek_single_pair(const occurr_list&, const u&);
-    outcome elim_single_pair(const u&, const u&, const u&, bool);
+    // pointing pair
+    outcome pointing_pair(const sud_list<sud_node>&, const u&);
+    outcome elim_pointing_pair(const u&, const u&, const u&, bool);
 
-    // naked double pair
-    outcome seek_naked_pairs(occurr_list& current);
-    outcome elim_naked_pairs(const u& val_1, const u& val_2,
-            const u& rw_cm_1, const u& rw_cm_2, const u& rw_cm, bool flag);
-
-    // hidden double pair
-    outcome seek_hidden_pairs(occurr_list& current);
+    // hidden pair
+    outcome seek_hidden_pairs(const sud_list<sud_list<sud_node>>&prs);
 };
 #endif	/* HIDDENSINGLES_H */

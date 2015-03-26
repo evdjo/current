@@ -6,8 +6,8 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "../SudokuCell.h"
 
-class SudokuTests : public CPPUNIT_NS::TestFixture {
-    CPPUNIT_TEST_SUITE(SudokuTests);
+class SudokuCellTests : public CPPUNIT_NS::TestFixture {
+    CPPUNIT_TEST_SUITE(SudokuCellTests);
 
     CPPUNIT_TEST(test_init_known_val);
     CPPUNIT_TEST(test_init_unknown_val);
@@ -21,8 +21,8 @@ class SudokuTests : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 
 public:
-    SudokuTests();
-    virtual ~SudokuTests();
+    SudokuCellTests();
+    virtual ~SudokuCellTests();
     void setUp();
     void tearDown();
 
