@@ -8,3 +8,4 @@ u SudokuUtils::zero_index(const u& index) {
 outcome SudokuUtils::max(const outcome& first, const outcome& second) {
     return first >= second ? first : second;
 }
+

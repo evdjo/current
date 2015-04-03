@@ -28,10 +28,30 @@ void SudokuModel::verify() {
             }
         }
     }
+    for (u i = 0; i < 7; i += 3) {
+        for (u o = 0; o < 7; o += 3) {
+
+            u occur_square[9]{0};
+            for (u z = i; z < i + 3; ++z) {
+                for (u q = o; q < o + 3; ++q) {
+                    ++occur_square[cell_val(z, q) - 1];
+                }
+            }
+
+            for (u o = 0; o < 9; ++o) {
+                if (occur_square[o] != 1) {
+                    cout << "Verify failed..." << endl;
+                    cout << i << o << " square , ";
+                    cout << o + 1 << " has occurrence > 1" << endl;
+                    return;
+                }
+            }
+        }
+    }
     cout << "Sudoku verified - OK." << endl;
 }
 
-SudokuModel::SudokuModel(const string& filename) {
+SudokuModel::SudokuModel(const string & filename) {
     ifstream input(filename);
     if (!input.good()) {
         cerr << "Could not open the Sudoku file." << endl;
@@ -47,9 +67,9 @@ SudokuModel::SudokuModel(const string& filename) {
         }
     }
     try {
-        the_sudoku = new SudokuCell*[9];
+        the_sudoku = new SudCell*[9];
         for (u row = 0; row < 9; row++) {
-            the_sudoku[row] = new SudokuCell[9];
+            the_sudoku[row] = new SudCell[9];
             for (u column = 0; column < 9; column++) {
                 const char val = lines[row].at(column);
                 u val_ = (val == ' ') ? 0 : val - '0';
@@ -80,50 +100,54 @@ SudokuModel::~SudokuModel() {
 
 void SudokuModel::solve() {
     if (the_sudoku == nullptr) return;
-    SinglePosition kv(the_sudoku);
-    SingleCandidate sc(the_sudoku);
-    kv.apply();
-    sc.apply();
+    KnownValuesRemover kv(the_sudoku);
+    Solver solver(the_sudoku);
+    solver.apply();
+    solver.debug_flag = true;
+    solver.apply();
+    //    print_possible_values();
+    //    solver.debug_flag = true;
+    //    solver.apply();
 
 }
 
-void SudokuModel::print() {
-    if (the_sudoku == nullptr) return;
-    for (u row = 0; row < 9; row++) {
-        for (u column = 0; column < 9; column++) {
-            cout << cell_val(row, column);
-            // print space each three columns
-            if ((8 - column) % 3 == 0) cout << " ";
-        }
-        cout << endl;
-        // print new line each three columns
-        if ((8 - row) % 3 == 0) cout << endl;
-    }
-}
+//void SudokuModel::print() {
+//    if (the_sudoku == nullptr) return;
+//    for (u row = 0; row < 9; row++) {
+//        for (u column = 0; column < 9; column++) {
+//            cout << cell_val(row, column);
+//            // print space each three columns
+//            if ((8 - column) % 3 == 0) cout << " ";
+//        }
+//        cout << endl;
+//        // print new line each three columns
+//        if ((8 - row) % 3 == 0) cout << endl;
+//    }
+//}
 
-void SudokuModel::print_possible_values() {
-    if (the_sudoku == nullptr) return;
-    for (u row = 0; row < 9; row++) {
-        cout << endl;
-        for (u column = 0; column < 9; column++) {
-            cout << '[' << row;
-            cout << "x";
-            cout << column << ']';
-            cout << "=";
-            if (cell(row, column).unknown())
-                cell(row, column).print_possible_values();
-            else {
-                for (u i = 1; i < 10; i++)
-                    if (i == cell_val(row, column))
-                        cout << " "; // << cell_val(row, column);
-                    else
-                        cout << " ";
-            }
-            cout << " ";
-            // print space each three columns
-            if ((8 - column) % 3 == 0) cout << "   ";
-        }
-        // print new line each three columns
-        if ((8 - row) % 3 == 0) cout << endl << endl;
-    }
-}
+//void SudokuModel::print_possible_values() {
+//    if (the_sudoku == nullptr) return;
+//    for (u row = 0; row < 9; row++) {
+//        cout << endl;
+//        for (u column = 0; column < 9; column++) {
+//            cout << '[' << row;
+//            cout << "x";
+//            cout << column << ']';
+//            cout << "=";
+//            if (cell(row, column).unknown())
+//                cell(row, column).print_possible_values();
+//            else {
+//                for (u i = 1; i < 10; i++)
+//                    if (i == cell_val(row, column))
+//                        cout << " "; // << cell_val(row, column);
+//                    else
+//                        cout << " ";
+//            }
+//            cout << " ";
+//            // print space each three columns
+//            if ((8 - column) % 3 == 0) cout << "   ";
+//        }
+//        // print new line each three columns
+//        if ((8 - row) % 3 == 0) cout << endl << endl;
+//    }
+//}

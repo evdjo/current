@@ -20,7 +20,7 @@ void SudokuCellTests::tearDown() { }
 
 void SudokuCellTests::test_init_unknown_val() {
 
-    SudokuCell sc;
+    SudCell sc;
     sc.init(0, 3, 3);
     CPPUNIT_ASSERT_EQUAL(sc.cand_count(), static_cast<u> (9));
 
@@ -32,7 +32,7 @@ void SudokuCellTests::test_init_unknown_val() {
 }
 
 void SudokuCellTests::test_init_known_val() {
-    SudokuCell sc;
+    SudCell sc;
     sc.init(1, 3, 3);
 
     CPPUNIT_ASSERT(!sc.unknown());
@@ -47,7 +47,7 @@ void SudokuCellTests::test_init_known_val() {
 }
 
 void SudokuCellTests::test_rm_candidate() {
-    SudokuCell sc;
+    SudCell sc;
     sc.init(0, 3, 3);
     CPPUNIT_ASSERT_EQUAL(sc.cand_count(), static_cast<u> (9));
 
@@ -56,7 +56,7 @@ void SudokuCellTests::test_rm_candidate() {
 }
 
 void SudokuCellTests::test_last_value() {
-    SudokuCell sc;
+    SudCell sc;
     sc.init(0, 3, 3);
 
     for (u i = 1; i < 9; ++i)
@@ -69,7 +69,7 @@ void SudokuCellTests::test_last_value() {
 }
 
 void SudokuCellTests::test_get_cand() {
-    SudokuCell sc;
+    SudCell sc;
     sc.init(0, 3, 3);
     sc.rm_cand(1);
     sc.rm_cand(2);
@@ -83,7 +83,7 @@ void SudokuCellTests::test_get_cand() {
 }
 
 void SudokuCellTests::test_rm_all_but_pair_cands_excluded() {
-    SudokuCell sc;
+    SudCell sc;
     sc.init(0, 3, 3);
 
     outcome outcome_ = sc.rmall_but(5, 7);
@@ -94,7 +94,7 @@ void SudokuCellTests::test_rm_all_but_pair_cands_excluded() {
 }
 
 void SudokuCellTests::test_rm_all_but_pair_new_val_found() {
-    SudokuCell sc;
+    SudCell sc;
     sc.init(0, 3, 3);
     sc.rm_cand(1);
     sc.rm_cand(2);
@@ -115,7 +115,7 @@ void SudokuCellTests::test_rm_all_but_pair_new_val_found() {
 
 void SudokuCellTests::test_rm_all_but_pair_nothing_found() {
 
-    SudokuCell sc;
+    SudCell sc;
     sc.init(0, 3, 3);
     //  sc.rm_cand(1);
     sc.rm_cand(2);

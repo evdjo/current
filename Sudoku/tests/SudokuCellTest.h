@@ -4,7 +4,7 @@
 #define	SUDOKUTESTS_H
 
 #include <cppunit/extensions/HelperMacros.h>
-#include "../SudokuCell.h"
+#include "../SudCell.h"
 
 class SudokuCellTests : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(SudokuCellTests);

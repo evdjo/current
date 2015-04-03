@@ -13,6 +13,12 @@ enum outcome {
     NEW_VALUE = 2
 };
 
+enum iter_over {
+    SQUARE = 1,
+    ROW = 2,
+    COLUMN = 3
+};
+
 class SudokuUtils final {
 private:
     SudokuUtils();
@@ -25,6 +31,7 @@ template<class T> class sud_list final {
 
     class list_node {
         friend class sud_list;
+    public:
         list_node(const T& elem) : element(elem) { };
         T element;
         list_node * next;
@@ -55,7 +62,7 @@ public:
         while (current != nullptr && i++ != index && (current = current->next));
         return (current->element);
     }
-    bool operator==(const sud_list&other) {
+    bool operator==(const sud_list&other) const {
         if (m_count == other.m_count) {
             list_node * this_node = m_first;
             list_node * other_node = other.m_first;
@@ -70,13 +77,20 @@ public:
         }
         return false;
     }
-    bool operator!=(const sud_list&other) {
+    bool operator!=(const sud_list&other) const {
         return !(operator==(other));
     }
-    void print() {
+    void print() const {
         for_each([](list_node * node){
             cout << node->element;
         });
+    }
+    friend std::ostream& operator<<(std::ostream& out, const sud_list& list) {
+        for (u p = 0; p < list.size(); ++p) {
+            out << list[p];
+        }
+        out << endl;
+        return out;
     }
     sud_list() { }
     sud_list(const sud_list& other) {
@@ -89,7 +103,7 @@ public:
             delete node;
         });
     }
-    void for_each(void(*function) (list_node*)) {
+    void for_each(void(*function) (list_node*)) const {
         list_node * current = m_first;
         while (current != nullptr) {
             list_node * temp = current->next;
@@ -97,7 +111,20 @@ public:
             current = temp;
         }
     }
-
+    bool contains(const T& element) const {
+        return contains([](const T& elem1, const T & elem2){
+            return elem1 == elem2;
+        }, element);
+    }
+    bool contains(bool(*cmpr)(const T&, const T&), const T& element) const {
+        list_node * current = m_first;
+        while (current != nullptr) {
+            list_node * temp = current->next;
+            if (cmpr(current->element, element)) return true;
+            current = temp;
+        }
+        return false;
+    }
 };
 
 struct sud_node {
@@ -106,7 +133,7 @@ struct sud_node {
     u val = 0;
     sud_node(const u& row = 0, const u& column = 0, const u& value = 0) :
     rw(row), cm(column), val(value) { }
-    bool operator==(const sud_node& other) {
+    bool operator==(const sud_node& other) const {
         return rw == other.rw && cm == other.cm && val == other.val;
     }
     bool equals_row(const sud_node& other) {
@@ -118,8 +145,8 @@ struct sud_node {
     bool operator!=(const sud_node& other) {
         return !(*this == (other));
     }
-    friend std::ostream& operator<<(std::ostream& out, const sud_node& s) {
-        out << "[" << s.rw << "x" << s.cm << "]" << "=" << s.val << "   ";
+    friend std::ostream& operator<<(std::ostream& out, const sud_node& n) {
+        out << "[" << n.rw << "x" << n.cm << "]" << "=" << n.val << "   ";
         return out;
     }
 };
