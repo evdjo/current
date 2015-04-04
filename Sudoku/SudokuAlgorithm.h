@@ -2,6 +2,7 @@
 #define	SUDOKUALGORITHM_H
 #include "SudCell.h"
 #include "SudokuUtils.h"
+#define zero(index) (((index) / 3) * 3)
 
 class SudokuAlgorithm {
 public:
@@ -80,8 +81,8 @@ protected:
         u rw = origin.node().rw;
         u cm = origin.node().cm;
         if (what == SQUARE) {
-            u zero_rw = SudokuUtils::zero_index(rw);
-            u zero_cm = SudokuUtils::zero_index(cm);
+            u zero_rw = zero(rw);
+            u zero_cm = zero(cm);
             for (u iter_rw = zero_rw; iter_rw < zero_rw + 3; ++iter_rw) {
                 for (u iter_cm = zero_cm; iter_cm < zero_cm + 3; ++iter_cm) {
                     if (skips && skip->contains(sud_node(iter_rw, iter_cm)))
@@ -90,7 +91,7 @@ protected:
 
                     SudCell& cell_ = cell(iter_rw, iter_cm);
                     outcome this_outcome = function(cell_, origin);
-                    _outcome = SudokuUtils::max(_outcome, this_outcome);
+                    _outcome = max(_outcome, this_outcome);
                 }
             }
         } else if (what == ROW) {
@@ -101,7 +102,7 @@ protected:
 
                 SudCell& cell_ = cell(rw, iter_index);
                 outcome this_outcome = function(cell_, origin);
-                _outcome = SudokuUtils::max(_outcome, this_outcome);
+                _outcome = max(_outcome, this_outcome);
             }
         } else if (what == COLUMN) {
             for (u iter_index = 0; iter_index < 9; ++iter_index) {
@@ -110,12 +111,40 @@ protected:
 
                 SudCell& cell_ = cell(iter_index, cm);
                 outcome this_outcome = function(cell_, origin);
-                _outcome = SudokuUtils::max(_outcome, this_outcome);
+                _outcome = max(_outcome, this_outcome);
             }
         }
         return _outcome;
 
     }
+    outcome iterate(iter_over what, const sud_node& origin, outcome(*f)(SudCell&)) {
+        outcome _otcm = NOTHING;
+        switch (what) {
+            case ROW:
+                for (u i_rw = 0; i_rw < 9; i_rw) {
+                    _otcm = max(_otcm, f(cell(i_rw, origin.cm)));
+                    if (_otcm == NEW_VALUE) return NEW_VALUE;
+                }
+                break;
+            case COLUMN:
+                for (u i_cm = 0; i_cm < 9; i_cm) {
+                    _otcm = max(_otcm, f(cell(origin.rw, i_cm)));
+                    if (_otcm == NEW_VALUE) return NEW_VALUE;
+                }
+                break;
+            case SQUARE:
+                u zero_rw = zero(origin.rw);
+                u zero_cm = zero(origin.cm);
+                for (u i_rw = zero_rw; i_rw < zero_rw + 3; ++i_rw) {
+                    for (u i_cm = zero_cm; i_cm < zero_cm + 3; ++i_cm) {
+                        _otcm = max(_otcm, f(cell(i_rw, i_cm)));
+                        if (_otcm == NEW_VALUE) return NEW_VALUE;
+                    }
+                }
+        }
+        return _otcm;
+    }
+
 
 };
 

@@ -16,7 +16,7 @@ void KnownValuesRemover::apply() {
                 u val = cell_val(row, column);
                 SudCell& _cell = cell(row, column);
                 if (!_cell.unknown()) { // if value is known
-                    if (eliminate_val(_cell))
+                    if (eliminate_val(_cell) != NOTHING)
                         keep_goin = true;
                 }
             }
@@ -27,21 +27,18 @@ void KnownValuesRemover::apply() {
 outcome KnownValuesRemover::
 eliminate_val(const SudCell& origin) {
     check_sudoku();
-    outcome _outcome = NOTHING;
 
-    outcome rows = iterate_over([](SudCell & cell, const SudCell & n) {
-        return (!cell.unknown()) ? NOTHING : cell.rm_cand(n.val());
-    }, origin, ROW);
+    auto elim = [&](iter_over what) {
+        return iterate_over([](SudCell & cell, const SudCell & n) {
+            return (!cell.unknown()) ? NOTHING : cell.rm_cand(n.val());
+        }, origin, what);
+    };
 
-    outcome columns = iterate_over([](SudCell & cell, const SudCell & n) {
-        return (!cell.unknown()) ? NOTHING : cell.rm_cand(n.val());
-    }, origin, COLUMN);
+    outcome rows = elim(ROW);
+    outcome columns = elim(COLUMN);
+    outcome squares = elim(SQUARE);
 
-    outcome squares = iterate_over([](SudCell & cell, const SudCell & n) {
-        return (!cell.unknown()) ? NOTHING : cell.rm_cand(n.val());
-    }, origin, SQUARE);
-
-    return SudokuUtils::max(rows, SudokuUtils::max(columns, squares));
+    return max(rows, max(columns, squares));
 }
 
 ///**

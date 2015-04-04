@@ -153,7 +153,7 @@ public:
             if (i == first || i == second) continue;
             else {
                 outcome curr = rm_cand(i);
-                outcome_ = SudokuUtils::max(outcome_, curr);
+                outcome_ = max(outcome_, curr);
                 if (outcome_ == NEW_VALUE)
                     break;
             }
@@ -187,6 +187,10 @@ public:
         m_cnds = nullptr;
     }
     SudCell() { }
+    //    SudCell(SudCell&& other) : m_node(other.m_node), m_cnds(other.m_cnds) {
+    //        cerr << "hi";
+    //        other.m_cnds = nullptr;
+    //    }
     SudCell(const SudCell& other) {
         m_node = other.m_node;
         if (m_node.val == 0) {

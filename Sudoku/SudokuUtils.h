@@ -5,26 +5,20 @@
 #include <stdexcept>
 using namespace std;
 
+
+
 typedef unsigned short u;
 
 enum outcome {
-    NOTHING = 0,
+    NEW_VALUE = 0,
     EXCLUDED_CAND = 1,
-    NEW_VALUE = 2
+    NOTHING = 2
 };
 
 enum iter_over {
     SQUARE = 1,
     ROW = 2,
     COLUMN = 3
-};
-
-class SudokuUtils final {
-private:
-    SudokuUtils();
-public:
-    static u zero_index(const u& index);
-    static outcome max(const outcome& first, const outcome& second);
 };
 
 template<class T> class sud_list final {
@@ -98,6 +92,16 @@ public:
             this->add(other[i]);
         }
     }
+    sud_list(sud_list&& other) :
+    m_first(other.m_first),
+    m_count(other.m_count),
+    m_next_free(other.m_next_free) {
+
+        other.m_first = nullptr;
+        other.m_count = 0;
+        other.m_next_free = nullptr;
+
+    }
     virtual ~sud_list() {
         for_each([](list_node * node){
             delete node;
@@ -131,6 +135,14 @@ struct sud_node {
     u rw = 0;
     u cm = 0;
     u val = 0;
+    //    sud_node operator=(const sud_node& other) {
+    //        rw=other.rw;
+    //        cm=other.cm;
+    //        val=other.val;
+    //    }
+    //    sud_node(const sud_node& other)
+    //    : rw(other.rw), cm(other.cm), val(other.val) { }
+    //    sud_node(sud_node&& other) : rw(other.rw), cm(other.cm), val(other.val) { }
     sud_node(const u& row = 0, const u& column = 0, const u& value = 0) :
     rw(row), cm(column), val(value) { }
     bool operator==(const sud_node& other) const {

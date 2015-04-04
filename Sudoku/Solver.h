@@ -6,7 +6,7 @@
 
 class Solver final : public SudokuAlgorithm {
 public:
-    bool debug_flag = false;
+    //    bool debug_flag = false;
     u bla = 0;
     Solver(SudCell**sudoku)
     : SudokuAlgorithm(sudoku), kvr(sudoku) { }
@@ -18,7 +18,7 @@ private:
     outcome squares();
 
     // count candidate occurrences
-    void count_candidates(const u&, const u&, sud_list<sud_node>*);
+    void count_cands(const u&, const u&, sud_list<sud_node>*);
 
     //analyze the occurrences
     outcome search(sud_list<sud_node>* list);

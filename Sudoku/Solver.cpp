@@ -15,7 +15,6 @@ void Solver::apply() {
         if (_rows == NOTHING &&
                 _columns == NOTHING &&
                 _squares == NOTHING) {
-
             print_possible_values();
             return;
         }
@@ -24,95 +23,62 @@ void Solver::apply() {
 }
 
 outcome Solver::rows() {
-    outcome outcome_rows = NOTHING;
+    outcome _rows = NOTHING;
     for (u row = 0; row < 9; ++row) {
         sud_list<sud_node> candidates[9];
-        sud_list<sud_node> two_cands;
-        sud_list<sud_node> three_cands;
+
         for (u column = 0; column < 9; ++column) {
             SudCell & _cell = cell(row, column);
             if (!_cell.unknown()) continue;
-            count_candidates(row, column, candidates);
-            if (_cell.cand_count() == 2) {
-                two_cands.add(_cell.m_node);
-            } else if (_cell.cand_count() == 3) {
-                three_cands.add(_cell.m_node);
-            }
+            count_cands(row, column, candidates);
         }
-        outcome row_outcome = search(candidates);
-        outcome_rows = SudokuUtils::max(outcome_rows, row_outcome);
-        if (outcome_rows == NEW_VALUE) break;
-
-        if (two_cands.size() > 1) {
-            outcome _naked_pairs = naked_pairs(two_cands, false);
-            outcome_rows = SudokuUtils::max(outcome_rows, _naked_pairs);
-            if (outcome_rows == NEW_VALUE) break;
-        }
-
-        if (three_cands.size() > 1) {
-            outcome _naked_trip = naked_trip(three_cands, two_cands, ROW);
-            outcome_rows = SudokuUtils::max(outcome_rows, _naked_trip);
-            if (outcome_rows == NEW_VALUE) break;
-        }
-
+        outcome _row = search(candidates);
+        _rows = max(_rows, _row);
+        if (_rows == NEW_VALUE) break;
     }
-    return outcome_rows;
+    return _rows;
 }
 
 outcome Solver::columns() {
-    outcome outcome_columns = NOTHING;
+    outcome _columns = NOTHING;
     for (u column = 0; column < 9; ++column) {
         sud_list<sud_node> candidates[9];
-        sud_list<sud_node> two_cands;
         for (u row = 0; row < 9; ++row) {
             SudCell & _cell = cell(row, column);
             if (!_cell.unknown()) continue;
-            count_candidates(row, column, candidates);
-            if (_cell.cand_count() == 2) {
-                two_cands.add(_cell.m_node);
-            }
+            count_cands(row, column, candidates);
         }
-        outcome outcome_column = search(candidates);
-        outcome_columns = SudokuUtils::max(outcome_columns, outcome_column);
-        if (outcome_columns == NEW_VALUE) break;
-
-        if (two_cands.size() > 1) {
-            outcome _naked_pairs = naked_pairs(two_cands, true);
-            outcome_columns = SudokuUtils::max(outcome_columns, _naked_pairs);
-            if (outcome_columns == NEW_VALUE) break;
-        }
-
-
+        outcome _column = search(candidates);
+        _columns = max(_columns, _column);
+        if (_columns == NEW_VALUE) break;
     }
-    return outcome_columns;
+    return _columns;
 }
 
 outcome Solver::squares() {
-    outcome outcome_squares = NOTHING;
+    outcome _squares = NOTHING;
     for (u srow = 0; srow <= 6; srow += 3) {
         for (u scmn = 0; scmn <= 6; scmn += 3) {
             sud_list<sud_node> candidates[9];
             for (u row = srow; row < srow + 3; ++row) {
                 for (u cmn = scmn; cmn < scmn + 3; ++cmn) {
                     if (!cell(row, cmn).unknown()) continue;
-                    count_candidates(row, cmn, candidates);
+                    count_cands(row, cmn, candidates);
                 }
             }
-            outcome outcome_square = search(candidates);
-            outcome_squares = SudokuUtils::max(outcome_squares, outcome_square);
-            if (outcome_squares == NEW_VALUE) break;
+            outcome _square = search(candidates);
+            _squares = max(_squares, _square);
+            if (_squares == NEW_VALUE) break;
         }
     }
-    return outcome_squares;
+    return _squares;
 }
 
-void Solver::count_candidates
+void Solver::count_cands
 (const u& row, const u& column, sud_list<sud_node>* list) {
     SudCell& sc = cell(row, column);
     for (u i = 0; i < 9; ++i) {
-        if (sc.is_cand(i + 1)) {
-            list[i].add(sud_node(row, column, i + 1));
-        }
+        if (sc.is_cand(i + 1)) list[i].add(sud_node(row, column, i + 1));
     }
 }
 
@@ -131,7 +97,7 @@ outcome Solver::search(sud_list<sud_node>* list) {
         } else if (cand_occur.size() == 2) {
 
             outcome _pointing_pair = pointing_pair(cand_occur, candidate);
-            search_outcome = SudokuUtils::max(search_outcome, _pointing_pair);
+            search_outcome = max(search_outcome, _pointing_pair);
             if (search_outcome == NEW_VALUE) return NEW_VALUE;
             pairs.add(sud_list<sud_node>());
             pairs[pairs.size() - 1].add(cand_occur[0]);
@@ -140,7 +106,7 @@ outcome Solver::search(sud_list<sud_node>* list) {
         } else if (cand_occur.size() == 3) {
 
             outcome _pnt_tripple = pointing_trip(cand_occur, candidate);
-            search_outcome = SudokuUtils::max(search_outcome, _pnt_tripple);
+            search_outcome = max(search_outcome, _pnt_tripple);
             if (search_outcome == NEW_VALUE) return NEW_VALUE;
             tripples.add(sud_list<sud_node>());
             tripples[tripples.size() - 1].add(cand_occur[0]);
@@ -151,7 +117,7 @@ outcome Solver::search(sud_list<sud_node>* list) {
     }
     if (pairs.size() > 1) {
         outcome hidden_pairs_outcome = hidden_pairs(pairs);
-        search_outcome = SudokuUtils::max(search_outcome, hidden_pairs_outcome);
+        search_outcome = max(search_outcome, hidden_pairs_outcome);
     }
 
     return search_outcome;
@@ -192,7 +158,7 @@ outcome Solver::hidden_pairs
                 outcome _1 = cell1.rmall_but(prs[i][0].val, prs[o][0].val);
                 outcome _2 = cell2.rmall_but(prs[i][0].val, prs[o][0].val);
 
-                return SudokuUtils::max(_1, _2);
+                return max(_1, _2);
             }
         }
     }
@@ -208,11 +174,11 @@ outcome Solver::pointing_pair
     u cm1 = list[0].cm;
     u cm2 = list[1].cm;
 
-    u zero_rw1 = SudokuUtils::zero_index(rw1);
-    u zero_rw2 = SudokuUtils::zero_index(rw2);
+    u zero_rw1 = zero(rw1);
+    u zero_rw2 = zero(rw2);
 
-    u zero_cm1 = SudokuUtils::zero_index(cm1);
-    u zero_cm2 = SudokuUtils::zero_index(cm2);
+    u zero_cm1 = zero(cm1);
+    u zero_cm2 = zero(cm2);
 
     if (rw1 == rw2 && zero_cm1 == zero_cm2) {
         outcome_ = elim_pointing_pair(rw1, cm1, value, true);
@@ -231,12 +197,12 @@ outcome Solver::pointing_pair
 outcome Solver::elim_pointing_pair
 (const u& x, const u& y, const u& val, bool flag) {
     outcome outcome_ = NOTHING;
-    u zero_index = SudokuUtils::zero_index(y);
+    u zero_index = zero(y);
     for (u iter_over = 0; iter_over < 9; ++iter_over) {
         if (iter_over < zero_index || iter_over >= zero_index + 3) {
             SudCell& sc = flag ? cell(x, iter_over) : cell(iter_over, x);
             if (sc.unknown()) {
-                outcome_ = SudokuUtils::max(outcome_, sc.rm_cand(val));
+                outcome_ = max(outcome_, sc.rm_cand(val));
             }
         }
     }
@@ -265,13 +231,13 @@ outcome Solver::pointing_trip
     u cm2 = list[1].cm;
     u cm3 = list[2].cm;
 
-    u zero_rw1 = SudokuUtils::zero_index(rw1);
-    u zero_rw2 = SudokuUtils::zero_index(rw2);
-    u zero_rw3 = SudokuUtils::zero_index(rw3);
+    u zero_rw1 = zero(rw1);
+    u zero_rw2 = zero(rw2);
+    u zero_rw3 = zero(rw3);
 
-    u zero_cm1 = SudokuUtils::zero_index(cm1);
-    u zero_cm2 = SudokuUtils::zero_index(cm2);
-    u zero_cm3 = SudokuUtils::zero_index(cm3);
+    u zero_cm1 = zero(cm1);
+    u zero_cm2 = zero(cm2);
+    u zero_cm3 = zero(cm3);
 
     bool occurr_same_row = (rw1 == rw2 && rw2 == rw3);
     bool occurr_row_sqr = (zero_cm1 == zero_cm2 && zero_cm2 == zero_cm3);
@@ -314,138 +280,16 @@ outcome Solver::pointing_trip
 outcome Solver::elim_pointing_trip
 (const u& x, const u& y, const u& val, bool flag) {
     outcome outcome_ = NOTHING;
-    u zero_x = SudokuUtils::zero_index(x);
-    u zero_y = SudokuUtils::zero_index(y);
+    u zero_x = zero(x);
+    u zero_y = zero(y);
     for (u iter_x = zero_x; iter_x < zero_x + 3; ++iter_x) {
         if (iter_x == x) continue;
         for (u iter_y = zero_y; iter_y < zero_y + 3; ++iter_y) {
             SudCell& sc = flag ? cell(iter_x, iter_y) : cell(iter_y, iter_x);
             if (sc.unknown()) {
-                outcome_ = SudokuUtils::max(outcome_, sc.rm_cand(val));
+                outcome_ = max(outcome_, sc.rm_cand(val));
             }
         }
     }
     return outcome_;
 }
-
-outcome Solver::naked_pairs(const sud_list<sud_node>& two_cands, bool flag) {
-    outcome naked_pairs = NOTHING;
-    for (u i = 0; i < two_cands.size(); ++i) {
-        for (u z = i + 1; z < two_cands.size(); ++z) {
-            SudCell& cell_1 = cell(two_cands[i].rw, two_cands[i].cm);
-            SudCell& cell_2 = cell(two_cands[z].rw, two_cands[z].cm);
-            if (cell_1 == cell_2) {
-                outcome _outcome = elim_naked_pair(cell_1, cell_2, flag);
-                naked_pairs = SudokuUtils::max(naked_pairs, _outcome);
-                if (naked_pairs == NEW_VALUE) return NEW_VALUE;
-            }
-        }
-    }
-    return naked_pairs;
-}
-
-outcome Solver::elim_naked_pair
-(const SudCell& cell_1, const SudCell& cell_2, bool flag) {
-    outcome _outcome = NOTHING;
-
-    u curr = flag ? cell_1.m_node.cm : cell_1.m_node.rw;
-
-    u skip_iter_1 = flag ? cell_1.m_node.rw : cell_1.m_node.cm;
-    u skip_iter_2 = flag ? cell_2.m_node.rw : cell_2.m_node.cm;
-
-    u val_1 = cell_1.get_cand(0);
-    u val_2 = cell_1.get_cand(1);
-
-    for (u iter = 0; iter < 9; ++iter) {
-        SudCell& _cell = flag ? cell(iter, curr) : cell(curr, iter);
-
-        if (!_cell.unknown() || iter == skip_iter_1 || iter == skip_iter_2)
-            continue;
-
-        outcome first = _cell.rm_cand(val_1);
-        if (first == NEW_VALUE) return NEW_VALUE;
-
-        outcome second = _cell.rm_cand(val_2);
-        if (second == NEW_VALUE) return NEW_VALUE;
-
-        _outcome = SudokuUtils::max(_outcome, first);
-        _outcome = SudokuUtils::max(_outcome, second);
-    }
-    return _outcome;
-}
-
-outcome Solver::naked_trip
-(const sud_list<sud_node>& threes, const sud_list<sud_node>& twos,
-        iter_over flag) {
-    outcome outcome_ = NOTHING;
-    for (u first = 0; first < threes.size(); ++first) {
-
-        SudCell& cell_1 = cell(threes[first]);
-
-        for (u second = first + 1; second < threes.size(); ++second) {
-
-            SudCell& cell_2 = cell(threes[second]);
-            bool first_two_equal = cell_1 == cell_2;
-            if (first_two_equal) {
-                bool three_equal = false;
-
-                for (u third = first + 2; third < threes.size(); ++third) {
-
-                    SudCell& cell_3 = cell(threes[third]);
-                    if (cell_1 == cell_3) {
-                        three_equal = true;
-                        outcome o_ = elim_trip(cell_1, cell_2, cell_3, flag);
-                        outcome_ = SudokuUtils::max(outcome_, o_);
-                        if (outcome_ == NEW_VALUE) return NEW_VALUE;
-                    }
-                }
-                if (!three_equal && twos.size() > 0) {
-                    outcome o_ = two_equal_threes(cell_1, cell_2, twos, flag);
-                    outcome_ = SudokuUtils::max(outcome_, o_);
-                    if (outcome_ == NEW_VALUE) return NEW_VALUE;
-                }
-            }
-        }
-    }
-    return outcome_;
-}
-
-outcome Solver::two_equal_threes
-(const SudCell& cell_1, const SudCell& cell_2,
-        const sud_list<sud_node>& twos, iter_over flag) {
-    for (u q = 0; q < twos.size(); ++q) {
-        SudCell& cell_3 = cell(twos[q]);
-        if (cell_1.subset_equals(cell_3)) {
-            return elim_trip(cell_1, cell_2, cell_3, flag);
-        }
-    }
-    return NOTHING;
-}
-
-outcome Solver::elim_trip
-(const SudCell & cell_1, const SudCell & cell_2, const SudCell & cell_3,
-        iter_over flag) {
-
-    outcome _outcome = NOTHING;
-    sud_list<sud_node> skip;
-    skip.add(cell_1.node());
-    skip.add(cell_2.node());
-    skip.add(cell_3.node());
-
-    return iterate_over([](SudCell& cell, const SudCell & origin) {
-        if (cell.unknown()) {
-            u val_1 = origin.get_cand(0);
-            u val_2 = origin.get_cand(1);
-            u val_3 = origin.get_cand(2);
-            outcome otcm_1 = cell.rm_cand(val_1);
-            if (otcm_1 == NEW_VALUE) return NEW_VALUE;
-            outcome otcm_2 = cell.rm_cand(val_2);
-            if (otcm_2 == NEW_VALUE) return NEW_VALUE;
-            outcome otcm_3 = cell.rm_cand(val_3);
-            if (otcm_3 == NEW_VALUE) return NEW_VALUE;
-            return SudokuUtils::max(otcm_1, SudokuUtils::max(otcm_2, otcm_3));
-
-        } else return NOTHING;
-    }, cell_1, flag, &skip);
-}
-

@@ -103,51 +103,6 @@ void SudokuModel::solve() {
     KnownValuesRemover kv(the_sudoku);
     Solver solver(the_sudoku);
     solver.apply();
-    solver.debug_flag = true;
-    solver.apply();
-    //    print_possible_values();
     //    solver.debug_flag = true;
-    //    solver.apply();
-
+    //    print_possible_values();
 }
-
-//void SudokuModel::print() {
-//    if (the_sudoku == nullptr) return;
-//    for (u row = 0; row < 9; row++) {
-//        for (u column = 0; column < 9; column++) {
-//            cout << cell_val(row, column);
-//            // print space each three columns
-//            if ((8 - column) % 3 == 0) cout << " ";
-//        }
-//        cout << endl;
-//        // print new line each three columns
-//        if ((8 - row) % 3 == 0) cout << endl;
-//    }
-//}
-
-//void SudokuModel::print_possible_values() {
-//    if (the_sudoku == nullptr) return;
-//    for (u row = 0; row < 9; row++) {
-//        cout << endl;
-//        for (u column = 0; column < 9; column++) {
-//            cout << '[' << row;
-//            cout << "x";
-//            cout << column << ']';
-//            cout << "=";
-//            if (cell(row, column).unknown())
-//                cell(row, column).print_possible_values();
-//            else {
-//                for (u i = 1; i < 10; i++)
-//                    if (i == cell_val(row, column))
-//                        cout << " "; // << cell_val(row, column);
-//                    else
-//                        cout << " ";
-//            }
-//            cout << " ";
-//            // print space each three columns
-//            if ((8 - column) % 3 == 0) cout << "   ";
-//        }
-//        // print new line each three columns
-//        if ((8 - row) % 3 == 0) cout << endl << endl;
-//    }
-//}
