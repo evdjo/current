@@ -2,7 +2,7 @@
 #define	CANDIDATESUBSETTEST_H
 
 #include <cppunit/extensions/HelperMacros.h>
-#include "SudCell.h"
+#include "Cell.h"
 #include "SudokuUtils.h"
 
 class CandidateSubsetTest : public CPPUNIT_NS::TestFixture {

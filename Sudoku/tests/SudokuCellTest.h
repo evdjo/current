@@ -4,7 +4,7 @@
 #define	SUDOKUTESTS_H
 
 #include <cppunit/extensions/HelperMacros.h>
-#include "../SudCell.h"
+#include "../Cell.h"
 
 class SudokuCellTests : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(SudokuCellTests);
@@ -17,6 +17,8 @@ class SudokuCellTests : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST(test_rm_all_but_pair_cands_excluded);
     CPPUNIT_TEST(test_rm_all_but_pair_new_val_found);
     CPPUNIT_TEST(test_rm_all_but_pair_nothing_found);
+    CPPUNIT_TEST(test_join_no_intersection);
+    CPPUNIT_TEST(test_join_with_intersection);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -35,6 +37,8 @@ private:
     void test_rm_all_but_pair_cands_excluded();
     void test_rm_all_but_pair_new_val_found();
     void test_rm_all_but_pair_nothing_found();
+    void test_join_no_intersection();
+    void test_join_with_intersection();
 };
 
 #endif	/* SUDOKUTESTS_H */

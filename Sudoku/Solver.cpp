@@ -4,7 +4,6 @@ void Solver::apply() {
 
     while (true) {
         kvr.apply();
-
         outcome _rows = rows();
         if (_rows == NEW_VALUE) continue;
         outcome _columns = columns();
@@ -16,9 +15,9 @@ void Solver::apply() {
                 _columns == NOTHING &&
                 _squares == NOTHING) {
             print_possible_values();
+            print();
             return;
         }
-
     }
 }
 
@@ -26,15 +25,20 @@ outcome Solver::rows() {
     outcome _rows = NOTHING;
     for (u row = 0; row < 9; ++row) {
         sud_list<sud_node> candidates[9];
+        sud_list<Cell> candidates_fourorless;
 
         for (u column = 0; column < 9; ++column) {
-            SudCell & _cell = cell(row, column);
+            Cell & _cell = cell(row, column);
             if (!_cell.unknown()) continue;
             count_cands(row, column, candidates);
+            if (_cell.cand_count() < 5) {
+                candidates_fourorless.add(_cell);
+            }
         }
         outcome _row = search(candidates);
         _rows = max(_rows, _row);
         if (_rows == NEW_VALUE) break;
+        naked(candidates_fourorless, ROW);
     }
     return _rows;
 }
@@ -43,14 +47,20 @@ outcome Solver::columns() {
     outcome _columns = NOTHING;
     for (u column = 0; column < 9; ++column) {
         sud_list<sud_node> candidates[9];
+        sud_list<Cell> candidates_fourorless;
         for (u row = 0; row < 9; ++row) {
-            SudCell & _cell = cell(row, column);
+            Cell & _cell = cell(row, column);
             if (!_cell.unknown()) continue;
             count_cands(row, column, candidates);
+            if (_cell.cand_count() < 5) {
+                candidates_fourorless.add(_cell);
+            }
         }
         outcome _column = search(candidates);
         _columns = max(_columns, _column);
         if (_columns == NEW_VALUE) break;
+        if (_columns == NEW_VALUE) break;
+        naked(candidates_fourorless, COLUMN);
     }
     return _columns;
 }
@@ -60,15 +70,21 @@ outcome Solver::squares() {
     for (u srow = 0; srow <= 6; srow += 3) {
         for (u scmn = 0; scmn <= 6; scmn += 3) {
             sud_list<sud_node> candidates[9];
+            sud_list<Cell> candidates_fourorless;
             for (u row = srow; row < srow + 3; ++row) {
                 for (u cmn = scmn; cmn < scmn + 3; ++cmn) {
-                    if (!cell(row, cmn).unknown()) continue;
+                    Cell & _cell = cell(row, cmn);
+                    if (!_cell.unknown()) continue;
                     count_cands(row, cmn, candidates);
+                    if (_cell.cand_count() < 5) {
+                        candidates_fourorless.add(_cell);
+                    }
                 }
             }
             outcome _square = search(candidates);
             _squares = max(_squares, _square);
             if (_squares == NEW_VALUE) break;
+            naked(candidates_fourorless, SQUARE);
         }
     }
     return _squares;
@@ -76,7 +92,7 @@ outcome Solver::squares() {
 
 void Solver::count_cands
 (const u& row, const u& column, sud_list<sud_node>* list) {
-    SudCell& sc = cell(row, column);
+    Cell& sc = cell(row, column);
     for (u i = 0; i < 9; ++i) {
         if (sc.is_cand(i + 1)) list[i].add(sud_node(row, column, i + 1));
     }
@@ -147,8 +163,8 @@ outcome Solver::hidden_pairs
                     && p1_occur2.rw == p2_occur2.rw
                     && p1_occur2.cm == p2_occur2.cm) {
 
-                SudCell& cell1 = cell(p1_occur1.rw, p1_occur1.cm);
-                SudCell& cell2 = cell(p1_occur2.rw, p1_occur2.cm);
+                Cell& cell1 = cell(p1_occur1.rw, p1_occur1.cm);
+                Cell& cell2 = cell(p1_occur2.rw, p1_occur2.cm);
 
                 if (!(cell1.unknown() && cell2.unknown())) {
                     cout << "HEY LOOK AT ME CODE : 1005";
@@ -200,7 +216,7 @@ outcome Solver::elim_pointing_pair
     u zero_index = zero(y);
     for (u iter_over = 0; iter_over < 9; ++iter_over) {
         if (iter_over < zero_index || iter_over >= zero_index + 3) {
-            SudCell& sc = flag ? cell(x, iter_over) : cell(iter_over, x);
+            Cell& sc = flag ? cell(x, iter_over) : cell(iter_over, x);
             if (sc.unknown()) {
                 outcome_ = max(outcome_, sc.rm_cand(val));
             }
@@ -285,7 +301,7 @@ outcome Solver::elim_pointing_trip
     for (u iter_x = zero_x; iter_x < zero_x + 3; ++iter_x) {
         if (iter_x == x) continue;
         for (u iter_y = zero_y; iter_y < zero_y + 3; ++iter_y) {
-            SudCell& sc = flag ? cell(iter_x, iter_y) : cell(iter_y, iter_x);
+            Cell& sc = flag ? cell(iter_x, iter_y) : cell(iter_y, iter_x);
             if (sc.unknown()) {
                 outcome_ = max(outcome_, sc.rm_cand(val));
             }
@@ -293,3 +309,49 @@ outcome Solver::elim_pointing_trip
     }
     return outcome_;
 }
+
+outcome Solver::naked(const sud_list<Cell>& list, iter_over what) {
+
+    for (u current = 0; current < list.size(); ++current) {
+        Cell& cell_1 = list[current];
+        for (u i = current + 1; i < list.size(); ++i) {
+            Cell& cell_2 = list[i];
+
+            if (cell_1.cand_count() == 2 && cell_2.cand_count() == 2 &&
+                    cell_1 == cell_2) {
+                return elim_naked_pair(cell_1, cell_2, what);
+            }
+
+            for (u z = i + 1; z < list.size(); ++z) {
+                Cell& cell_3 = list[z];
+                if (cell_1.cand_count() <= 3 && cell_2.cand_count() <= 3 &&
+                        cell_3.cand_count() <= 3) {
+                    sud_list<u> _join = join(cell_1, join(cell_2, cell_3));
+                    if (_join.size() == 3) {
+                        // eliminate naked tripple
+                    }
+                }
+
+                for (u j = z + 1; j < list.size(); ++j) {
+                    Cell& cell_4 = list[j];
+                    if (cell_1.cand_count() <= 4 &&
+                            cell_2.cand_count() <= 4 &&
+                            cell_3.cand_count() <= 4 &&
+                            cell_4.cand_count() <= 4) {
+                        sud_list<u> _join = join(cell_1,
+                                join(cell_2, join(cell_3, cell_4)));
+                        if (_join.size() == 4) {
+                            // eliminate naked quad
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+outcome Solver::elim_naked_pair
+(const Cell& cell_1, const Cell& cell_2, iter_over what) {
+
+
+ }

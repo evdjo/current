@@ -67,9 +67,9 @@ SudokuModel::SudokuModel(const string & filename) {
         }
     }
     try {
-        the_sudoku = new SudCell*[9];
+        the_sudoku = new Cell*[9];
         for (u row = 0; row < 9; row++) {
-            the_sudoku[row] = new SudCell[9];
+            the_sudoku[row] = new Cell[9];
             for (u column = 0; column < 9; column++) {
                 const char val = lines[row].at(column);
                 u val_ = (val == ' ') ? 0 : val - '0';

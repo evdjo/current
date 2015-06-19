@@ -11,8 +11,8 @@ typedef unsigned short u;
 
 enum outcome {
     NEW_VALUE = 0,
-    EXCLUDED_CAND = 1,
-    NOTHING = 2
+    EXCLUDED_CAND = -1,
+    NOTHING = -2
 };
 
 enum iter_over {
@@ -35,14 +35,35 @@ template<class T> class sud_list final {
     list_node * m_first = nullptr;
     list_node ** m_next_free = &m_first;
 public:
+    sud_list() { }
+    sud_list(const sud_list& other) {
+        for (u i = 0; i < other.size(); ++i) {
+            this->add(other[i]);
+        }
+    }
+    sud_list(sud_list&& other) :
+    m_first(other.m_first),
+    m_count(other.m_count),
+    m_next_free(other.m_next_free) {
+        other.m_first = nullptr;
+        other.m_count = 0;
+        other.m_next_free = nullptr;
+    }
     u size() const {
         return m_count;
     }
-    void add(const T& element) {
+    //    void add(const T& element) {
+    //        *m_next_free = new list_node(element);
+    //        m_next_free = &((*m_next_free)->next);
+    //        *m_next_free = nullptr;
+    //        ++m_count;
+    //    }
+    sud_list<T>& add(const T& element) {
         *m_next_free = new list_node(element);
         m_next_free = &((*m_next_free)->next);
         *m_next_free = nullptr;
         ++m_count;
+        return *this;
     }
     T& operator[](const u& index) const {
         if (index < 0 || index >= m_count) {
@@ -85,22 +106,6 @@ public:
         }
         out << endl;
         return out;
-    }
-    sud_list() { }
-    sud_list(const sud_list& other) {
-        for (u i = 0; i < other.size(); ++i) {
-            this->add(other[i]);
-        }
-    }
-    sud_list(sud_list&& other) :
-    m_first(other.m_first),
-    m_count(other.m_count),
-    m_next_free(other.m_next_free) {
-
-        other.m_first = nullptr;
-        other.m_count = 0;
-        other.m_next_free = nullptr;
-
     }
     virtual ~sud_list() {
         for_each([](list_node * node){

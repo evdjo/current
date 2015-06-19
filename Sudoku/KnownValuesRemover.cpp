@@ -14,9 +14,9 @@ void KnownValuesRemover::apply() {
         for (u row = 0; row < 9; ++row) {
             for (u column = 0; column < 9; ++column) {
                 u val = cell_val(row, column);
-                SudCell& _cell = cell(row, column);
+                Cell& _cell = cell(row, column);
                 if (!_cell.unknown()) { // if value is known
-                    if (eliminate_val(_cell) != NOTHING)
+                    if (eliminate_val(_cell.node()) != NOTHING)
                         keep_goin = true;
                 }
             }
@@ -24,13 +24,11 @@ void KnownValuesRemover::apply() {
     }
 }
 
-outcome KnownValuesRemover::
-eliminate_val(const SudCell& origin) {
+outcome KnownValuesRemover::eliminate_val(const sud_node& origin) {
     check_sudoku();
-
     auto elim = [&](iter_over what) {
-        return iterate_over([](SudCell & cell, const SudCell & n) {
-            return (!cell.unknown()) ? NOTHING : cell.rm_cand(n.val());
+        return iterate_over([](Cell & cell, const sud_node & origin) {
+            return (!cell.unknown()) ? NOTHING : cell.rm_cand(origin.val);
         }, origin, what);
     };
 

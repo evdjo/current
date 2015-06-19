@@ -20,7 +20,7 @@ void SudokuCellTests::tearDown() { }
 
 void SudokuCellTests::test_init_unknown_val() {
 
-    SudCell sc;
+    Cell sc;
     sc.init(0, 3, 3);
     CPPUNIT_ASSERT_EQUAL(sc.cand_count(), static_cast<u> (9));
 
@@ -32,7 +32,7 @@ void SudokuCellTests::test_init_unknown_val() {
 }
 
 void SudokuCellTests::test_init_known_val() {
-    SudCell sc;
+    Cell sc;
     sc.init(1, 3, 3);
 
     CPPUNIT_ASSERT(!sc.unknown());
@@ -47,7 +47,7 @@ void SudokuCellTests::test_init_known_val() {
 }
 
 void SudokuCellTests::test_rm_candidate() {
-    SudCell sc;
+    Cell sc;
     sc.init(0, 3, 3);
     CPPUNIT_ASSERT_EQUAL(sc.cand_count(), static_cast<u> (9));
 
@@ -56,7 +56,7 @@ void SudokuCellTests::test_rm_candidate() {
 }
 
 void SudokuCellTests::test_last_value() {
-    SudCell sc;
+    Cell sc;
     sc.init(0, 3, 3);
 
     for (u i = 1; i < 9; ++i)
@@ -69,7 +69,7 @@ void SudokuCellTests::test_last_value() {
 }
 
 void SudokuCellTests::test_get_cand() {
-    SudCell sc;
+    Cell sc;
     sc.init(0, 3, 3);
     sc.rm_cand(1);
     sc.rm_cand(2);
@@ -83,7 +83,7 @@ void SudokuCellTests::test_get_cand() {
 }
 
 void SudokuCellTests::test_rm_all_but_pair_cands_excluded() {
-    SudCell sc;
+    Cell sc;
     sc.init(0, 3, 3);
 
     outcome outcome_ = sc.rmall_but(5, 7);
@@ -94,7 +94,7 @@ void SudokuCellTests::test_rm_all_but_pair_cands_excluded() {
 }
 
 void SudokuCellTests::test_rm_all_but_pair_new_val_found() {
-    SudCell sc;
+    Cell sc;
     sc.init(0, 3, 3);
     sc.rm_cand(1);
     sc.rm_cand(2);
@@ -115,7 +115,7 @@ void SudokuCellTests::test_rm_all_but_pair_new_val_found() {
 
 void SudokuCellTests::test_rm_all_but_pair_nothing_found() {
 
-    SudCell sc;
+    Cell sc;
     sc.init(0, 3, 3);
     //  sc.rm_cand(1);
     sc.rm_cand(2);
@@ -130,5 +130,69 @@ void SudokuCellTests::test_rm_all_but_pair_nothing_found() {
     outcome outcome_ = sc.rmall_but(1, 3);
     CPPUNIT_ASSERT_EQUAL(NOTHING, outcome_);
 
+
+}
+
+void SudokuCellTests::test_join_no_intersection() {
+    Cell sc_1;
+    sc_1.init(0, 1, 1);
+    for (u i = 4; i < 10; ++i) { // leave 1 2 3
+        sc_1.rm_cand(i);
+    }
+
+    Cell sc_2;
+    sc_2.init(0, 1, 1);
+    for (u i = 1; i < 7; ++i) { // leave 7 8 9
+        sc_2.rm_cand(i);
+    }
+    sud_list<u> expected;
+    expected.add(1).add(2).add(3).add(7).add(8).add(9);
+    sud_list<u> actual = join(sc_1, sc_2);
+    actual.print();
+
+    CPPUNIT_ASSERT(actual == expected);
+}
+
+void SudokuCellTests::test_join_with_intersection() {
+    Cell sc_1;
+    sc_1.init(0, 1, 1);
+    // leave 1 3 5 7
+    sc_1.rm_cand(2);
+    sc_1.rm_cand(4);
+    sc_1.rm_cand(6);
+    sc_1.rm_cand(8);
+    sc_1.rm_cand(9);
+
+    Cell sc_2;
+    sc_2.init(0, 1, 1);
+    // leave 1 4 5 6
+    sc_2.rm_cand(2);
+    sc_2.rm_cand(3);
+    sc_2.rm_cand(7);
+    sc_2.rm_cand(8);
+    sc_2.rm_cand(9);
+
+    sud_list<u> expected;
+    expected.add(1).add(3).add(5).add(7).add(4).add(6);
+    sud_list<u> actual = join(sc_1, sc_2);
+
+    CPPUNIT_ASSERT(actual == expected);
+
+    Cell sc_3(sc_2);
+    sc_3.rm_cand(1);
+    sc_3.rm_cand(4);
+
+    sud_list<u> actual_2 = join(sc_3, actual);
+
+    CPPUNIT_ASSERT(actual_2 == expected);
+
+    Cell sc_4;
+    sc_4.init(0, 1, 1);
+    sc_4.rm_cand(9);
+    expected.add(2).add(8);
+
+    sud_list<u> actual_3 = join(sc_4, actual);
+
+    CPPUNIT_ASSERT(actual_3 == expected);
 
 }
