@@ -9,7 +9,10 @@ using namespace std;
 typedef unsigned short u;
 
 static string SUDOKU_FILES[]{
-                             "input/book55.sud"
+                             "input/book55.sud",
+                             "input/book56.sud",
+                             "input/book57.sud",
+                             "input/book58.sud"
 };
 
 #define CELL_MAX_VAL 9
