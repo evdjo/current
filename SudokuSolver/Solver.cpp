@@ -37,113 +37,72 @@ outcome Solver::excludeKnownVal(u row, u column, u val) {
     return max(row_otcm, max(col_otcm, sqr_otcm));
 }
 
-outcome Solver::excludeKnownValues() {
-    outcome _outcome = NOTHING;
+void Solver::excludeKnownValues(outcome& final_outcome) {
     for (u row = 0; row < 9; ++row) {
         for (u column = 0; column < 9; ++column) {
             u cell_val = grid.cell(row, column).get_value();
             if (cell_val != CELL_UNKNOWN_VAL) {
-                _outcome = max(excludeKnownVal(row, column, cell_val), _outcome);
+                final_outcome = max(excludeKnownVal(row, column, cell_val),
+                        final_outcome);
             }
         }
-
     }
-    return _outcome;
 }
 
 void Solver::solve() {
+    if (!grid.is_good()) {
+        return;
+    }
     while (true) {
-        if (excludeKnownValues() != NOTHING) continue;
-        outcome _rows = process(ROWS);
-        if (_rows == NEW_VALUE) continue;
-        outcome _columns = process(COLUMNS);
-        if (_columns == NEW_VALUE) continue;
-        outcome _squares = process(SQUARES);
-        if (_squares == NEW_VALUE) continue;
+        outcome final_outcome = NOTHING;
+        excludeKnownValues(final_outcome);
+        if (final_outcome != NOTHING) continue;
 
-        if (_rows == NOTHING
-                &&
-                _columns == NOTHING
-                &&
-                _squares == NOTHING
-                ) {
-            break;
-        }
+        process(ROWS, final_outcome);
+        if (final_outcome == NEW_VALUE) continue;
+
+        process(COLUMNS, final_outcome);
+        if (final_outcome == NEW_VALUE) continue;
+
+        process(SQUARES, final_outcome);
+        if (final_outcome == NEW_VALUE) continue;
+
+        if (final_outcome == NOTHING) break;
+
     }
     grid.print();
     grid.print_possible_values();
     grid.verify();
 }
 
-outcome Solver::process(iter_over what) {
+void Solver::process(iter_over what, outcome& final_outcome) {
     if (SQUARES == what) {
         for (u row = 0; row < 3; ++row) {
             for (u col = 0; col < 3; ++col) {
                 niner n = grid.get_niner_square(row, col);
-                if (process(n, what) == NEW_VALUE) return NEW_VALUE;
+                process(n, what, final_outcome);
+                if (final_outcome == NEW_VALUE) return;
             }
         }
     } else {
         for (u i = 0; i < 9; ++i) {
             niner n = grid.get_niner_line(what, i);
-            if (process(n, what) == NEW_VALUE) return NEW_VALUE;
+            process(n, what, final_outcome);
+            if (final_outcome == NEW_VALUE) return;
         }
     }
-    return NOTHING;
 }
 
-outcome Solver::process(const niner & n, iter_over what) {
-    outcome final_outcome = NOTHING;
+void Solver::process(const niner & n, iter_over what, outcome& final_outcome) {
 
     sud_list<sud_node> occurrences[9];
     count_occurr(n, occurrences);
 
-    outcome hs_outcome = hidden_single(occurrences);
-    final_outcome = max(hs_outcome, final_outcome);
-    if (final_outcome == NEW_VALUE) return NEW_VALUE;
+    hidden_single(occurrences, final_outcome);
+    if (final_outcome == NEW_VALUE) return;
 
-
-    outcome pp_outcome = NOTHING;
-    for (u i = 0; i < 9; ++i) {
-        u candidate = i + 1;
-        if (occurrences[i].size() == 2) {
-            u occur1_row = occurrences[i][0].rw;
-            u occur2_row = occurrences[i][1].rw;
-            u occur1_col = occurrences[i][0].cm;
-            u occur2_col = occurrences[i][1].cm;
-            if (what != SQUARES) {
-                if (zero(occur1_row) == zero(occur2_row) &&
-                        zero(occur1_col) == zero(occur2_col)) {
-
-                    if (occur1_row == occur2_row) {
-                        for (u iter_col = 0; iter_col < 9; ++iter_col) {
-                            if (iter_col == occur1_col || iter_col == occur2_col) continue;
-                            Cell& cell = *(n[iter_col]);
-                            if (!cell.is_solved()) {
-                                outcome _outcome = cell.remove_candidate(candidate);
-                                pp_outcome = max(pp_outcome, _outcome);
-                                if (pp_outcome == NEW_VALUE) return NEW_VALUE;
-                            }
-                        }
-
-                    } else if (occur1_col == occur2_col) {
-                        for (u iter_row = 0; iter_row < 9; ++iter_row) {
-                            if (iter_row == occur1_row || iter_row == occur2_row) continue;
-                            Cell& cell = *(n[iter_row]);
-                            if (!cell.is_solved()) {
-                                outcome _outcome = cell.remove_candidate(candidate);
-                                pp_outcome = max(pp_outcome, _outcome);
-                                if (pp_outcome == NEW_VALUE) return NEW_VALUE;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    final_outcome = max(final_outcome, pp_outcome);
-
-    return final_outcome;
+    pointing_pair(occurrences, n, what, final_outcome);
+    if (final_outcome == NEW_VALUE) return;
 
 }
 
@@ -160,15 +119,73 @@ void Solver::count_occurr(const niner & n, sud_list<sud_node> * occurrences) {
     }
 }
 
-outcome Solver::hidden_single(const sud_list<sud_node> * occurrences) {
+void Solver::hidden_single(const sud_list<sud_node> * occurrences, outcome& hs) {
     for (u i = 0; i < 9; ++i) {
         if (occurrences[i].size() == 1) {
             u cell_row = occurrences[i][0].rw;
             u cell_col = occurrences[i][0].cm;
             u single_candidate = i + 1;
             grid.cell(cell_row, cell_col).solve_cell(single_candidate);
-            return NEW_VALUE;
+            hs = NEW_VALUE;
+            return;
         }
     }
-    return NOTHING;
+}
+
+void Solver::pointing_pair(const sud_list<sud_node> * occurrences,
+        const niner & n, iter_over what, outcome& pp_outcome) {
+    for (u i = 0; i < 9; ++i) {
+        u candidate = i + 1;
+        if (occurrences[i].size() == 2) {
+            u occur1_row = occurrences[i][0].rw;
+            u occur2_row = occurrences[i][1].rw;
+            u occur1_col = occurrences[i][0].cm;
+            u occur2_col = occurrences[i][1].cm;
+            bool same_row = occur1_row == occur2_row;
+            bool same_col = occur1_col == occur2_col;
+            if (what != SQUARES) {
+                if (zero(occur1_row) == zero(occur2_row) &&
+                        zero(occur1_col) == zero(occur2_col)) {
+                    for (u index = 0; index < 9; ++index) {
+                        if ((same_row &&
+                                index == occur1_col || index == occur2_col)
+                                ||
+                                (same_col &&
+                                index == occur1_row || index == occur2_row)) {
+                            continue;
+                        }
+                        rm_pointing_pair((*n[index]), candidate, pp_outcome);
+                        if (pp_outcome == NEW_VALUE) return;
+                    }
+                }
+            } else if (what == SQUARES) {
+
+                u zero_col = zero(occur1_col);
+                u zero_row = zero(occur1_row);
+
+                for (u index = 0; index < 9; ++index) {
+                    if (same_row || same_col) {
+                        if ((same_row &&
+                                zero(index) == zero_col)
+                                ||
+                                (same_col
+                                && zero(index) == zero_row)) {
+                            continue;
+                        }
+                        Cell & cell = same_row ? grid.cell(occur1_row, index) :
+                                grid.cell(index, occur1_col);
+
+                        rm_pointing_pair(cell, candidate, pp_outcome);
+                        if (pp_outcome == NEW_VALUE) return;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Solver::rm_pointing_pair(Cell& cell, u cand, outcome& pp) {
+    if (!cell.is_solved()) {
+        pp = max(pp, cell.remove_candidate(cand));
+    }
 }
