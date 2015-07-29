@@ -100,6 +100,11 @@ void Cell::assert_is_not_solved() {
 }
 
 void Cell::print_possible_values() {
+    if (is_solved()) {
+        cout << m_node.val;
+        return;
+    }
+
     for (u i = 0; i < 9; i++)
         if ((m_candidates)[i] != 0) cout << (m_candidates)[i];
         else cout << " ";
@@ -107,4 +112,9 @@ void Cell::print_possible_values() {
 
 sud_node Cell::node() {
     return m_node;
+}
+
+u Cell::cand_count() {
+    assert_is_not_solved();
+    return m_candidates_count;
 }

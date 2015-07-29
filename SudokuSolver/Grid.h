@@ -66,20 +66,7 @@ public:
             if ((8 - row) % 3 == 0) cout << endl << endl;
         }
     }
-    niner get_niner_square(u row, u col) {
-        niner n;
-        u begin_row = row * 3;
-        u begin_col = col * 3;
-        u index = 0;
-        for (u rw = begin_row; rw < begin_row + 3; ++rw) {
-            for (u cl = begin_col; cl < begin_col + 3; ++cl) {
-                n[index] = &(the_sudoku[rw][cl]);
-                ++index;
-            }
-        }
-        return n;
-    }
-    niner get_niner_line(iter_over what, u index) {
+    niner get_niner(iter_over what, u index) {
         niner n;
         if (ROWS == what) {
             for (u i = 0; i < 9; ++i) {
@@ -89,12 +76,26 @@ public:
             for (u i = 0; i < 9; ++i) {
                 n[i] = &(the_sudoku[i][index]);
             }
+        } else if (SQUARES == what) {
+            u begin_row = (index / 3) * 3;
+            u begin_col = (index % 3) * 3;
+            //            print_possible_values();
+            u i = 0;
+            for (u rw = begin_row; rw < begin_row + 3; ++rw) {
+                for (u cl = begin_col; cl < begin_col + 3; ++cl) {
+                    n[i] = &(the_sudoku[rw][cl]);
+                    ++i;
+                }
+            }
+        } else {
+            throw logic_error("WHAT");
         }
+
         return n;
     }
 
 private:
-    Cell ** the_sudoku;
+    Cell ** the_sudoku = nullptr;
     bool good = false;
 };
 

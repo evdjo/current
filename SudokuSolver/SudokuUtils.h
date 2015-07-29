@@ -5,20 +5,27 @@
 #include <stdexcept>
 using namespace std;
 
-
 typedef unsigned short u;
 
 static string SUDOKU_FILES[]{
                              "input/book55.sud",
                              "input/book56.sud",
                              "input/book57.sud",
-                             "input/book58.sud"
+                             "input/book58.sud",
+                             "input/book62.sud",
+                             "input/book63.sud",
+                             "input/book64.sud",
+                             "input/book65.sud",
+                             "input/book67.sud",
+                             "input/hard1.sud"
 };
 
 #define CELL_MAX_VAL 9
 #define CELL_MIN_VAL 1
 #define CELL_UNKNOWN_VAL 0
 #define zero(index) (((index) / 3) * 3)
+
+#define square_index(row,col) (zero(row) + (zero(col) / 3))
 
 enum outcome {
     NEW_VALUE = 2,
@@ -75,6 +82,17 @@ public:
         *m_next_free = nullptr;
         ++m_count;
         return *this;
+    }
+    sud_list<T>& add_if_not_contained(const T& element) {
+        if (contains(element)) {
+            return *this;
+        }
+        return add(element);
+    }
+    void add_all_if_not_contained(sud_list<T> added) {
+        for (u i = 0; i < added.size(); ++i) {
+            add_if_not_contained(added[i]);
+        }
     }
     T& operator[](const u& index) const {
         if (index < 0 || index >= m_count) {

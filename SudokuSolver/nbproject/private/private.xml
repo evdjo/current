@@ -9,8 +9,10 @@
         <group>
             <file>file:/home/evdjoint/current/SudokuSolver/Solver.cpp</file>
             <file>file:/home/evdjoint/current/SudokuSolver/SudokuUtils.h</file>
-            <file>file:/home/evdjoint/current/SudokuSolver/Solver.h</file>
+            <file>file:/home/evdjoint/current/SudokuSolver/Grid.cpp</file>
             <file>file:/home/evdjoint/current/SudokuSolver/main.cpp</file>
+            <file>file:/home/evdjoint/current/SudokuSolver/Grid.h</file>
+            <file>file:/home/evdjoint/current/SudokuSolver/Cell.cpp</file>
         </group>
     </open-files>
 </project-private>

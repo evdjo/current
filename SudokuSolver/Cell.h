@@ -18,6 +18,7 @@ public:
     bool is_solved();
     outcome remove_candidate(u value_to_remove);
     void print_possible_values();
+    u cand_count();
 
     sud_node node();
 

@@ -59,7 +59,7 @@ void Grid::verify() {
 Grid::Grid(const string & filename) {
     ifstream input(filename);
     if (!input.good()) {
-        cerr << "Could not open the Sudoku file." << endl;
+        cerr << "Could not open the Sudoku file. " << endl;
         return;
     }
 
@@ -67,7 +67,7 @@ Grid::Grid(const string & filename) {
     for (u i = 0; i < 9; ++i) {
         getline(input, lines[i]);
         if (lines[i].length() != 9) {
-            cerr << "Input file is not a valid sudoku." << endl;
+            cerr << "Input file is not a valid sudoku[0]." << filename << endl;
             return;
         }
     }
@@ -81,7 +81,7 @@ Grid::Grid(const string & filename) {
                 if (val_ >= 0 && val_ < 10) {
                     the_sudoku[row][column].initilize(val_, row, column);
                 } else {
-                    cerr << "Input file is not a valid sudoku." << endl;
+                    cerr << "Input file is not a valid sudoku[1]." << filename << endl;
                     return;
                 }
             }
